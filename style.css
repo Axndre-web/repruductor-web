@@ -1,0 +1,4894 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Invitación digital">
+    <meta name="theme-color" content="#05030b">
+
+    <title>Invitación Digital</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="background-effects">
+        <span class="neon-orb orb-1"></span>
+        <span class="neon-orb orb-2"></span>
+        <span class="neon-orb orb-3"></span>
+        <span class="neon-orb orb-4"></span>
+
+        <span class="particle p1"></span>
+        <span class="particle p2"></span>
+        <span class="particle p3"></span>
+        <span class="particle p4"></span>
+        <span class="particle p5"></span>
+        <span class="particle p6"></span>
+        <span class="particle p7"></span>
+    </div>
+
+    <header class="navbar">
+
+        <a href="#inicio" class="logo">
+            <span class="logo-symbol">✦</span>
+            <span>Mi Invitación</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#evento">Evento</a>
+            <a href="#pedido">Confirmación</a>
+            <a href="#redes">Redes</a>
+        </nav>
+
+        <a href="#pedido" class="nav-button">
+            Confirmar
+        </a>
+
+    </header>
+
+    <main>
+
+        <!-- HERO -->
+
+        <section id="inicio" class="hero section-reveal">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+                    <span></span>
+                    Una ocasión especial
+                    <span></span>
+                </div>
+
+                <h1 class="animated-title">
+                    Una noche
+                    <span>para recordar</span>
+                </h1>
+
+                <div class="title-glow"></div>
+
+                <p class="hero-description">
+                    Queremos compartir contigo un momento muy especial.
+                    Prepara tu mejor sonrisa y acompáñanos en este día
+                    que hemos preparado con muchísimo cariño.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="#evento" class="button button-primary">
+                        <span>Descubrir invitación</span>
+                        <b>↓</b>
+                    </a>
+
+                    <a href="#pedido" class="button button-secondary">
+                        Confirmar asistencia
+                    </a>
+
+                </div>
+
+                <div class="hero-date">
+
+                    <div class="date-box">
+                        <strong>15</strong>
+                        <span>AGO</span>
+                    </div>
+
+                    <div class="date-line"></div>
+
+                    <div>
+                        <strong>2026</strong>
+                        <small>SÁBADO</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hero-visual">
+
+                <div class="energy-ring ring-one"></div>
+                <div class="energy-ring ring-two"></div>
+                <div class="energy-ring ring-three"></div>
+
+                <div class="neon-star star-one">✦</div>
+                <div class="neon-star star-two">✧</div>
+                <div class="neon-star star-three">✦</div>
+
+                <div class="invitation-card">
+
+                    <div class="card-border"></div>
+
+                    <div class="card-top">
+                        <span>INVITACIÓN ESPECIAL</span>
+                        <span>✦</span>
+                    </div>
+
+                    <div class="card-center">
+
+                        <span class="small-script">
+                            Estás invitado/a
+                        </span>
+
+                        <h2>
+                            Una
+                            <i>noche</i>
+                        </h2>
+
+                        <div class="card-divider">
+                            <span></span>
+                            ✦
+                            <span></span>
+                        </div>
+
+                        <p>
+                            15 · 08 · 2026
+                        </p>
+
+                    </div>
+
+                    <div class="card-bottom">
+                        <span>Será un placer verte</span>
+                        <span>♥</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- EVENTO -->
+
+        <section id="evento" class="event-section section-reveal">
+
+            <div class="section-heading centered">
+
+                <div class="section-number">
+                    01
+                </div>
+
+                <div>
+                    <span class="section-label">
+                        Guarda esta fecha
+                    </span>
+
+                    <h2>
+                        El gran momento
+                    </h2>
+
+                    <p>
+                        Todo está preparado para recibirte.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="event-grid">
+
+                <article class="event-card">
+
+                    <div class="event-glow"></div>
+
+                    <div class="event-icon">
+                        ◷
+                    </div>
+
+                    <span class="card-label">
+                        FECHA
+                    </span>
+
+                    <h3>
+                        15 de Agosto
+                    </h3>
+
+                    <p>
+                        Sábado · 2026
+                    </p>
+
+                </article>
+
+
+                <article class="event-card featured-card">
+
+                    <div class="event-glow"></div>
+
+                    <div class="event-icon">
+                        ⌖
+                    </div>
+
+                    <span class="card-label">
+                        LUGAR
+                    </span>
+
+                    <h3>
+                        Lugar del evento
+                    </h3>
+
+                    <p>
+                        Dirección del evento
+                    </p>
+
+                    <a
+                        href="https://www.google.com/maps"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="card-link">
+                        Ver ubicación →
+                    </a>
+
+                </article>
+
+
+                <article class="event-card">
+
+                    <div class="event-glow"></div>
+
+                    <div class="event-icon">
+                        ✦
+                    </div>
+
+                    <span class="card-label">
+                        HORA
+                    </span>
+
+                    <h3>
+                        18:00
+                    </h3>
+
+                    <p>
+                        Recepción de invitados
+                    </p>
+
+                </article>
+
+            </div>
+
+        </section>
+
+
+        <!-- FRASE -->
+
+        <section class="quote-section section-reveal">
+
+            <div class="quote-orbit">
+                <span>✦</span>
+            </div>
+
+            <span class="quote-decoration">
+                “
+            </span>
+
+            <blockquote>
+                Los momentos especiales
+                <span>se disfrutan mejor juntos.</span>
+            </blockquote>
+
+            <div class="quote-line">
+                <span></span>
+                ✦
+                <span></span>
+            </div>
+
+        </section>
+
+
+        <!-- CONFIRMACIÓN -->
+
+        <section id="pedido" class="order-section section-reveal">
+
+            <div class="section-heading centered">
+
+                <div class="section-number">
+                    02
+                </div>
+
+                <div>
+
+                    <span class="section-label">
+                        Tu respuesta
+                    </span>
+
+                    <h2>
+                        Confirma tu asistencia
+                    </h2>
+
+                    <p>
+                        Solo necesitamos unos datos.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="order-container">
+
+                <form
+                    id="whatsappForm"
+                    class="invitation-form">
+
+                    <div class="form-glow"></div>
+
+                    <div class="form-group">
+
+                        <label for="nombre">
+                            Nombre completo
+                        </label>
+
+                        <input
+                            type="text"
+                            id="nombre"
+                            name="nombre"
+                            placeholder="Escribe tu nombre"
+                            required>
+
+                    </div>
+
+
+                    <div class="form-row">
+
+                        <div class="form-group">
+
+                            <label for="personas">
+                                Número de personas
+                            </label>
+
+                            <select
+                                id="personas"
+                                name="personas"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="1">
+                                    1 persona
+                                </option>
+
+                                <option value="2">
+                                    2 personas
+                                </option>
+
+                                <option value="3">
+                                    3 personas
+                                </option>
+
+                                <option value="4">
+                                    4 personas
+                                </option>
+
+                                <option value="5">
+                                    5 personas
+                                </option>
+
+                                <option value="6">
+                                    6 personas
+                                </option>
+
+                                <option value="Más de 6">
+                                    Más de 6
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="respuesta">
+                                ¿Asistirás?
+                            </label>
+
+                            <select
+                                id="respuesta"
+                                name="respuesta"
+                                required>
+
+                                <option value="">
+                                    Seleccionar
+                                </option>
+
+                                <option value="Sí, asistiré">
+                                    Sí, asistiré
+                                </option>
+
+                                <option value="No podré asistir">
+                                    No podré asistir
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="mensaje">
+                            Mensaje
+                        </label>
+
+                        <textarea
+                            id="mensaje"
+                            name="mensaje"
+                            rows="4"
+                            placeholder="Escribe un mensaje opcional..."></textarea>
+
+                    </div>
+
+
+                    <button
+                        type="submit"
+                        class="button button-whatsapp">
+
+                        <span class="whatsapp-icon">
+                            ◉
+                        </span>
+
+                        <span>
+                            Enviar confirmación
+                        </span>
+
+                        <b>
+                            →
+                        </b>
+
+                    </button>
+
+
+                    <p class="form-note">
+                        La confirmación se enviará directamente por WhatsApp.
+                    </p>
+
+                </form>
+
+
+                <div class="order-side">
+
+                    <div class="side-glow"></div>
+
+                    <div class="side-number">
+                        02
+                    </div>
+
+                    <div class="side-content">
+
+                        <span class="mini-label">
+                            IMPORTANTE
+                        </span>
+
+                        <h3>
+                            Las niñas
+                            <em>van solas esta vez.</em>
+                        </h3>
+
+                        <p>
+                            Para que todo salga perfecto y podamos disfrutar
+                            de la celebración sin preocupaciones, esta vez
+                            las niñas pasarán solas.
+                        </p>
+
+                        <div class="side-decoration">
+                            <span></span>
+                            <b>✦</b>
+                            <span></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- REDES -->
+
+        <section
+            id="redes"
+            class="social-section section-reveal">
+
+            <div class="section-heading centered">
+
+                <div class="section-number">
+                    03
+                </div>
+
+                <div>
+
+                    <span class="section-label">
+                        Conecta con nosotros
+                    </span>
+
+                    <h2>
+                        Síguenos
+                    </h2>
+
+                    <p>
+                        También puedes encontrarnos en nuestras redes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="social-grid">
+
+                <a
+                    href="https://www.youtube.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-card youtube">
+
+                    <div class="social-icon">
+                        ▶
+                    </div>
+
+                    <div class="social-info">
+
+                        <small>
+                            YOUTUBE
+                        </small>
+
+                        <strong>
+                            Ver vídeos
+                        </strong>
+
+                    </div>
+
+                    <b>
+                        ↗
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="https://www.tiktok.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-card tiktok">
+
+                    <div class="social-icon">
+                        ♪
+                    </div>
+
+                    <div class="social-info">
+
+                        <small>
+                            TIKTOK
+                        </small>
+
+                        <strong>
+                            Descubre más
+                        </strong>
+
+                    </div>
+
+                    <b>
+                        ↗
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="https://www.facebook.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-card facebook">
+
+                    <div class="social-icon">
+                        f
+                    </div>
+
+                    <div class="social-info">
+
+                        <small>
+                            FACEBOOK
+                        </small>
+
+                        <strong>
+                            Visítanos
+                        </strong>
+
+                    </div>
+
+                    <b>
+                        ↗
+                    </b>
+
+                </a>
+
+
+                <a
+                    href="https://www.instagram.com/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="social-card instagram">
+
+                    <div class="social-icon">
+                        ◎
+                    </div>
+
+                    <div class="social-info">
+
+                        <small>
+                            INSTAGRAM
+                        </small>
+
+                        <strong>
+                            Síguenos
+                        </strong>
+
+                    </div>
+
+                    <b>
+                        ↗
+                    </b>
+
+                </a>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOOGLE -->
+
+        <section class="search-section section-reveal">
+
+            <div class="search-content">
+
+                <div class="search-orbit">
+                    ✦
+                </div>
+
+                <span class="section-label">
+                    Busca lo que necesites
+                </span>
+
+                <h2>
+                    Encuéntralo
+                    <em>en Google.</em>
+                </h2>
+
+                <p>
+                    Utiliza el buscador para encontrar información,
+                    ubicaciones, horarios y mucho más.
+                </p>
+
+
+                <form
+                    class="google-search"
+                    action="https://www.google.com/search"
+                    method="GET"
+                    target="_blank">
+
+                    <div class="search-input">
+
+                        <span>
+                            ⌕
+                        </span>
+
+                        <input
+                            type="search"
+                            name="q"
+                            placeholder="Buscar en Google..."
+                            aria-label="Buscar en Google"
+                            autocomplete="off"
+                            required>
+
+                        <button type="submit">
+                            Buscar
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            <div class="footer-line"></div>
+
+            <div class="footer-content">
+
+                <div class="footer-logo">
+                    <span>✦</span>
+                    <strong>Mi Invitación</strong>
+                </div>
+
+                <p>
+                    Gracias por compartir este momento.
+                </p>
+
+                <a
+                    href="https://wa.me/34602487576"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="footer-whatsapp">
+
+                    WhatsApp · 602 487 576
+
+                </a>
+
+            </div>
+
+            <div class="copyright">
+                © 2026 · Invitación Digital
+            </div>
+
+        </footer>
+
+    </main>
+
+
+    <!-- WHATSAPP FLOTANTE -->
+
+    <a
+        href="https://wa.me/34602487576"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="floating-whatsapp"
+        aria-label="Contactar por WhatsApp">
+
+        <span>
+            ◉
+        </span>
+
+        <div class="whatsapp-tooltip">
+            ¿Hablamos por WhatsApp?
+        </div>
+
+    </a>
+
+
+    <!-- VOLVER ARRIBA -->
+
+    <button
+        class="back-top"
+        id="backTop"
+        aria-label="Volver arriba">
+
+        ↑
+
+    </button>
+
+
+    <script>
+
+        /* =====================================================
+           WHATSAPP
+        ===================================================== */
+
+        const whatsappForm =
+            document.getElementById("whatsappForm");
+
+        whatsappForm.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                const nombre =
+                    document.getElementById("nombre")
+                    .value
+                    .trim();
+
+                const personas =
+                    document.getElementById("personas")
+                    .value;
+
+                const respuesta =
+                    document.getElementById("respuesta")
+                    .value;
+
+                const mensaje =
+                    document.getElementById("mensaje")
+                    .value
+                    .trim();
+
+                const texto =
+`✨ CONFIRMACIÓN DE INVITACIÓN ✨
+
+👤 Nombre:
+${nombre}
+
+👥 Número de personas:
+${personas}
+
+💌 Confirmación:
+${respuesta}
+
+📝 Mensaje:
+${mensaje || "Sin mensaje adicional."}
+
+━━━━━━━━━━━━━━━━━━
+📅 Invitación digital
+`;
+
+                const whatsappURL =
+                    "https://wa.me/34602487576?text=" +
+                    encodeURIComponent(texto);
+
+                window.open(
+                    whatsappURL,
+                    "_blank"
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           SCROLL REVEAL
+        ===================================================== */
+
+        const revealElements =
+            document.querySelectorAll(
+                ".section-reveal"
+            );
+
+        const revealObserver =
+            new IntersectionObserver(
+                function(entries) {
+
+                    entries.forEach(
+                        function(entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add("visible");
+
+                            } else {
+
+                                entry.target
+                                    .classList
+                                    .remove("visible");
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.12
+                }
+            );
+
+        revealElements.forEach(
+            function(element) {
+
+                revealObserver.observe(
+                    element
+                );
+
+            }
+        );
+
+
+        /* =====================================================
+           ANIMACIÓN CARDS
+        ===================================================== */
+
+        const cards =
+            document.querySelectorAll(
+                ".event-card, .social-card"
+            );
+
+        const cardObserver =
+            new IntersectionObserver(
+                function(entries) {
+
+                    entries.forEach(
+                        function(entry) {
+
+                            if (
+                                entry.isIntersecting
+                            ) {
+
+                                entry.target
+                                    .classList
+                                    .add("card-visible");
+
+                            } else {
+
+                                entry.target
+                                    .classList
+                                    .remove("card-visible");
+
+                            }
+
+                        }
+                    );
+
+                },
+                {
+                    threshold: 0.1
+                }
+            );
+
+        cards.forEach(
+            function(card) {
+
+                cardObserver.observe(card);
+
+            }
+        );
+
+
+        /* =====================================================
+           EFECTO 3D TARJETA
+        ===================================================== */
+
+        const heroVisual =
+            document.querySelector(
+                ".hero-visual"
+            );
+
+        const invitationCard =
+            document.querySelector(
+                ".invitation-card"
+            );
+
+        if (
+            heroVisual &&
+            invitationCard &&
+            window.innerWidth > 800
+        ) {
+
+            heroVisual.addEventListener(
+                "mousemove",
+                function(event) {
+
+                    const rect =
+                        heroVisual
+                        .getBoundingClientRect();
+
+                    const x =
+                        (
+                            event.clientX -
+                            rect.left
+                        ) /
+                        rect.width -
+                        .5;
+
+                    const y =
+                        (
+                            event.clientY -
+                            rect.top
+                        ) /
+                        rect.height -
+                        .5;
+
+                    invitationCard.style.transform =
+                        `perspective(1200px)
+                         rotateY(${x * 12}deg)
+                         rotateX(${y * -12}deg)
+                         translateY(-10px)
+                         scale(1.02)`;
+
+                }
+            );
+
+
+            heroVisual.addEventListener(
+                "mouseleave",
+                function() {
+
+                    invitationCard.style.transform =
+                        "";
+
+                }
+            );
+
+        }
+
+
+        /* =====================================================
+           RIPPLE
+        ===================================================== */
+
+        document
+            .querySelectorAll(".button")
+            .forEach(
+                function(button) {
+
+                    button.addEventListener(
+                        "click",
+                        function(event) {
+
+                            const ripple =
+                                document.createElement(
+                                    "span"
+                                );
+
+                            ripple.className =
+                                "ripple";
+
+                            const rect =
+                                button
+                                .getBoundingClientRect();
+
+                            ripple.style.left =
+                                (
+                                    event.clientX -
+                                    rect.left
+                                ) + "px";
+
+                            ripple.style.top =
+                                (
+                                    event.clientY -
+                                    rect.top
+                                ) + "px";
+
+                            button.appendChild(
+                                ripple
+                            );
+
+                            setTimeout(
+                                function() {
+                                    ripple.remove();
+                                },
+                                700
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           SCROLL SUAVE
+        ===================================================== */
+
+        document
+            .querySelectorAll(
+                'a[href^="#"]'
+            )
+            .forEach(
+                function(link) {
+
+                    link.addEventListener(
+                        "click",
+                        function(event) {
+
+                            const targetID =
+                                this.getAttribute(
+                                    "href"
+                                );
+
+                            if (
+                                targetID === "#"
+                            ) return;
+
+                            const target =
+                                document.querySelector(
+                                    targetID
+                                );
+
+                            if (!target) return;
+
+                            event.preventDefault();
+
+                            target.scrollIntoView({
+                                behavior:
+                                    "smooth",
+                                block:
+                                    "start"
+                            });
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /* =====================================================
+           BOTÓN ARRIBA
+        ===================================================== */
+
+        const backTop =
+            document.getElementById(
+                "backTop"
+            );
+
+        window.addEventListener(
+            "scroll",
+            function() {
+
+                if (
+                    window.scrollY > 500
+                ) {
+
+                    backTop.classList
+                        .add("show");
+
+                } else {
+
+                    backTop.classList
+                        .remove("show");
+
+                }
+
+            }
+        );
+
+        backTop.addEventListener(
+            "click",
+            function() {
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>
+```
+
+```css
+:root {
+    --bg: #05030b;
+    --bg-2: #090513;
+    --card: rgba(16, 9, 29, .72);
+
+    --white: #ffffff;
+    --text: #eeeaff;
+    --muted: #aaa3bd;
+
+    --purple: #8b35ff;
+    --purple-light: #c084ff;
+    --purple-neon: #a855f7;
+    --violet: #6d28d9;
+    --pink: #ec4899;
+
+    --green: #25d366;
+
+    --border: rgba(190, 130, 255, .17);
+
+    --title: "Playfair Display", serif;
+    --main: "DM Sans", sans-serif;
+
+    --container: 1180px;
+
+    --ease: cubic-bezier(.16, 1, .3, 1);
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 100px;
+}
+
+
+body {
+    min-height: 100vh;
+
+    overflow-x: hidden;
+
+    color: var(--text);
+
+    font-family: var(--main);
+
+    background:
+        radial-gradient(
+            circle at 50% -10%,
+            rgba(139, 53, 255, .18),
+            transparent 32%
+        ),
+        radial-gradient(
+            circle at 5% 45%,
+            rgba(109, 40, 217, .11),
+            transparent 28%
+        ),
+        radial-gradient(
+            circle at 95% 75%,
+            rgba(236, 72, 153, .08),
+            transparent 28%
+        ),
+        linear-gradient(
+            180deg,
+            #05030b 0%,
+            #08040f 45%,
+            #040208 100%
+        );
+
+    -webkit-font-smoothing: antialiased;
+}
+
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: -3;
+
+    pointer-events: none;
+
+    opacity: .18;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.025) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.025) 1px,
+            transparent 1px
+        );
+
+    background-size: 60px 60px;
+
+    mask-image:
+        linear-gradient(
+            to bottom,
+            black,
+            transparent 85%
+        );
+}
+
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+
+button {
+    border: 0;
+}
+
+
+/* =====================================================
+   FONDO NEÓN
+===================================================== */
+
+.background-effects {
+    position: fixed;
+
+    inset: 0;
+
+    overflow: hidden;
+
+    pointer-events: none;
+
+    z-index: -2;
+}
+
+
+.neon-orb {
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    filter: blur(110px);
+
+    opacity: .23;
+
+    mix-blend-mode: screen;
+
+    animation:
+        neonMove 14s ease-in-out infinite alternate;
+}
+
+
+.orb-1 {
+    left: -180px;
+    top: 5%;
+
+    background:
+        radial-gradient(
+            circle,
+            #9b4dff,
+            #5b21b6,
+            transparent 70%
+        );
+}
+
+
+.orb-2 {
+    right: -180px;
+    top: 25%;
+
+    background:
+        radial-gradient(
+            circle,
+            #7c3aed,
+            #4c1d95,
+            transparent 70%
+        );
+
+    animation-delay: -4s;
+}
+
+
+.orb-3 {
+    left: 25%;
+    bottom: -260px;
+
+    background:
+        radial-gradient(
+            circle,
+            #c026d3,
+            #701a75,
+            transparent 70%
+        );
+
+    animation-delay: -8s;
+}
+
+
+.orb-4 {
+    right: 25%;
+    top: 50%;
+
+    width: 260px;
+    height: 260px;
+
+    background:
+        radial-gradient(
+            circle,
+            #9333ea,
+            transparent 70%
+        );
+
+    opacity: .12;
+
+    animation-delay: -11s;
+}
+
+
+@keyframes neonMove {
+
+    0% {
+        transform:
+            translate3d(
+                -30px,
+                -20px,
+                0
+            )
+            scale(.9);
+    }
+
+    50% {
+        transform:
+            translate3d(
+                80px,
+                50px,
+                0
+            )
+            scale(1.15);
+    }
+
+    100% {
+        transform:
+            translate3d(
+                -20px,
+                100px,
+                0
+            )
+            scale(1.05);
+    }
+}
+
+
+.particle {
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background: #d8b4fe;
+
+    box-shadow:
+        0 0 8px #a855f7,
+        0 0 20px #7c3aed;
+
+    animation:
+        particleFloat 7s ease-in-out infinite;
+}
+
+
+.p1 {
+    left: 8%;
+    top: 25%;
+}
+
+.p2 {
+    left: 20%;
+    top: 70%;
+    animation-delay: -1s;
+}
+
+.p3 {
+    left: 47%;
+    top: 15%;
+    animation-delay: -2s;
+}
+
+.p4 {
+    left: 72%;
+    top: 33%;
+    animation-delay: -3s;
+}
+
+.p5 {
+    left: 87%;
+    top: 65%;
+    animation-delay: -4s;
+}
+
+.p6 {
+    left: 55%;
+    top: 83%;
+    animation-delay: -5s;
+}
+
+.p7 {
+    left: 35%;
+    top: 45%;
+    animation-delay: -6s;
+}
+
+
+@keyframes particleFloat {
+
+    0%,
+    100% {
+        opacity: .2;
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+    50% {
+        opacity: .9;
+        transform:
+            translateY(-80px)
+            scale(2);
+    }
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.navbar {
+    position: fixed;
+
+    top: 18px;
+    left: 50%;
+
+    width:
+        min(
+            calc(100% - 30px),
+            var(--container)
+        );
+
+    height: 70px;
+
+    transform:
+        translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    z-index: 100;
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    border-radius: 100px;
+
+    background:
+        rgba(5,3,11,.68);
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    box-shadow:
+        0 10px 50px
+        rgba(0,0,0,.3),
+        inset 0 1px 0
+        rgba(255,255,255,.04);
+
+    animation:
+        navIn 1s var(--ease) both;
+}
+
+
+.logo {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+.logo-symbol {
+    display: grid;
+    place-items: center;
+
+    width: 35px;
+    height: 35px;
+
+    color: var(--purple-light);
+
+    border:
+        1px solid
+        rgba(168,85,247,.5);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 20px
+        rgba(168,85,247,.2);
+
+    animation:
+        logoGlow 3s ease-in-out infinite;
+}
+
+
+.nav-links {
+    display: flex;
+    align-items: center;
+
+    gap: 30px;
+}
+
+
+.nav-links a {
+    position: relative;
+
+    color: #918a9f;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    transition:
+        color .3s ease,
+        transform .3s ease;
+}
+
+
+.nav-links a::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -8px;
+
+    width: 0;
+    height: 2px;
+
+    transform:
+        translateX(-50%);
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            var(--purple),
+            var(--pink)
+        );
+
+    box-shadow:
+        0 0 10px
+        var(--purple);
+
+    transition:
+        width .4s var(--ease);
+}
+
+
+.nav-links a:hover {
+    color: white;
+
+    transform:
+        translateY(-2px);
+}
+
+
+.nav-links a:hover::after {
+    width: 100%;
+}
+
+
+.nav-button {
+    padding:
+        11px 19px;
+
+    border:
+        1px solid
+        rgba(168,85,247,.45);
+
+    border-radius: 100px;
+
+    color: #d8b4fe;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    background:
+        rgba(139,53,255,.08);
+
+    box-shadow:
+        0 0 25px
+        rgba(139,53,255,.08);
+
+    transition:
+        .4s var(--ease);
+}
+
+
+.nav-button:hover {
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #a855f7
+        );
+
+    border-color:
+        transparent;
+
+    box-shadow:
+        0 0 30px
+        rgba(139,53,255,.4);
+
+    transform:
+        translateY(-3px);
+}
+
+
+@keyframes navIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -30px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translate(-50%, 0);
+    }
+}
+
+
+@keyframes logoGlow {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 10px
+            rgba(168,85,247,.15);
+    }
+
+    50% {
+        box-shadow:
+            0 0 30px
+            rgba(168,85,247,.5);
+    }
+}
+
+
+/* =====================================================
+   GENERAL
+===================================================== */
+
+section {
+    position: relative;
+
+    width:
+        min(
+            calc(100% - 40px),
+            var(--container)
+        );
+
+    margin: auto;
+}
+
+
+.section-reveal {
+    opacity: 0;
+
+    transform:
+        translateY(70px)
+        scale(.98);
+
+    filter:
+        blur(8px);
+
+    transition:
+        opacity 1s var(--ease),
+        transform 1s var(--ease),
+        filter 1s var(--ease);
+}
+
+
+.section-reveal.visible {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+
+    filter:
+        blur(0);
+}
+
+
+/* =====================================================
+   HERO
+===================================================== */
+
+.hero {
+    min-height: 100vh;
+
+    padding-top: 145px;
+    padding-bottom: 100px;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    align-items: center;
+
+    gap: 70px;
+}
+
+
+.hero-content {
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+}
+
+
+.eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 25px;
+
+    color: #c084fc;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    letter-spacing: .25em;
+
+    animation:
+        letterIn 1s .1s var(--ease) both;
+}
+
+
+.eyebrow span {
+    width: 35px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            var(--purple-light)
+        );
+
+    box-shadow:
+        0 0 10px
+        var(--purple);
+}
+
+
+.eyebrow span:last-child {
+    background:
+        linear-gradient(
+            90deg,
+            var(--purple-light),
+            transparent
+        );
+}
+
+
+.hero h1 {
+    position: relative;
+
+    margin: auto;
+
+    max-width: 700px;
+
+    font-family: var(--title);
+
+    font-size:
+        clamp(
+            58px,
+            7vw,
+            100px
+        );
+
+    line-height: .92;
+
+    letter-spacing:
+        -.055em;
+
+    font-weight: 600;
+
+    animation:
+        titleIn 1.2s .2s var(--ease) both;
+}
+
+
+.animated-title span {
+    display: block;
+
+    color: transparent;
+
+    background:
+        linear-gradient(
+            100deg,
+            #fff,
+            #d8b4fe 30%,
+            #a855f7 65%,
+            #f0abfc
+        );
+
+    background-size: 250% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    animation:
+        gradientText 5s linear infinite,
+        letterFloat 4s ease-in-out infinite;
+}
+
+
+@keyframes gradientText {
+
+    to {
+        background-position:
+            250% center;
+    }
+}
+
+
+@keyframes letterFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-5px);
+    }
+}
+
+
+.title-glow {
+    position: absolute;
+
+    left: 50%;
+    top: 30%;
+
+    width: 400px;
+    height: 150px;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        #9333ea;
+
+    filter: blur(110px);
+
+    opacity: .13;
+
+    z-index: -1;
+}
+
+
+.hero-description {
+    max-width: 590px;
+
+    margin:
+        30px auto;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+    line-height: 1.9;
+
+    animation:
+        textUp 1s .4s var(--ease) both;
+}
+
+
+.hero-buttons {
+    display: flex;
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+
+    animation:
+        textUp 1s .55s var(--ease) both;
+}
+
+
+.button {
+    position: relative;
+
+    min-height: 53px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 13px;
+
+    overflow: hidden;
+
+    padding:
+        0 24px;
+
+    border-radius: 100px;
+
+    cursor: pointer;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .12em;
+
+    text-transform: uppercase;
+
+    transition:
+        transform .45s var(--ease),
+        box-shadow .45s ease;
+}
+
+
+.button:hover {
+    transform:
+        translateY(-5px);
+}
+
+
+.button-primary {
+    color: white;
+
+    background:
+        linear-gradient(
+            110deg,
+            #6d28d9,
+            #9333ea,
+            #c026d3
+        );
+
+    background-size:
+        200% 100%;
+
+    box-shadow:
+        0 12px 35px
+        rgba(139,53,255,.28),
+        0 0 35px
+        rgba(168,85,247,.08);
+
+    animation:
+        buttonGradient 4s linear infinite;
+}
+
+
+.button-primary:hover {
+    box-shadow:
+        0 20px 50px
+        rgba(139,53,255,.45),
+        0 0 35px
+        rgba(168,85,247,.2);
+}
+
+
+@keyframes buttonGradient {
+
+    0% {
+        background-position:
+            0% center;
+    }
+
+    100% {
+        background-position:
+            200% center;
+    }
+}
+
+
+.button-secondary {
+    color: #ddd6fe;
+
+    border:
+        1px solid
+        rgba(168,85,247,.3);
+
+    background:
+        rgba(139,53,255,.05);
+}
+
+
+.button-secondary:hover {
+    color: white;
+
+    border-color:
+        rgba(192,132,252,.7);
+
+    background:
+        rgba(139,53,255,.12);
+
+    box-shadow:
+        0 0 30px
+        rgba(139,53,255,.15);
+}
+
+
+.ripple {
+    position: absolute;
+
+    width: 20px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.3);
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    animation:
+        ripple .7s ease-out forwards;
+
+    pointer-events: none;
+}
+
+
+@keyframes ripple {
+
+    to {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(25);
+    }
+}
+
+
+.hero-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 15px;
+
+    margin-top: 40px;
+
+    animation:
+        textUp 1s .7s var(--ease) both;
+}
+
+
+.date-box {
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+
+.date-box strong {
+    color: white;
+
+    font-family: var(--title);
+
+    font-size: 42px;
+}
+
+
+.date-box span {
+    color: #c084fc;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .15em;
+}
+
+
+.date-line {
+    width: 1px;
+    height: 35px;
+
+    background:
+        linear-gradient(
+            transparent,
+            #8b5cf6,
+            transparent
+        );
+}
+
+
+.hero-date > div:last-child {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 3px;
+}
+
+
+.hero-date > div:last-child strong {
+    font-size: 12px;
+
+    letter-spacing: .15em;
+}
+
+
+.hero-date small {
+    color: #756c82;
+
+    font-size: 8px;
+
+    letter-spacing: .2em;
+}
+
+
+@keyframes titleIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(45px)
+            scale(.95);
+
+        filter:
+            blur(10px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+
+        filter:
+            blur(0);
+    }
+}
+
+
+@keyframes textUp {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+}
+
+
+@keyframes letterIn {
+
+    from {
+        opacity: 0;
+
+        letter-spacing:
+            .5em;
+    }
+
+    to {
+        opacity: 1;
+
+        letter-spacing:
+            .25em;
+    }
+}
+
+
+/* =====================================================
+   HERO VISUAL
+===================================================== */
+
+.hero-visual {
+    position: relative;
+
+    min-height: 640px;
+
+    display: grid;
+    place-items: center;
+
+    perspective: 1200px;
+
+    animation:
+        visualIn 1.4s .3s var(--ease) both;
+}
+
+
+.energy-ring {
+    position: absolute;
+
+    border-radius: 50%;
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    box-shadow:
+        0 0 30px
+        rgba(139,53,255,.05);
+
+    animation:
+        rotateRing 25s linear infinite;
+}
+
+
+.ring-one {
+    width: 420px;
+    height: 420px;
+}
+
+
+.ring-two {
+    width: 530px;
+    height: 530px;
+
+    border-style: dashed;
+
+    animation-duration: 35s;
+
+    animation-direction: reverse;
+}
+
+
+.ring-three {
+    width: 650px;
+    height: 650px;
+
+    border-color:
+        rgba(236,72,153,.08);
+
+    animation-duration: 45s;
+}
+
+
+@keyframes rotateRing {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+}
+
+
+.neon-star {
+    position: absolute;
+
+    color: #d8b4fe;
+
+    text-shadow:
+        0 0 10px #a855f7,
+        0 0 30px #7c3aed;
+
+    animation:
+        starFloat 4s ease-in-out infinite;
+}
+
+
+.star-one {
+    top: 18%;
+    left: 17%;
+
+    font-size: 20px;
+}
+
+
+.star-two {
+    right: 13%;
+    top: 28%;
+
+    font-size: 28px;
+
+    animation-delay: -1.5s;
+}
+
+
+.star-three {
+    bottom: 18%;
+    left: 20%;
+
+    font-size: 16px;
+
+    animation-delay: -3s;
+}
+
+
+@keyframes starFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotate(0);
+    }
+
+    50% {
+        transform:
+            translateY(-15px)
+            rotate(20deg);
+    }
+}
+
+
+.invitation-card {
+    position: relative;
+
+    width:
+        min(
+            390px,
+            72vw
+        );
+
+    aspect-ratio:
+        .72;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 38px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(192,132,252,.45);
+
+    border-radius: 8px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,15,50,.95),
+            rgba(8,4,16,.98)
+        );
+
+    box-shadow:
+        0 40px 100px
+        rgba(0,0,0,.75),
+        0 0 60px
+        rgba(139,53,255,.13),
+        inset 0 0 80px
+        rgba(168,85,247,.05);
+
+    transform-style: preserve-3d;
+
+    transition:
+        transform 1s var(--ease);
+
+    animation:
+        cardFloat 6s ease-in-out infinite;
+
+    z-index: 5;
+}
+
+
+.invitation-card::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            rgba(168,85,247,.13),
+            transparent 45%
+        );
+
+    pointer-events: none;
+}
+
+
+.card-border {
+    position: absolute;
+
+    inset: 12px;
+
+    border:
+        1px solid
+        rgba(192,132,252,.2);
+
+    pointer-events: none;
+}
+
+
+.card-top,
+.card-bottom {
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+
+    color: #a78bfa;
+
+    font-size: 8px;
+
+    letter-spacing: .25em;
+
+    z-index: 2;
+}
+
+
+.card-center {
+    position: relative;
+
+    text-align: center;
+
+    z-index: 2;
+}
+
+
+.small-script {
+    display: block;
+
+    margin-bottom: 18px;
+
+    color: #a8a0b5;
+
+    font-family: var(--title);
+
+    font-size: 15px;
+
+    font-style: italic;
+}
+
+
+.card-center h2 {
+    font-family: var(--title);
+
+    font-size: 62px;
+
+    line-height: .9;
+
+    font-weight: 500;
+
+    letter-spacing: -.06em;
+}
+
+
+.card-center h2 i {
+    display: block;
+
+    color: transparent;
+
+    background:
+        linear-gradient(
+            100deg,
+            #d8b4fe,
+            #a855f7,
+            #f0abfc
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    font-style: italic;
+}
+
+
+.card-divider {
+    display: flex;
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    margin:
+        28px 0;
+
+    color: #a855f7;
+
+    text-shadow:
+        0 0 15px
+        #9333ea;
+}
+
+
+.card-divider span {
+    width: 35px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #a855f7
+        );
+}
+
+
+.card-divider span:last-child {
+    background:
+        linear-gradient(
+            90deg,
+            #a855f7,
+            transparent
+        );
+}
+
+
+.card-center p {
+    color: #aaa3b6;
+
+    font-size: 9px;
+
+    letter-spacing: .35em;
+}
+
+
+.card-bottom {
+    color: #70657b;
+}
+
+
+@keyframes visualIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            scale(.8)
+            translateX(60px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            scale(1)
+            translateX(0);
+    }
+}
+
+
+@keyframes cardFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0)
+            rotateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-13px)
+            rotateY(2deg);
+    }
+}
+
+
+/* =====================================================
+   SECTION HEADINGS
+===================================================== */
+
+.event-section,
+.order-section,
+.social-section {
+    padding-top: 130px;
+    padding-bottom: 130px;
+}
+
+
+.section-heading {
+    display: flex;
+
+    justify-content: center;
+
+    gap: 20px;
+
+    margin-bottom: 60px;
+
+    text-align: center;
+}
+
+
+.section-number {
+    color: #a855f7;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .2em;
+}
+
+
+.section-label {
+    display: block;
+
+    margin-bottom: 11px;
+
+    color: #b78cff;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .25em;
+}
+
+
+.section-heading h2 {
+    font-family: var(--title);
+
+    font-size:
+        clamp(
+            40px,
+            5vw,
+            65px
+        );
+
+    line-height: 1;
+
+    letter-spacing:
+        -.045em;
+
+    font-weight: 500;
+
+    animation:
+        subtleText 4s ease-in-out infinite;
+}
+
+
+.section-heading p {
+    margin-top: 15px;
+
+    color: #81798e;
+
+    font-size: 12px;
+}
+
+
+@keyframes subtleText {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-2px);
+    }
+}
+
+
+/* =====================================================
+   EVENT CARDS
+===================================================== */
+
+.event-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 17px;
+}
+
+
+.event-card {
+    position: relative;
+
+    min-height: 310px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    padding: 35px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(139,53,255,.025)
+        );
+
+    opacity: 0;
+
+    transform:
+        translateY(60px)
+        scale(.95);
+
+    transition:
+        opacity .8s var(--ease),
+        transform .8s var(--ease),
+        border-color .4s ease,
+        box-shadow .4s ease;
+}
+
+
+.event-card.card-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0)
+        scale(1);
+}
+
+
+.event-card:nth-child(2) {
+    transition-delay: .12s;
+}
+
+
+.event-card:nth-child(3) {
+    transition-delay: .24s;
+}
+
+
+.event-card:hover {
+    transform:
+        translateY(-10px) !important;
+
+    border-color:
+        rgba(168,85,247,.5);
+
+    box-shadow:
+        0 25px 60px
+        rgba(0,0,0,.35),
+        0 0 40px
+        rgba(139,53,255,.08);
+}
+
+
+.event-glow {
+    position: absolute;
+
+    right: -100px;
+    top: -100px;
+
+    width: 220px;
+    height: 220px;
+
+    border-radius: 50%;
+
+    background:
+        #8b35ff;
+
+    filter: blur(100px);
+
+    opacity: .08;
+
+    transition:
+        opacity .5s ease;
+}
+
+
+.event-card:hover .event-glow {
+    opacity: .22;
+}
+
+
+.event-icon {
+    position: absolute;
+
+    top: 32px;
+    right: 32px;
+
+    width: 48px;
+    height: 48px;
+
+    display: grid;
+    place-items: center;
+
+    border:
+        1px solid
+        rgba(168,85,247,.3);
+
+    border-radius: 50%;
+
+    color: #c084fc;
+
+    box-shadow:
+        0 0 20px
+        rgba(139,53,255,.1);
+
+    transition:
+        transform .5s var(--ease);
+}
+
+
+.event-card:hover .event-icon {
+    transform:
+        rotate(12deg)
+        scale(1.12);
+
+    box-shadow:
+        0 0 30px
+        rgba(139,53,255,.25);
+}
+
+
+.card-label {
+    margin-bottom: 10px;
+
+    color: #655c70;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .2em;
+}
+
+
+.event-card h3 {
+    margin-bottom: 7px;
+
+    font-family: var(--title);
+
+    font-size: 27px;
+
+    font-weight: 500;
+}
+
+
+.event-card p {
+    color: #888090;
+
+    font-size: 12px;
+}
+
+
+.card-link {
+    margin-top: 20px;
+
+    color: #c084fc;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    transition:
+        transform .3s ease,
+        color .3s ease;
+}
+
+
+.card-link:hover {
+    color: white;
+
+    transform:
+        translateX(5px);
+}
+
+
+/* =====================================================
+   QUOTE
+===================================================== */
+
+.quote-section {
+    width: 100%;
+    max-width: none;
+
+    padding:
+        140px 25px;
+
+    text-align: center;
+
+    border-top:
+        1px solid
+        rgba(168,85,247,.1);
+
+    border-bottom:
+        1px solid
+        rgba(168,85,247,.1);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(139,53,255,.11),
+            transparent 48%
+        );
+
+    overflow: hidden;
+}
+
+
+.quote-orbit {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 500px;
+    height: 500px;
+
+    transform:
+        translate(-50%, -50%);
+
+    border:
+        1px solid
+        rgba(168,85,247,.08);
+
+    border-radius: 50%;
+
+    animation:
+        rotateRing 35s linear infinite;
+}
+
+
+.quote-orbit span {
+    position: absolute;
+
+    left: 50%;
+    top: -8px;
+
+    color: #c084fc;
+
+    text-shadow:
+        0 0 15px
+        #a855f7;
+}
+
+
+.quote-decoration {
+    display: block;
+
+    color: #a855f7;
+
+    font-family: var(--title);
+
+    font-size: 85px;
+
+    line-height: .5;
+
+    animation:
+        quoteFloat 4s ease-in-out infinite;
+}
+
+
+blockquote {
+    position: relative;
+
+    max-width: 900px;
+
+    margin:
+        25px auto 0;
+
+    font-family: var(--title);
+
+    font-size:
+        clamp(
+            34px,
+            5vw,
+            62px
+        );
+
+    line-height: 1.12;
+
+    letter-spacing:
+        -.04em;
+
+    z-index: 2;
+}
+
+
+blockquote span {
+    display: block;
+
+    color: transparent;
+
+    background:
+        linear-gradient(
+            100deg,
+            #c084fc,
+            #f0abfc,
+            #a855f7
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    font-style: italic;
+
+    background-size: 200%;
+
+    animation:
+        gradientText 4s linear infinite;
+}
+
+
+.quote-line {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 40px;
+
+    color: #a855f7;
+}
+
+
+.quote-line span {
+    width: 50px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #a855f7
+        );
+}
+
+
+.quote-line span:last-child {
+    background:
+        linear-gradient(
+            90deg,
+            #a855f7,
+            transparent
+        );
+}
+
+
+@keyframes quoteFloat {
+
+    0%,
+    100% {
+        transform:
+            translateY(0);
+    }
+
+    50% {
+        transform:
+            translateY(-8px);
+    }
+}
+
+
+/* =====================================================
+   CONFIRMACIÓN
+===================================================== */
+
+.order-section {
+    padding-bottom: 160px;
+}
+
+
+.order-container {
+    display: grid;
+
+    grid-template-columns:
+        1.15fr
+        .85fr;
+
+    gap: 20px;
+}
+
+
+.invitation-form {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 45px;
+
+    border:
+        1px solid
+        var(--border);
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255,255,255,.045),
+            rgba(139,53,255,.025)
+        );
+
+    box-shadow:
+        0 30px 80px
+        rgba(0,0,0,.2);
+
+    opacity: 0;
+
+    transform:
+        translateX(-50px);
+
+    transition:
+        opacity .9s var(--ease),
+        transform .9s var(--ease);
+}
+
+
+.invitation-form.card-visible {
+    opacity: 1;
+
+    transform:
+        translateX(0);
+}
+
+
+.form-glow {
+    position: absolute;
+
+    right: -120px;
+    top: -120px;
+
+    width: 250px;
+    height: 250px;
+
+    border-radius: 50%;
+
+    background:
+        #8b35ff;
+
+    filter:
+        blur(100px);
+
+    opacity: .08;
+
+    pointer-events: none;
+}
+
+
+.form-group {
+    position: relative;
+
+    margin-bottom: 22px;
+
+    z-index: 2;
+}
+
+
+.form-row {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr;
+
+    gap: 18px;
+}
+
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    color: #a59bac;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    letter-spacing: .18em;
+}
+
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+
+    color: white;
+
+    outline: none;
+
+    border:
+        1px solid
+        rgba(168,85,247,.13);
+
+    border-radius: 5px;
+
+    background:
+        rgba(2,1,5,.55);
+
+    padding:
+        15px 16px;
+
+    transition:
+        border-color .35s ease,
+        box-shadow .35s ease,
+        background .35s ease;
+}
+
+
+.form-group textarea {
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #514958;
+}
+
+
+.form-group select {
+    color: #aaa1b4;
+}
+
+
+.form-group option {
+    color: white;
+
+    background: #0c0715;
+}
+
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color:
+        rgba(168,85,247,.65);
+
+    background:
+        rgba(139,53,255,.045);
+
+    box-shadow:
+        0 0 0 4px
+        rgba(139,53,255,.07),
+        0 0 30px
+        rgba(139,53,255,.08);
+}
+
+
+.button-whatsapp {
+    position: relative;
+
+    width: 100%;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            110deg,
+            #128c4b,
+            #25d366,
+            #128c4b
+        );
+
+    background-size:
+        200% 100%;
+
+    box-shadow:
+        0 15px 40px
+        rgba(37,211,102,.14);
+
+    animation:
+        whatsappGradient 4s linear infinite;
+}
+
+
+.button-whatsapp:hover {
+    box-shadow:
+        0 20px 50px
+        rgba(37,211,102,.28);
+}
+
+
+@keyframes whatsappGradient {
+
+    to {
+        background-position:
+            200% center;
+    }
+}
+
+
+.whatsapp-icon {
+    display: grid;
+    place-items: center;
+
+    width: 25px;
+    height: 25px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.5);
+
+    border-radius: 50%;
+}
+
+
+.button-whatsapp b {
+    margin-left: auto;
+
+    font-size: 17px;
+}
+
+
+.form-note {
+    position: relative;
+
+    margin-top: 15px;
+
+    color: #625b68;
+
+    font-size: 9px;
+
+    text-align: center;
+
+    z-index: 2;
+}
+
+
+.order-side {
+    position: relative;
+
+    min-height: 500px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 55px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(168,85,247,.18);
+
+    background:
+        radial-gradient(
+            circle at 70% 20%,
+            rgba(139,53,255,.15),
+            transparent 35%
+        ),
+        #08050f;
+
+    opacity: 0;
+
+    transform:
+        translateX(50px);
+
+    transition:
+        opacity .9s .15s var(--ease),
+        transform .9s .15s var(--ease);
+}
+
+
+.order-side.card-visible {
+    opacity: 1;
+
+    transform:
+        translateX(0);
+}
+
+
+.side-glow {
+    position: absolute;
+
+    width: 300px;
+    height: 300px;
+
+    right: -150px;
+    bottom: -150px;
+
+    border-radius: 50%;
+
+    background:
+        #c026d3;
+
+    filter:
+        blur(100px);
+
+    opacity: .1;
+}
+
+
+.side-number {
+    position: absolute;
+
+    right: -25px;
+    top: -65px;
+
+    color:
+        rgba(168,85,247,.035);
+
+    font-family: var(--title);
+
+    font-size: 320px;
+
+    line-height: 1;
+
+    pointer-events: none;
+}
+
+
+.side-content {
+    position: relative;
+
+    z-index: 2;
+
+    text-align: center;
+}
+
+
+.mini-label {
+    display: inline-block;
+
+    margin-bottom: 25px;
+
+    color: #a855f7;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    letter-spacing: .25em;
+}
+
+
+.order-side h3 {
+    margin-bottom: 25px;
+
+    font-family: var(--title);
+
+    font-size:
+        clamp(
+            37px,
+            4vw,
+            54px
+        );
+
+    line-height: 1.02;
+
+    font-weight: 500;
+
+    letter-spacing: -.04em;
+}
+
+
+.order-side h3 em {
+    display: block;
+
+    color: transparent;
+
+    background:
+        linear-gradient(
+            100deg,
+            #c084fc,
+            #f0abfc,
+            #a855f7
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    font-style: italic;
+
+    animation:
+        gradientText 4s linear infinite;
+}
+
+
+.order-side p {
+    max-width: 390px;
+
+    margin: auto;
+
+    color: #888090;
+
+    font-size: 13px;
+
+    line-height: 1.9;
+}
+
+
+.side-decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-top: 35px;
+
+    color: #a855f7;
+}
+
+
+.side-decoration span {
+    width: 45px;
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #a855f7
+        );
+}
+
+
+.side-decoration span:last-child {
+    background:
+        linear-gradient(
+            90deg,
+            #a855f7,
+            transparent
+        );
+}
+
+
+/* =====================================================
+   REDES
+===================================================== */
+
+.social-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 14px;
+}
+
+
+.social-card {
+    position: relative;
+
+    min-height: 190px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    padding: 25px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        var(--border);
+
+    background:
+        rgba(255,255,255,.025);
+
+    transition:
+        transform .5s var(--ease),
+        border-color .4s ease,
+        box-shadow .4s ease;
+}
+
+
+.social-card::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    opacity: 0;
+
+    transition:
+        opacity .4s ease;
+
+    pointer-events: none;
+}
+
+
+.social-card:hover {
+    transform:
+        translateY(-10px);
+
+    border-color:
+        rgba(255,255,255,.25);
+
+    box-shadow:
+        0 25px 60px
+        rgba(0,0,0,.35);
+}
+
+
+.social-card:hover::after {
+    opacity: 1;
+}
+
+
+.social-icon {
+    position: relative;
+
+    width: 45px;
+    height: 45px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 13px;
+
+    color: white;
+
+    font-size: 21px;
+    font-weight: 800;
+
+    z-index: 2;
+
+    transition:
+        transform .5s var(--ease);
+}
+
+
+.social-card:hover .social-icon {
+    transform:
+        rotate(-8deg)
+        scale(1.12);
+}
+
+
+.social-info {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 5px;
+
+    z-index: 2;
+}
+
+
+.social-info small {
+    color: #8d8496;
+
+    font-size: 8px;
+    font-weight: 800;
+
+    letter-spacing: .18em;
+}
+
+
+.social-info strong {
+    font-size: 14px;
+}
+
+
+.social-card > b {
+    position: absolute;
+
+    right: 25px;
+    bottom: 25px;
+
+    color: #635b6c;
+
+    z-index: 3;
+
+    transition:
+        .35s ease;
+}
+
+
+.social-card:hover > b {
+    color: white;
+
+    transform:
+        translate(
+            3px,
+            -3px
+        );
+}
+
+
+.youtube .social-icon {
+    background: #ff0033;
+
+    box-shadow:
+        0 0 25px
+        rgba(255,0,51,.25);
+}
+
+
+.youtube::after {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(255,0,51,.12),
+            transparent 45%
+        );
+}
+
+
+.tiktok .social-icon {
+    background: #050505;
+
+    box-shadow:
+        2px 2px 0 #ff0050,
+        -2px -2px 0 #00f2ea;
+}
+
+
+.tiktok::after {
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            rgba(0,242,234,.08),
+            transparent 45%
+        );
+}
+
+
+.facebook .social-icon {
+    background: #1877f2;
+
+    box-shadow:
+        0 0 25px
+        rgba(24,119,242,.2);
+}
+
+
+.instagram .social-icon {
+    background:
+        linear-gradient(
+            135deg,
+            #feda75,
+            #d62976,
+            #962fbf,
+            #4f5bd5
+        );
+
+    box-shadow:
+        0 0 25px
+        rgba(214,41,118,.2);
+}
+
+
+/* =====================================================
+   GOOGLE
+===================================================== */
+
+.search-section {
+    width: 100%;
+    max-width: none;
+
+    padding:
+        140px 20px;
+
+    border-top:
+        1px solid
+        rgba(168,85,247,.1);
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(139,53,255,.1),
+            transparent 48%
+        );
+}
+
+
+.search-content {
+    width:
+        min(
+            800px,
+            100%
+        );
+
+    margin: auto;
+
+    text-align: center;
+}
+
+
+.search-orbit {
+    width: 50px;
+    height: 50px;
+
+    display: grid;
+    place-items: center;
+
+    margin:
+        0 auto 25px;
+
+    color: #c084fc;
+
+    border:
+        1px solid
+        rgba(168,85,247,.3);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 30px
+        rgba(139,53,255,.15);
+
+    animation:
+        logoGlow 3s ease-in-out infinite;
+}
+
+
+.search-content h2 {
+    margin-bottom: 18px;
+
+    font-family: var(--title);
+
+    font-size:
+        clamp(
+            42px,
+            5vw,
+            65px
+        );
+
+    line-height: 1;
+
+    font-weight: 500;
+}
+
+
+.search-content h2 em {
+    display: block;
+
+    color: transparent;
+
+    background:
+        linear-gradient(
+            100deg,
+            #c084fc,
+            #f0abfc,
+            #a855f7
+        );
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    font-style: italic;
+}
+
+
+.search-content > p {
+    max-width: 560px;
+
+    margin:
+        0 auto 38px;
+
+    color: #81798e;
+
+    font-size: 12px;
+
+    line-height: 1.8;
+}
+
+
+.google-search {
+    width: 100%;
+}
+
+
+.search-input {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+
+    min-height: 64px;
+
+    padding: 7px;
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    border-radius: 100px;
+
+    background:
+        rgba(8,4,16,.75);
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.25);
+
+    transition:
+        border-color .4s ease,
+        box-shadow .4s ease;
+}
+
+
+.search-input:focus-within {
+    border-color:
+        rgba(168,85,247,.65);
+
+    box-shadow:
+        0 20px 70px
+        rgba(0,0,0,.35),
+        0 0 35px
+        rgba(139,53,255,.1);
+}
+
+
+.search-input > span {
+    padding-left: 20px;
+
+    color: #c084fc;
+
+    font-size: 25px;
+}
+
+
+.search-input input {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 50px;
+
+    padding:
+        0 15px;
+
+    color: white;
+
+    border: 0;
+
+    outline: 0;
+
+    background: transparent;
+
+    font-size: 13px;
+}
+
+
+.search-input input::placeholder {
+    color: #62596b;
+}
+
+
+.search-input button {
+    height: 50px;
+
+    padding:
+        0 25px;
+
+    border-radius: 100px;
+
+    color: white;
+
+    cursor: pointer;
+
+    font-size: 10px;
+    font-weight: 800;
+
+    letter-spacing: .1em;
+
+    text-transform: uppercase;
+
+    background:
+        linear-gradient(
+            110deg,
+            #6d28d9,
+            #a855f7
+        );
+
+    box-shadow:
+        0 0 25px
+        rgba(139,53,255,.2);
+
+    transition:
+        .35s var(--ease);
+}
+
+
+.search-input button:hover {
+    transform:
+        scale(.96);
+
+    box-shadow:
+        0 0 35px
+        rgba(139,53,255,.4);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.footer {
+    width:
+        min(
+            calc(100% - 40px),
+            var(--container)
+        );
+
+    margin: auto;
+
+    padding:
+        70px 0 35px;
+}
+
+
+.footer-line {
+    height: 1px;
+
+    margin-bottom: 35px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(168,85,247,.3),
+            transparent
+        );
+}
+
+
+.footer-content {
+    display: grid;
+
+    grid-template-columns:
+        1fr
+        1fr
+        1fr;
+
+    align-items: center;
+}
+
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 12px;
+}
+
+
+.footer-logo span {
+    color: #a855f7;
+
+    text-shadow:
+        0 0 15px
+        #a855f7;
+}
+
+
+.footer-content p {
+    color: #625b68;
+
+    text-align: center;
+
+    font-size: 10px;
+}
+
+
+.footer-whatsapp {
+    justify-self: end;
+
+    color: #777080;
+
+    font-size: 10px;
+
+    transition:
+        color .3s ease;
+}
+
+
+.footer-whatsapp:hover {
+    color: #25d366;
+}
+
+
+.copyright {
+    margin-top: 50px;
+
+    color: #3e3845;
+
+    font-size: 8px;
+
+    text-align: center;
+
+    text-transform: uppercase;
+
+    letter-spacing: .18em;
+}
+
+
+/* =====================================================
+   WHATSAPP
+===================================================== */
+
+.floating-whatsapp {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 60px;
+    height: 60px;
+
+    display: grid;
+    place-items: center;
+
+    z-index: 90;
+
+    border-radius: 50%;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #25d366,
+            #128c4b
+        );
+
+    box-shadow:
+        0 15px 40px
+        rgba(37,211,102,.28);
+
+    animation:
+        whatsappPulse 3s ease-in-out infinite;
+
+    transition:
+        transform .4s var(--ease);
+}
+
+
+.floating-whatsapp:hover {
+    transform:
+        translateY(-6px)
+        scale(1.08);
+
+    animation:
+        none;
+}
+
+
+.floating-whatsapp > span {
+    font-size: 25px;
+}
+
+
+.whatsapp-tooltip {
+    position: absolute;
+
+    right: 72px;
+
+    white-space: nowrap;
+
+    padding:
+        10px 15px;
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    border-radius: 8px;
+
+    color: white;
+
+    background:
+        rgba(10,5,18,.95);
+
+    box-shadow:
+        0 10px 30px
+        rgba(0,0,0,.4);
+
+    font-size: 10px;
+
+    opacity: 0;
+
+    transform:
+        translateX(10px);
+
+    pointer-events: none;
+
+    transition:
+        .3s ease;
+}
+
+
+.floating-whatsapp:hover
+.whatsapp-tooltip {
+    opacity: 1;
+
+    transform:
+        translateX(0);
+}
+
+
+@keyframes whatsappPulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 15px 40px
+            rgba(37,211,102,.25);
+    }
+
+    50% {
+        box-shadow:
+            0 15px 50px
+            rgba(37,211,102,.45),
+            0 0 0 10px
+            rgba(37,211,102,.035);
+    }
+}
+
+
+/* =====================================================
+   BACK TO TOP
+===================================================== */
+
+.back-top {
+    position: fixed;
+
+    right: 25px;
+    bottom: 98px;
+
+    width: 43px;
+    height: 43px;
+
+    display: grid;
+    place-items: center;
+
+    z-index: 89;
+
+    border:
+        1px solid
+        rgba(168,85,247,.2);
+
+    border-radius: 50%;
+
+    color: #9b8fa5;
+
+    background:
+        rgba(8,4,15,.85);
+
+    backdrop-filter:
+        blur(12px);
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(15px);
+
+    transition:
+        opacity .4s ease,
+        visibility .4s ease,
+        transform .4s ease,
+        color .3s ease,
+        border-color .3s ease;
+}
+
+
+.back-top.show {
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0);
+}
+
+
+.back-top:hover {
+    color: #c084fc;
+
+    border-color:
+        rgba(168,85,247,.6);
+
+    box-shadow:
+        0 0 25px
+        rgba(139,53,255,.15);
+
+    transform:
+        translateY(-4px);
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1000px) {
+
+    .hero {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+
+        padding-top: 145px;
+    }
+
+
+    .hero-visual {
+        min-height: 590px;
+    }
+
+
+    .event-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .event-card:last-child {
+        grid-column:
+            span 2;
+    }
+
+
+    .order-container {
+        grid-template-columns: 1fr;
+    }
+
+
+    .order-side {
+        min-height: 430px;
+    }
+
+
+    .social-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+
+    .footer-content {
+        grid-template-columns: 1fr;
+
+        gap: 20px;
+
+        text-align: center;
+    }
+
+
+    .footer-logo,
+    .footer-whatsapp {
+        justify-self: center;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    html {
+        scroll-padding-top: 80px;
+    }
+
+
+    .navbar {
+        top: 10px;
+
+        width:
+            calc(100% - 20px);
+
+        height: 62px;
+
+        padding:
+            0 14px;
+    }
+
+
+    .nav-links {
+        display: none;
+    }
+
+
+    .logo {
+        font-size: 11px;
+    }
+
+
+    .logo-symbol {
+        width: 30px;
+        height: 30px;
+    }
+
+
+    .nav-button {
+        padding:
+            9px 13px;
+
+        font-size: 9px;
+    }
+
+
+    section {
+        width:
+            calc(100% - 30px);
+    }
+
+
+    .hero {
+        min-height: auto;
+
+        padding-top: 135px;
+        padding-bottom: 80px;
+    }
+
+
+    .eyebrow {
+        font-size: 8px;
+
+        letter-spacing:
+            .14em;
+    }
+
+
+    .eyebrow span {
+        width: 18px;
+    }
+
+
+    .hero h1 {
+        font-size:
+            clamp(
+                48px,
+                15vw,
+                70px
+            );
+    }
+
+
+    .hero-description {
+        margin-top: 25px;
+
+        font-size: 12px;
+
+        line-height: 1.8;
+    }
+
+
+    .hero-buttons {
+        width: 100%;
+
+        flex-direction: column;
+    }
+
+
+    .button {
+        width: 100%;
+    }
+
+
+    .hero-date {
+        margin-top: 30px;
+    }
+
+
+    .hero-visual {
+        min-height: 470px;
+
+        margin-top: 10px;
+    }
+
+
+    .invitation-card {
+        width: 275px;
+
+        padding:
+            27px;
+    }
+
+
+    .card-center h2 {
+        font-size: 45px;
+    }
+
+
+    .ring-one {
+        width: 310px;
+        height: 310px;
+    }
+
+
+    .ring-two {
+        width: 390px;
+        height: 390px;
+    }
+
+
+    .ring-three {
+        width: 460px;
+        height: 460px;
+    }
+
+
+    .star-one {
+        left: 5%;
+    }
+
+
+    .star-two {
+        right: 3%;
+    }
+
+
+    .event-section,
+    .order-section,
+    .social-section {
+        padding-top: 90px;
+        padding-bottom: 90px;
+    }
+
+
+    .section-heading {
+        margin-bottom: 45px;
+    }
+
+
+    .section-heading h2 {
+        font-size: 40px;
+    }
+
+
+    .section-heading p {
+        font-size: 11px;
+    }
+
+
+    .event-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .event-card {
+        min-height: 260px;
+    }
+
+
+    .event-card:last-child {
+        grid-column: auto;
+    }
+
+
+    .quote-section {
+        padding:
+            100px 20px;
+    }
+
+
+    .quote-orbit {
+        width: 350px;
+        height: 350px;
+    }
+
+
+    blockquote {
+        font-size: 34px;
+    }
+
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+
+    .invitation-form {
+        padding:
+            27px 20px;
+    }
+
+
+    .order-side {
+        min-height: 410px;
+
+        padding:
+            35px 25px;
+    }
+
+
+    .order-side h3 {
+        font-size: 38px;
+    }
+
+
+    .social-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .social-card {
+        min-height: 155px;
+    }
+
+
+    .search-section {
+        padding:
+            100px 15px;
+    }
+
+
+    .search-content h2 {
+        font-size: 43px;
+    }
+
+
+    .search-input {
+        min-height: 58px;
+    }
+
+
+    .search-input > span {
+        padding-left: 14px;
+    }
+
+
+    .search-input input {
+        font-size: 12px;
+
+        padding:
+            0 8px;
+    }
+
+
+    .search-input button {
+        height: 44px;
+
+        padding:
+            0 15px;
+
+        font-size: 8px;
+    }
+
+
+    .footer {
+        width:
+            calc(100% - 30px);
+    }
+
+
+    .floating-whatsapp {
+        right: 18px;
+        bottom: 18px;
+
+        width: 55px;
+        height: 55px;
+    }
+
+
+    .back-top {
+        right: 18px;
+        bottom: 84px;
+    }
+
+
+    .whatsapp-tooltip {
+        display: none;
+    }
+
+}
+
+
+/* =====================================================
+   MOBILE PEQUEÑO
+===================================================== */
+
+@media (max-width: 400px) {
+
+    .hero h1 {
+        font-size: 47px;
+    }
+
+
+    .hero-visual {
+        min-height: 420px;
+    }
+
+
+    .invitation-card {
+        width: 250px;
+    }
+
+
+    .card-center h2 {
+        font-size: 40px;
+    }
+
+
+    .ring-one {
+        width: 285px;
+        height: 285px;
+    }
+
+
+    .ring-two {
+        width: 340px;
+        height: 340px;
+    }
+
+
+    .ring-three {
+        width: 400px;
+        height: 400px;
+    }
+
+
+    .section-heading h2 {
+        font-size: 35px;
+    }
+
+
+    blockquote {
+        font-size: 29px;
+    }
+
+}
+
+
+/* =====================================================
+   REDUCIR MOVIMIENTO
+===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        scroll-behavior:
+            auto !important;
+
+        transition-duration:
+            .01ms !important;
+    }
+
+}
+```
