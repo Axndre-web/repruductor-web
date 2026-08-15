@@ -1,513 +1,794 @@
-```html
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#090512">
+    <meta name="description" content="Invitación y pedido de empanadas artesanales. 1 € por unidad. A domicilio o recogida en la estación Renfe de Azuqueca de Henares.">
 
-    <meta name="description" content="Invitación digital profesional">
-    <meta name="theme-color" content="#111111">
-
-    <title>Invitación Digital</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Empanadas | Invitación & Pedidos</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
     <!-- FONDO ANIMADO -->
     <div class="background-effects">
-        <span class="glow glow-1"></span>
-        <span class="glow glow-2"></span>
-        <span class="glow glow-3"></span>
-        <span class="particle particle-1"></span>
-        <span class="particle particle-2"></span>
-        <span class="particle particle-3"></span>
-        <span class="particle particle-4"></span>
-        <span class="particle particle-5"></span>
+        <span class="orb orb-1"></span>
+        <span class="orb orb-2"></span>
+        <span class="orb orb-3"></span>
+
+        <span class="spark spark-1">✦</span>
+        <span class="spark spark-2">✧</span>
+        <span class="spark spark-3">✦</span>
+        <span class="spark spark-4">✧</span>
     </div>
 
-    <!-- NAVEGACIÓN -->
+    <!-- BARRA DE NAVEGACIÓN -->
     <header class="navbar">
         <a href="#inicio" class="logo">
-            <span class="logo-icon">✦</span>
-            <span>Mi Invitación</span>
+            <span>EMPANADAS</span>
+            <small>ARTESANALES</small>
         </a>
 
-        <nav class="nav-links">
-            <a href="#inicio">Inicio</a>
-            <a href="#evento">Evento</a>
+        <nav>
+            <a href="#invitacion">Invitación</a>
+            <a href="#menu">Menú</a>
             <a href="#pedido">Pedido</a>
             <a href="#contacto">Contacto</a>
         </nav>
-
-        <a href="#pedido" class="nav-button">
-            Confirmar
-        </a>
     </header>
+
 
     <main>
 
         <!-- HERO -->
-        <section id="inicio" class="hero section-reveal">
+        <section class="hero" id="inicio">
 
             <div class="hero-content">
 
-                <div class="eyebrow">
+                <div class="welcome-tag">
                     <span></span>
-                    Una invitación especial
+                    UNA INVITACIÓN CON SABOR
                     <span></span>
                 </div>
+
+                <p class="mini-title">HECHAS PARA COMPARTIR</p>
 
                 <h1>
-                    Un momento
-                    <em>para recordar</em>
+                    El sabor que
+                    <strong>merece</strong>
+                    tu celebración
                 </h1>
 
-                <p class="hero-description">
-                    Tenemos el placer de invitarte a compartir con nosotros
-                    un día muy especial. Tu presencia hará que este momento
-                    sea todavía más inolvidable.
+                <p class="hero-text">
+                    Empanadas artesanales, recién preparadas y listas
+                    para acompañar tus momentos especiales.
                 </p>
 
-                <div class="hero-buttons">
-                    <a href="#evento" class="button button-primary">
-                        <span>Ver invitación</span>
-                        <strong>↓</strong>
-                    </a>
-
-                    <a href="#pedido" class="button button-secondary">
-                        Confirmar asistencia
-                    </a>
+                <div class="price-highlight">
+                    <div class="price-number">1€</div>
+                    <div>
+                        <strong>POR UNIDAD</strong>
+                        <small>Pedido mínimo según disponibilidad</small>
+                    </div>
                 </div>
 
-                <div class="hero-date">
-                    <span>15</span>
-                    <div>
-                        <strong>AGOSTO</strong>
-                        <small>2026</small>
-                    </div>
+                <div class="hero-buttons">
+                    <a href="#pedido" class="btn btn-primary">
+                        Hacer mi pedido
+                        <span>→</span>
+                    </a>
+
+                    <a href="#invitacion" class="btn btn-outline">
+                        Ver invitación
+                    </a>
                 </div>
 
             </div>
 
-            <div class="hero-visual">
 
-                <div class="visual-ring ring-1"></div>
-                <div class="visual-ring ring-2"></div>
-                <div class="visual-ring ring-3"></div>
+            <!-- PRODUCTO -->
+            <div class="hero-product">
 
-                <div class="invitation-card">
-                    <div class="card-top">
-                        <span>INVITACIÓN</span>
-                        <span>✦</span>
+                <div class="product-glow"></div>
+
+                <div class="product-card">
+
+                    <div class="product-badge">
+                        <span>★</span>
+                        ARTESANALES
                     </div>
 
-                    <div class="card-center">
-                        <span class="small-script">Nos encantaría verte</span>
-                        <h2>Un día<br><i>especial</i></h2>
-                        <div class="card-divider">✦</div>
-                        <p>15 · 08 · 2026</p>
+                    <img src="imagene empanadas.jpeg"
+                         alt="Empanadas artesanales">
+
+                    <div class="floating-price">
+                        <strong>1€</strong>
+                        <span>unidad</span>
                     </div>
+
+                </div>
+
+                <div class="floating-note note-one">
+                    <span>🥟</span>
+                    Recién preparadas
+                </div>
+
+                <div class="floating-note note-two">
+                    <span>✨</span>
+                    Perfectas para compartir
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- INVITACIÓN -->
+        <section class="invitation section" id="invitacion">
+
+            <div class="section-header reveal">
+                <span class="section-number">01</span>
+
+                <div>
+                    <p>ESTÁS INVITADO/A</p>
+                    <h2>Una ocasión especial<br><strong>se disfruta mejor</strong></h2>
+                </div>
+            </div>
+
+            <div class="invitation-grid">
+
+                <div class="invitation-text reveal">
+
+                    <div class="quote-mark">“</div>
+
+                    <h3>
+                        Ven a compartir,
+                        <span>nosotros ponemos el sabor.</span>
+                    </h3>
+
+                    <p>
+                        Queremos que esta ocasión sea especial para todos.
+                        Y como una buena celebración siempre merece algo
+                        delicioso, hemos preparado nuestras empanadas
+                        artesanales para acompañarte.
+                    </p>
+
+                    <p>
+                        Puedes indicarnos si asistirás y, si lo deseas,
+                        reservar tus empanadas con antelación.
+                    </p>
+
+                    <a href="#asistencia" class="text-button">
+                        Confirmar asistencia →
+                    </a>
+
+                </div>
+
+
+                <div class="invitation-card reveal">
+
+                    <div class="card-icon">🥟</div>
+
+                    <span>PARA ESTA OCASIÓN</span>
+
+                    <h3>
+                        Empanadas
+                        <strong>artesanales</strong>
+                    </h3>
+
+                    <div class="line"></div>
+
+                    <p>
+                        Un bocado crujiente, sabroso y preparado
+                        con cariño para compartir.
+                    </p>
 
                     <div class="card-bottom">
-                        <span>Con cariño</span>
-                        <span>♥</span>
+                        <span>1 €</span>
+                        <small>por unidad</small>
                     </div>
+
                 </div>
 
             </div>
-        </section>
-
-        <!-- EVENTO -->
-        <section id="evento" class="event-section section-reveal">
-
-            <div class="section-heading">
-                <span class="section-number">01</span>
-                <div>
-                    <span class="section-label">El gran día</span>
-                    <h2>Todo está preparado</h2>
-                </div>
-            </div>
-
-            <div class="event-grid">
-
-                <article class="event-card">
-                    <div class="event-icon">◷</div>
-                    <span class="card-label">FECHA</span>
-                    <h3>15 Agosto</h3>
-                    <p>Sábado · 2026</p>
-                </article>
-
-                <article class="event-card featured-card">
-                    <div class="event-icon">⌖</div>
-                    <span class="card-label">LUGAR</span>
-                    <h3>El lugar del evento</h3>
-                    <p>Dirección del evento</p>
-
-                    <a
-                        href="https://www.google.com/maps"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="card-link">
-                        Ver ubicación →
-                    </a>
-                </article>
-
-                <article class="event-card">
-                    <div class="event-icon">♢</div>
-                    <span class="card-label">HORA</span>
-                    <h3>18:00</h3>
-                    <p>Recepción de invitados</p>
-                </article>
-
-            </div>
 
         </section>
 
-        <!-- CUENTA REGRESIVA VISUAL -->
-        <section class="quote-section section-reveal">
 
-            <div class="quote-decoration">“</div>
+        <!-- PRODUCTO -->
+        <section class="menu-section section" id="menu">
 
-            <blockquote>
-                Los mejores momentos de la vida
-                <span>merecen ser compartidos.</span>
-            </blockquote>
+            <div class="section-header centered reveal">
 
-            <div class="quote-line"></div>
-
-        </section>
-
-        <!-- PEDIDO / CONFIRMACIÓN -->
-        <section id="pedido" class="order-section section-reveal">
-
-            <div class="section-heading centered">
                 <span class="section-number">02</span>
+
                 <div>
-                    <span class="section-label">Tu respuesta</span>
-                    <h2>Confirma tu asistencia</h2>
+                    <p>NUESTRO PRODUCTO</p>
+                    <h2>Sabor que se <strong>recuerda</strong></h2>
                 </div>
+
             </div>
 
-            <p class="section-intro">
-                Completa tus datos y recibirás la confirmación directamente
-                por WhatsApp.
-            </p>
 
-            <div class="order-container">
+            <div class="food-showcase">
 
-                <form id="whatsappForm" class="invitation-form">
+                <div class="food-image reveal">
+
+                    <div class="image-frame">
+                        <img src="imagene empanadas.jpeg"
+                             alt="Cesta de empanadas artesanales">
+                    </div>
+
+                    <div class="image-caption">
+                        <span>EMPANADAS ARTESANALES</span>
+                        <strong>Preparadas para ti</strong>
+                    </div>
+
+                </div>
+
+
+                <div class="food-info reveal">
+
+                    <span class="small-label">NUESTRA ESPECIALIDAD</span>
+
+                    <h3>
+                        Una por una,
+                        <strong>hechas para disfrutar.</strong>
+                    </h3>
+
+                    <p>
+                        Elaboramos nuestras empanadas pensando en que cada
+                        bocado tenga ese equilibrio perfecto entre una masa
+                        dorada y un relleno lleno de sabor.
+                    </p>
+
+                    <div class="features">
+
+                        <div class="feature">
+                            <span>🥟</span>
+                            <div>
+                                <strong>Artesanales</strong>
+                                <small>Preparadas con dedicación</small>
+                            </div>
+                        </div>
+
+                        <div class="feature">
+                            <span>🔥</span>
+                            <div>
+                                <strong>Recién preparadas</strong>
+                                <small>Para disfrutar al máximo</small>
+                            </div>
+                        </div>
+
+                        <div class="feature">
+                            <span>💜</span>
+                            <div>
+                                <strong>Para compartir</strong>
+                                <small>Ideales para celebraciones</small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="simple-price">
+                        <strong>1 €</strong>
+                        <span>por unidad</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SERVICIO -->
+        <section class="service section">
+
+            <div class="service-box reveal">
+
+                <div class="service-content">
+
+                    <span class="small-label">ENTREGA</span>
+
+                    <h2>
+                        Tú eliges cómo
+                        <strong>recibirlas.</strong>
+                    </h2>
+
+                    <p>
+                        Disponemos de servicio a domicilio y también puedes
+                        recoger tu pedido en nuestro punto de entrega.
+                    </p>
+
+                </div>
+
+
+                <div class="delivery-options">
+
+                    <div class="delivery-card">
+                        <div class="delivery-icon">🏠</div>
+                        <div>
+                            <strong>A domicilio</strong>
+                            <span>Consulta disponibilidad</span>
+                        </div>
+                    </div>
+
+                    <div class="delivery-card">
+                        <div class="delivery-icon">🚆</div>
+                        <div>
+                            <strong>Recogida</strong>
+                            <span>Estación Renfe Azuqueca de Henares</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PEDIDO -->
+        <section class="order section" id="pedido">
+
+            <div class="section-header centered reveal">
+
+                <span class="section-number">03</span>
+
+                <div>
+                    <p>RESERVA TUS EMPANADAS</p>
+                    <h2>Haz tu pedido <strong>fácilmente</strong></h2>
+                </div>
+
+            </div>
+
+
+            <div class="order-wrapper reveal">
+
+                <div class="order-intro">
+
+                    <div class="order-icon">🥟</div>
+
+                    <h3>
+                        ¿Cuántas quieres?
+                    </h3>
+
+                    <p>
+                        Selecciona la cantidad y dinos cómo quieres
+                        recibir tu pedido.
+                    </p>
+
+                    <div class="unit-price">
+                        <span>Precio</span>
+                        <strong>1 € / unidad</strong>
+                    </div>
+
+                </div>
+
+
+                <form id="orderForm" class="order-form">
 
                     <div class="form-group">
-                        <label for="nombre">Nombre completo</label>
+
+                        <label for="nombre">Tu nombre</label>
+
                         <input
                             type="text"
                             id="nombre"
                             name="nombre"
                             placeholder="Escribe tu nombre"
-                            required>
-                    </div>
-
-                    <div class="form-row">
-
-                        <div class="form-group">
-                            <label for="personas">Número de personas</label>
-
-                            <select id="personas" name="personas" required>
-                                <option value="">Seleccionar</option>
-                                <option value="1">1 persona</option>
-                                <option value="2">2 personas</option>
-                                <option value="3">3 personas</option>
-                                <option value="4">4 personas</option>
-                                <option value="5">5 personas</option>
-                                <option value="6">6 personas</option>
-                                <option value="Más de 6">Más de 6</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="respuesta">Asistencia</label>
-
-                            <select id="respuesta" name="respuesta" required>
-                                <option value="">Seleccionar</option>
-                                <option value="Sí, asistiré">Sí, asistiré</option>
-                                <option value="No podré asistir">No podré asistir</option>
-                            </select>
-                        </div>
+                            required
+                        >
 
                     </div>
+
 
                     <div class="form-group">
-                        <label for="mensaje">Mensaje</label>
+
+                        <label for="cantidad">Cantidad de empanadas</label>
+
+                        <div class="quantity-control">
+
+                            <button type="button" id="minus">−</button>
+
+                            <input
+                                type="number"
+                                id="cantidad"
+                                name="cantidad"
+                                value="10"
+                                min="1"
+                                max="500"
+                                required
+                            >
+
+                            <button type="button" id="plus">+</button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="entrega">Forma de entrega</label>
+
+                        <select id="entrega" name="entrega" required>
+
+                            <option value="">Selecciona una opción</option>
+
+                            <option value="A domicilio">
+                                🏠 A domicilio
+                            </option>
+
+                            <option value="Recogida en la estación Renfe de Azuqueca de Henares">
+                                🚆 Recogida en estación Renfe Azuqueca de Henares
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="fecha">Fecha deseada</label>
+
+                        <input
+                            type="date"
+                            id="fecha"
+                            name="fecha"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="mensaje">Mensaje adicional</label>
 
                         <textarea
                             id="mensaje"
                             name="mensaje"
-                            rows="4"
-                            placeholder="Escribe un mensaje opcional..."></textarea>
+                            rows="3"
+                            placeholder="¿Alguna indicación para tu pedido?"
+                        ></textarea>
+
                     </div>
 
-                    <button type="submit" class="button button-whatsapp">
+
+                    <div class="order-total">
+
+                        <span>Total estimado</span>
+
+                        <strong>
+                            <span id="total">10</span> €
+                        </strong>
+
+                    </div>
+
+
+                    <button type="submit" class="whatsapp-button">
+
                         <span class="whatsapp-icon">◉</span>
-                        Enviar por WhatsApp
-                        <span class="button-arrow">→</span>
+
+                        Pedir por WhatsApp
+
+                        <span>→</span>
+
                     </button>
 
-                    <p class="form-note">
-                        Tu información se enviará directamente a nuestro WhatsApp.
-                    </p>
+                    <small class="form-note">
+                        Tu pedido se enviará directamente por WhatsApp para confirmar disponibilidad.
+                    </small>
 
                 </form>
 
-                <div class="order-side">
-
-                    <div class="side-number">02</div>
-
-                    <h3>
-                        Tu presencia
-                        <em>es nuestro mejor regalo.</em>
-                    </h3>
-
-                    <p>
-                        Queremos compartir este momento contigo.
-                        Confirma tu asistencia para que podamos preparar
-                        todo de la mejor manera.
-                    </p>
-
-                    <div class="side-decoration">
-                        <span></span>
-                        <b>✦</b>
-                        <span></span>
-                    </div>
-
-                </div>
-
             </div>
 
         </section>
 
-        <!-- REDES SOCIALES -->
-        <section id="contacto" class="social-section section-reveal">
 
-            <div class="section-heading centered">
-                <span class="section-number">03</span>
-                <div>
-                    <span class="section-label">Síguenos</span>
-                    <h2>También estamos aquí</h2>
-                </div>
-            </div>
+        <!-- ASISTENCIA -->
+        <section class="attendance section" id="asistencia">
 
-            <div class="social-grid">
+            <div class="attendance-card reveal">
 
-                <a
-                    href="https://www.youtube.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="social-card youtube">
-                    <span class="social-icon">▶</span>
-                    <span>
-                        <small>YouTube</small>
-                        <strong>Ver vídeos</strong>
-                    </span>
-                    <b>↗</b>
-                </a>
+                <div class="attendance-glow"></div>
 
-                <a
-                    href="https://www.tiktok.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="social-card tiktok">
-                    <span class="social-icon">♪</span>
-                    <span>
-                        <small>TikTok</small>
-                        <strong>Descubre más</strong>
-                    </span>
-                    <b>↗</b>
-                </a>
-
-                <a
-                    href="https://www.facebook.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="social-card facebook">
-                    <span class="social-icon">f</span>
-                    <span>
-                        <small>Facebook</small>
-                        <strong>Visítanos</strong>
-                    </span>
-                    <b>↗</b>
-                </a>
-
-                <a
-                    href="https://www.instagram.com/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="social-card instagram">
-                    <span class="social-icon">◎</span>
-                    <span>
-                        <small>Instagram</small>
-                        <strong>Síguenos</strong>
-                    </span>
-                    <b>↗</b>
-                </a>
-
-            </div>
-
-        </section>
-
-        <!-- BUSCADOR GOOGLE -->
-        <section class="search-section section-reveal">
-
-            <div class="search-content">
-
-                <span class="section-label">¿Necesitas buscar algo?</span>
+                <span class="small-label">CONFIRMACIÓN</span>
 
                 <h2>
-                    Encuéntralo
-                    <em>en Google.</em>
+                    ¿Nos acompañas?
                 </h2>
 
-                <form
-                    class="google-search"
-                    action="https://www.google.com/search"
-                    method="GET"
-                    target="_blank">
+                <p>
+                    Confirma tu asistencia y, si quieres, reserva tus
+                    empanadas para la ocasión.
+                </p>
 
-                    <div class="search-input">
-                        <span>⌕</span>
+                <div class="attendance-buttons">
 
-                        <input
-                            type="search"
-                            name="q"
-                            placeholder="Buscar en Google..."
-                            autocomplete="off"
-                            aria-label="Buscar en Google"
-                            required>
+                    <a
+                        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20confirmar%20mi%20asistencia."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="attendance-btn yes"
+                    >
+                        ✓ Sí, allí estaré
+                    </a>
 
-                        <button type="submit">
-                            Buscar
-                        </button>
-                    </div>
+                    <a
+                        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20informar%20sobre%20mi%20asistencia."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="attendance-btn"
+                    >
+                        Escribir por WhatsApp
+                    </a>
 
-                </form>
+                </div>
 
             </div>
 
         </section>
 
-        <!-- FOOTER -->
-        <footer class="footer">
 
-            <div class="footer-line"></div>
+        <!-- REDES SOCIALES -->
+        <section class="social-section section" id="contacto">
 
-            <div class="footer-content">
+            <div class="social-content reveal">
 
-                <div class="footer-logo">
-                    <span>✦</span>
-                    <strong>Mi Invitación</strong>
-                </div>
+                <span class="small-label">SÍGUENOS</span>
+
+                <h2>
+                    Comparte el <strong>sabor</strong>
+                </h2>
 
                 <p>
-                    Gracias por formar parte de este momento.
+                    Descubre novedades, promociones y más contenido
+                    en nuestras redes sociales.
                 </p>
 
+
+                <div class="social-links">
+
+                    <!-- Sustituye los # por tus enlaces reales -->
+
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="social instagram">
+                        <span>◎</span>
+                        Instagram
+                    </a>
+
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="social tiktok">
+                        <span>♪</span>
+                        TikTok
+                    </a>
+
+                    <a href="#" target="_blank" rel="noopener noreferrer" class="social facebook">
+                        <span>f</span>
+                        Facebook
+                    </a>
+
+                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="social youtube">
+                        <span>▶</span>
+                        YouTube
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOOGLE -->
+        <section class="google-section">
+
+            <div class="google-box reveal">
+
+                <div class="google-icon">G</div>
+
+                <div>
+                    <strong>¿Buscas nuestra ubicación?</strong>
+                    <span>Encuéntranos en Google Maps</span>
+                </div>
+
                 <a
-                    href="https://wa.me/34602487576"
+                    href="https://www.google.com/maps/search/?api=1&query=Estacion+Renfe+Azuqueca+de+Henares"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="footer-whatsapp">
-                    WhatsApp · 602 487 576
+                >
+                    Buscar ubicación →
                 </a>
 
             </div>
 
-            <div class="copyright">
-                © 2026 · Invitación Digital · Todos los derechos reservados
-            </div>
-
-        </footer>
+        </section>
 
     </main>
 
-    <!-- BOTÓN FLOTANTE WHATSAPP -->
+
+    <!-- FOOTER -->
+    <footer>
+
+        <div class="footer-logo">
+            EMPANADAS
+            <span>ARTESANALES</span>
+        </div>
+
+        <p>
+            Hechas con cariño. Compartidas con alegría.
+        </p>
+
+        <a
+            href="https://wa.me/34602487576"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="footer-whatsapp"
+        >
+            WhatsApp · 602 487 576
+        </a>
+
+        <div class="footer-line"></div>
+
+        <small>
+            © 2026 · Todos los derechos reservados
+        </small>
+
+    </footer>
+
+
+    <!-- BOTÓN WHATSAPP FLOTANTE -->
     <a
-        href="https://wa.me/34602487576"
+        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20empanadas."
         target="_blank"
         rel="noopener noreferrer"
         class="floating-whatsapp"
-        aria-label="Contactar por WhatsApp">
-
+        aria-label="Contactar por WhatsApp"
+    >
         <span>◉</span>
-
-        <div class="whatsapp-tooltip">
-            ¿Hablamos por WhatsApp?
-        </div>
-
+        <small>Pedido</small>
     </a>
 
+
     <!-- BOTÓN VOLVER ARRIBA -->
-    <button
-        class="back-top"
-        id="backTop"
-        aria-label="Volver arriba">
+    <button id="backTop" class="back-top" aria-label="Volver arriba">
         ↑
     </button>
 
 
     <script>
 
-        /* ENVÍO DEL FORMULARIO A WHATSAPP */
-        const whatsappForm = document.getElementById("whatsappForm");
+        /* ==============================
+           CANTIDAD Y PRECIO
+        ============================== */
 
-        whatsappForm.addEventListener("submit", function(event) {
+        const quantity = document.getElementById("cantidad");
+        const total = document.getElementById("total");
+        const plus = document.getElementById("plus");
+        const minus = document.getElementById("minus");
+
+        function updateTotal() {
+            let value = parseInt(quantity.value) || 1;
+
+            if (value < 1) value = 1;
+            if (value > 500) value = 500;
+
+            quantity.value = value;
+            total.textContent = value;
+        }
+
+        plus.addEventListener("click", () => {
+            quantity.value = Math.min(parseInt(quantity.value || 1) + 1, 500);
+            updateTotal();
+        });
+
+        minus.addEventListener("click", () => {
+            quantity.value = Math.max(parseInt(quantity.value || 1) - 1, 1);
+            updateTotal();
+        });
+
+        quantity.addEventListener("input", updateTotal);
+
+
+        /* ==============================
+           PEDIDO POR WHATSAPP
+        ============================== */
+
+        document.getElementById("orderForm").addEventListener("submit", function(event) {
 
             event.preventDefault();
 
-            const nombre =
-                document.getElementById("nombre").value.trim();
+            const nombre = document.getElementById("nombre").value.trim();
+            const cantidad = document.getElementById("cantidad").value;
+            const entrega = document.getElementById("entrega").value;
+            const fecha = document.getElementById("fecha").value;
+            const mensaje = document.getElementById("mensaje").value.trim();
 
-            const personas =
-                document.getElementById("personas").value;
+            const totalPedido = cantidad * 1;
 
-            const respuesta =
-                document.getElementById("respuesta").value;
+            let texto =
+                "🥟 *NUEVO PEDIDO DE EMPANADAS*%0A%0A" +
+                "👤 *Nombre:* " + nombre + "%0A" +
+                "🥟 *Cantidad:* " + cantidad + " unidades%0A" +
+                "💶 *Total:* " + totalPedido + " €%0A" +
+                "📦 *Entrega:* " + entrega;
 
-            const mensaje =
-                document.getElementById("mensaje").value.trim();
+            if (fecha) {
+                texto += "%0A📅 *Fecha:* " + fecha;
+            }
 
-            const texto =
-`✨ NUEVA CONFIRMACIÓN ✨
+            if (mensaje) {
+                texto += "%0A📝 *Mensaje:* " + mensaje;
+            }
 
-👤 Nombre: ${nombre}
+            texto += "%0A%0A¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.";
 
-👥 Personas: ${personas}
-
-💌 Asistencia: ${respuesta}
-
-📝 Mensaje:
-${mensaje || "Sin mensaje adicional."}
-
-━━━━━━━━━━━━━━━━
-Invitación digital`;
-
-            const whatsappURL =
-                "https://wa.me/34602487576?text=" +
-                encodeURIComponent(texto);
-
-            window.open(whatsappURL, "_blank");
+            window.open(
+                "https://wa.me/34602487576?text=" + texto,
+                "_blank"
+            );
 
         });
 
 
-        /* BOTÓN VOLVER ARRIBA */
+        /* ==============================
+           ANIMACIONES AL HACER SCROLL
+        ============================== */
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+
+                entries.forEach(entry => {
+
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                    }
+
+                });
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
+
+        document.querySelectorAll(".reveal").forEach(element => {
+            observer.observe(element);
+        });
+
+
+        /* ==============================
+           FECHA MÍNIMA
+        ============================== */
+
+        const dateInput = document.getElementById("fecha");
+
+        const today = new Date();
+
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, "0");
+        const day = String(today.getDate()).padStart(2, "0");
+
+        dateInput.min = `${year}-${month}-${day}`;
+
+
+        /* ==============================
+           BOTÓN VOLVER ARRIBA
+        ============================== */
+
         const backTop = document.getElementById("backTop");
 
-        window.addEventListener("scroll", function() {
+        window.addEventListener("scroll", () => {
 
             if (window.scrollY > 500) {
                 backTop.classList.add("show");
@@ -517,7 +798,7 @@ Invitación digital`;
 
         });
 
-        backTop.addEventListener("click", function() {
+        backTop.addEventListener("click", () => {
 
             window.scrollTo({
                 top: 0,
@@ -527,163 +808,43 @@ Invitación digital`;
         });
 
 
-        /* REVELACIÓN DE ELEMENTOS AL HACER SCROLL */
-        const revealElements =
-            document.querySelectorAll(".section-reveal");
+        /* ==============================
+           NAVBAR
+        ============================== */
 
-        const revealObserver =
-            new IntersectionObserver(
-                function(entries) {
+        let lastScroll = 0;
+        const navbar = document.querySelector(".navbar");
 
-                    entries.forEach(function(entry) {
+        window.addEventListener("scroll", () => {
 
-                        if (entry.isIntersecting) {
+            const currentScroll = window.scrollY;
 
-                            entry.target.classList.add("visible");
+            if (currentScroll > 80 && currentScroll > lastScroll) {
+                navbar.classList.add("nav-hidden");
+            } else {
+                navbar.classList.remove("nav-hidden");
+            }
 
-                        } else {
-
-                            entry.target.classList.remove("visible");
-
-                        }
-
-                    });
-
-                },
-                {
-                    threshold: 0.12
-                }
-            );
-
-        revealElements.forEach(function(element) {
-
-            revealObserver.observe(element);
+            lastScroll = currentScroll;
 
         });
 
 
-        /* ANIMACIÓN DE LOS ELEMENTOS INTERNOS */
-        const animatedCards =
-            document.querySelectorAll(
-                ".event-card, .social-card, .invitation-form, .order-side"
-            );
+        /* ==============================
+           EFECTO PARALLAX SUAVE
+        ============================== */
 
-        const cardObserver =
-            new IntersectionObserver(
-                function(entries) {
+        window.addEventListener("mousemove", (event) => {
 
-                    entries.forEach(function(entry) {
+            const x = (event.clientX / window.innerWidth - 0.5) * 2;
+            const y = (event.clientY / window.innerHeight - 0.5) * 2;
 
-                        if (entry.isIntersecting) {
-                            entry.target.classList.add("card-visible");
-                        } else {
-                            entry.target.classList.remove("card-visible");
-                        }
+            document.querySelectorAll(".orb").forEach((orb, index) => {
 
-                    });
+                const speed = (index + 1) * 5;
 
-                },
-                {
-                    threshold: 0.1
-                }
-            );
-
-        animatedCards.forEach(function(card) {
-            cardObserver.observe(card);
-        });
-
-
-        /* EFECTO DE MOVIMIENTO DEL RATÓN */
-        const heroVisual =
-            document.querySelector(".hero-visual");
-
-        if (heroVisual) {
-
-            heroVisual.addEventListener("mousemove", function(event) {
-
-                const rect =
-                    heroVisual.getBoundingClientRect();
-
-                const x =
-                    (event.clientX - rect.left) / rect.width - 0.5;
-
-                const y =
-                    (event.clientY - rect.top) / rect.height - 0.5;
-
-                const card =
-                    heroVisual.querySelector(".invitation-card");
-
-                card.style.transform =
-                    `perspective(1000px)
-                     rotateY(${x * 8}deg)
-                     rotateX(${y * -8}deg)
-                     translateY(-8px)`;
-
-            });
-
-            heroVisual.addEventListener("mouseleave", function() {
-
-                const card =
-                    heroVisual.querySelector(".invitation-card");
-
-                card.style.transform = "";
-
-            });
-
-        }
-
-
-        /* EFECTO RIPPLE EN BOTONES */
-        document.querySelectorAll(".button").forEach(function(button) {
-
-            button.addEventListener("click", function(event) {
-
-                const ripple =
-                    document.createElement("span");
-
-                ripple.classList.add("ripple");
-
-                const rect =
-                    button.getBoundingClientRect();
-
-                ripple.style.left =
-                    `${event.clientX - rect.left}px`;
-
-                ripple.style.top =
-                    `${event.clientY - rect.top}px`;
-
-                button.appendChild(ripple);
-
-                setTimeout(function() {
-                    ripple.remove();
-                }, 700);
-
-            });
-
-        });
-
-
-        /* SUAVE EFECTO DE DESAPARICIÓN AL CAMBIAR DE SECCIÓN */
-        document.querySelectorAll('a[href^="#"]').forEach(function(link) {
-
-            link.addEventListener("click", function(event) {
-
-                const targetID =
-                    this.getAttribute("href");
-
-                if (targetID === "#") return;
-
-                const target =
-                    document.querySelector(targetID);
-
-                if (!target) return;
-
-                event.preventDefault();
-
-                target.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
+                orb.style.transform =
+                    `translate(${x * speed}px, ${y * speed}px)`;
 
             });
 
@@ -693,2587 +854,3 @@ Invitación digital`;
 
 </body>
 </html>
-```
-
-```css
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-:root {
-    --bg: #090909;
-    --bg-soft: #111111;
-    --bg-card: rgba(255, 255, 255, 0.055);
-
-    --white: #ffffff;
-    --white-soft: #eeeeee;
-    --gray: #a4a4a4;
-    --gray-dark: #686868;
-
-    --gold: #d5b06a;
-    --gold-light: #f2d79b;
-    --gold-dark: #8e6d32;
-
-    --green: #25d366;
-
-    --border: rgba(255, 255, 255, 0.11);
-
-    --font-main: "DM Sans", sans-serif;
-    --font-title: "Playfair Display", serif;
-
-    --container: 1180px;
-
-    --ease: cubic-bezier(.22, 1, .36, 1);
-}
-
-
-/* =========================================================
-   RESET
-========================================================= */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 90px;
-}
-
-body {
-    min-height: 100vh;
-    overflow-x: hidden;
-
-    background:
-        radial-gradient(
-            circle at 20% 10%,
-            rgba(213, 176, 106, 0.08),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 80% 70%,
-            rgba(213, 176, 106, 0.05),
-            transparent 30%
-        ),
-        var(--bg);
-
-    color: var(--white);
-    font-family: var(--font-main);
-
-    -webkit-font-smoothing: antialiased;
-}
-
-a {
-    color: inherit;
-    text-decoration: none;
-}
-
-button,
-input,
-select,
-textarea {
-    font: inherit;
-}
-
-button {
-    border: 0;
-}
-
-img {
-    max-width: 100%;
-}
-
-
-/* =========================================================
-   FONDO
-========================================================= */
-
-.background-effects {
-    position: fixed;
-    inset: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    z-index: -1;
-}
-
-.glow {
-    position: absolute;
-
-    width: 450px;
-    height: 450px;
-
-    border-radius: 50%;
-
-    filter: blur(100px);
-
-    opacity: .13;
-
-    animation:
-        glowMove 14s ease-in-out infinite alternate;
-}
-
-.glow-1 {
-    top: -200px;
-    left: -150px;
-
-    background: var(--gold);
-
-    animation-delay: -2s;
-}
-
-.glow-2 {
-    right: -200px;
-    top: 30%;
-
-    background: #8e6d32;
-
-    animation-delay: -7s;
-}
-
-.glow-3 {
-    left: 30%;
-    bottom: -300px;
-
-    background: #c69b4d;
-
-    animation-delay: -10s;
-}
-
-.particle {
-    position: absolute;
-
-    width: 4px;
-    height: 4px;
-
-    border-radius: 50%;
-
-    background: var(--gold);
-
-    opacity: .45;
-
-    box-shadow:
-        0 0 12px var(--gold);
-
-    animation:
-        particleFloat 8s ease-in-out infinite;
-}
-
-.particle-1 {
-    left: 12%;
-    top: 30%;
-}
-
-.particle-2 {
-    left: 78%;
-    top: 20%;
-
-    animation-delay: -2s;
-}
-
-.particle-3 {
-    left: 65%;
-    top: 72%;
-
-    animation-delay: -4s;
-}
-
-.particle-4 {
-    left: 30%;
-    top: 85%;
-
-    animation-delay: -6s;
-}
-
-.particle-5 {
-    left: 90%;
-    top: 85%;
-
-    animation-delay: -1s;
-}
-
-@keyframes glowMove {
-
-    from {
-        transform: translate3d(-40px, -20px, 0) scale(.9);
-    }
-
-    to {
-        transform: translate3d(80px, 60px, 0) scale(1.2);
-    }
-}
-
-@keyframes particleFloat {
-
-    0%,
-    100% {
-        transform: translateY(0) scale(1);
-        opacity: .25;
-    }
-
-    50% {
-        transform: translateY(-80px) scale(1.8);
-        opacity: .8;
-    }
-}
-
-
-/* =========================================================
-   NAVBAR
-========================================================= */
-
-.navbar {
-    position: fixed;
-
-    top: 0;
-    left: 50%;
-
-    width: min(
-        calc(100% - 40px),
-        var(--container)
-    );
-
-    height: 72px;
-
-    transform: translateX(-50%);
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    z-index: 100;
-
-    margin-top: 18px;
-
-    padding: 0 20px;
-
-    border: 1px solid rgba(255,255,255,.08);
-
-    border-radius: 100px;
-
-    background:
-        rgba(10, 10, 10, .72);
-
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-
-    animation:
-        navbarIn 1s var(--ease) both;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    font-weight: 700;
-    letter-spacing: -.02em;
-}
-
-.logo-icon {
-    display: grid;
-    place-items: center;
-
-    width: 34px;
-    height: 34px;
-
-    border-radius: 50%;
-
-    color: var(--gold);
-
-    border: 1px solid rgba(213,176,106,.35);
-
-    animation:
-        logoPulse 3s ease-in-out infinite;
-}
-
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 34px;
-}
-
-.nav-links a {
-    position: relative;
-
-    color: var(--gray);
-
-    font-size: 13px;
-    font-weight: 500;
-
-    transition:
-        color .3s ease,
-        transform .3s ease;
-}
-
-.nav-links a::after {
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-    bottom: -7px;
-
-    width: 0;
-    height: 1px;
-
-    background: var(--gold);
-
-    transition: width .35s var(--ease);
-}
-
-.nav-links a:hover {
-    color: var(--white);
-
-    transform: translateY(-2px);
-}
-
-.nav-links a:hover::after {
-    width: 100%;
-}
-
-.nav-button {
-    padding: 11px 19px;
-
-    border: 1px solid rgba(213,176,106,.5);
-    border-radius: 100px;
-
-    color: var(--gold-light);
-
-    font-size: 12px;
-    font-weight: 600;
-
-    transition:
-        background .3s ease,
-        color .3s ease,
-        transform .3s ease,
-        box-shadow .3s ease;
-}
-
-.nav-button:hover {
-    color: #111;
-
-    background: var(--gold-light);
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 10px 30px rgba(213,176,106,.2);
-}
-
-@keyframes navbarIn {
-
-    from {
-        opacity: 0;
-        transform: translate(-50%, -30px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-    }
-}
-
-@keyframes logoPulse {
-
-    0%,
-    100% {
-        box-shadow: 0 0 0 rgba(213,176,106,0);
-    }
-
-    50% {
-        box-shadow:
-            0 0 25px rgba(213,176,106,.15);
-    }
-}
-
-
-/* =========================================================
-   ESTRUCTURA
-========================================================= */
-
-section {
-    position: relative;
-
-    width: min(
-        calc(100% - 40px),
-        var(--container)
-    );
-
-    margin: auto;
-}
-
-.hero {
-    min-height: 100vh;
-
-    padding-top: 150px;
-    padding-bottom: 90px;
-
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-
-    align-items: center;
-
-    gap: 80px;
-}
-
-
-/* =========================================================
-   HERO CONTENT
-========================================================= */
-
-.hero-content {
-    position: relative;
-
-    z-index: 2;
-}
-
-.eyebrow {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    margin-bottom: 25px;
-
-    color: var(--gold);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    text-transform: uppercase;
-    letter-spacing: .22em;
-
-    animation:
-        heroTextIn 1s .1s var(--ease) both;
-}
-
-.eyebrow span {
-    width: 35px;
-    height: 1px;
-
-    background: var(--gold);
-}
-
-.hero h1 {
-    max-width: 650px;
-
-    margin-bottom: 25px;
-
-    font-family: var(--font-title);
-
-    font-size: clamp(
-        55px,
-        7vw,
-        105px
-    );
-
-    line-height: .93;
-
-    font-weight: 600;
-
-    letter-spacing: -.045em;
-
-    animation:
-        heroTextIn 1s .2s var(--ease) both;
-}
-
-.hero h1 em {
-    display: block;
-
-    color: transparent;
-
-    background:
-        linear-gradient(
-            120deg,
-            var(--gold-light),
-            var(--gold),
-            #9d773a
-        );
-
-    -webkit-background-clip: text;
-    background-clip: text;
-
-    font-style: italic;
-}
-
-.hero-description {
-    max-width: 520px;
-
-    margin-bottom: 35px;
-
-    color: var(--gray);
-
-    font-size: 15px;
-
-    line-height: 1.8;
-
-    animation:
-        heroTextIn 1s .35s var(--ease) both;
-}
-
-.hero-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-
-    animation:
-        heroTextIn 1s .5s var(--ease) both;
-}
-
-.button {
-    position: relative;
-
-    min-height: 52px;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 15px;
-
-    overflow: hidden;
-
-    padding: 0 23px;
-
-    border-radius: 100px;
-
-    cursor: pointer;
-
-    font-size: 12px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: .08em;
-
-    transition:
-        transform .4s var(--ease),
-        box-shadow .4s ease,
-        background .4s ease;
-}
-
-.button:hover {
-    transform: translateY(-4px);
-}
-
-.button-primary {
-    color: #111;
-
-    background:
-        linear-gradient(
-            135deg,
-            var(--gold-light),
-            var(--gold)
-        );
-
-    box-shadow:
-        0 15px 35px rgba(213,176,106,.15);
-}
-
-.button-primary:hover {
-    box-shadow:
-        0 20px 45px rgba(213,176,106,.3);
-}
-
-.button-secondary {
-    color: var(--white);
-
-    border: 1px solid var(--border);
-
-    background: rgba(255,255,255,.03);
-}
-
-.button-secondary:hover {
-    border-color: rgba(213,176,106,.45);
-
-    background: rgba(213,176,106,.08);
-}
-
-.button-whatsapp {
-    width: 100%;
-
-    color: #fff;
-
-    background:
-        linear-gradient(
-            135deg,
-            #20c761,
-            #159947
-        );
-
-    box-shadow:
-        0 18px 40px rgba(37,211,102,.12);
-}
-
-.button-whatsapp:hover {
-    box-shadow:
-        0 20px 45px rgba(37,211,102,.25);
-}
-
-.whatsapp-icon {
-    display: grid;
-    place-items: center;
-
-    width: 25px;
-    height: 25px;
-
-    border: 1px solid rgba(255,255,255,.5);
-    border-radius: 50%;
-}
-
-.button-arrow {
-    margin-left: auto;
-
-    font-size: 18px;
-}
-
-.ripple {
-    position: absolute;
-
-    width: 20px;
-    height: 20px;
-
-    border-radius: 50%;
-
-    background: rgba(255,255,255,.4);
-
-    transform:
-        translate(-50%, -50%)
-        scale(0);
-
-    animation:
-        ripple .7s ease-out forwards;
-
-    pointer-events: none;
-}
-
-@keyframes ripple {
-
-    to {
-        transform:
-            translate(-50%, -50%)
-            scale(25);
-
-        opacity: 0;
-    }
-}
-
-.hero-date {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-
-    margin-top: 45px;
-
-    color: var(--gray);
-
-    animation:
-        heroTextIn 1s .65s var(--ease) both;
-}
-
-.hero-date > span {
-    color: var(--gold-light);
-
-    font-family: var(--font-title);
-
-    font-size: 43px;
-    line-height: 1;
-}
-
-.hero-date div {
-    display: flex;
-    flex-direction: column;
-
-    gap: 3px;
-
-    padding-left: 14px;
-
-    border-left: 1px solid var(--border);
-}
-
-.hero-date strong {
-    font-size: 11px;
-    letter-spacing: .18em;
-}
-
-.hero-date small {
-    color: var(--gray-dark);
-
-    font-size: 10px;
-    letter-spacing: .12em;
-}
-
-@keyframes heroTextIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(40px);
-        filter: blur(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-        filter: blur(0);
-    }
-}
-
-
-/* =========================================================
-   HERO VISUAL
-========================================================= */
-
-.hero-visual {
-    position: relative;
-
-    min-height: 650px;
-
-    display: grid;
-    place-items: center;
-
-    perspective: 1200px;
-
-    animation:
-        visualIn 1.4s .2s var(--ease) both;
-}
-
-.visual-ring {
-    position: absolute;
-
-    width: 450px;
-    height: 450px;
-
-    border-radius: 50%;
-
-    border: 1px solid rgba(213,176,106,.14);
-
-    animation:
-        ringRotate 20s linear infinite;
-}
-
-.ring-2 {
-    width: 550px;
-    height: 550px;
-
-    border-style: dashed;
-
-    animation-duration: 30s;
-    animation-direction: reverse;
-}
-
-.ring-3 {
-    width: 650px;
-    height: 650px;
-
-    border-color: rgba(255,255,255,.045);
-
-    animation-duration: 40s;
-}
-
-.invitation-card {
-    position: relative;
-
-    width: min(390px, 75vw);
-    aspect-ratio: .73;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-
-    padding: 35px;
-
-    border:
-        1px solid
-        rgba(213,176,106,.4);
-
-    border-radius: 4px;
-
-    background:
-        linear-gradient(
-            145deg,
-            #201c16,
-            #0c0c0c 60%,
-            #18140e
-        );
-
-    box-shadow:
-        0 40px 100px rgba(0,0,0,.7),
-        inset 0 0 70px rgba(213,176,106,.04);
-
-    transform-style: preserve-3d;
-
-    transition:
-        transform 1s var(--ease);
-
-    animation:
-        cardFloat 6s ease-in-out infinite;
-
-    z-index: 5;
-}
-
-.invitation-card::before {
-    content: "";
-
-    position: absolute;
-
-    inset: 13px;
-
-    border: 1px solid rgba(213,176,106,.17);
-
-    pointer-events: none;
-}
-
-.card-top,
-.card-bottom {
-    position: relative;
-
-    display: flex;
-    justify-content: space-between;
-
-    color: var(--gold);
-
-    font-size: 8px;
-    letter-spacing: .25em;
-
-    z-index: 2;
-}
-
-.card-center {
-    position: relative;
-
-    text-align: center;
-
-    z-index: 2;
-}
-
-.small-script {
-    display: block;
-
-    margin-bottom: 15px;
-
-    color: var(--gray);
-
-    font-family: var(--font-title);
-
-    font-size: 15px;
-
-    font-style: italic;
-}
-
-.card-center h2 {
-    font-family: var(--font-title);
-
-    font-size: 58px;
-
-    line-height: .9;
-
-    font-weight: 500;
-
-    letter-spacing: -.05em;
-}
-
-.card-center h2 i {
-    color: var(--gold-light);
-
-    font-style: italic;
-}
-
-.card-divider {
-    margin: 28px 0;
-
-    color: var(--gold);
-
-    font-size: 14px;
-}
-
-.card-center p {
-    color: var(--gray);
-
-    font-size: 10px;
-
-    letter-spacing: .35em;
-}
-
-.card-bottom {
-    color: var(--gray-dark);
-}
-
-@keyframes visualIn {
-
-    from {
-        opacity: 0;
-        transform: scale(.85) translateX(60px);
-    }
-
-    to {
-        opacity: 1;
-        transform: scale(1) translateX(0);
-    }
-}
-
-@keyframes cardFloat {
-
-    0%,
-    100% {
-        transform: translateY(0) rotateY(0deg);
-    }
-
-    50% {
-        transform: translateY(-15px) rotateY(2deg);
-    }
-}
-
-@keyframes ringRotate {
-
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-
-/* =========================================================
-   SECCIONES
-========================================================= */
-
-.event-section,
-.order-section,
-.social-section,
-.search-section {
-    padding-top: 130px;
-    padding-bottom: 130px;
-}
-
-.section-heading {
-    display: flex;
-    align-items: flex-start;
-    gap: 25px;
-
-    margin-bottom: 60px;
-}
-
-.section-heading.centered {
-    justify-content: center;
-
-    text-align: center;
-}
-
-.section-number {
-    color: var(--gold);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    letter-spacing: .15em;
-}
-
-.section-label {
-    display: block;
-
-    margin-bottom: 10px;
-
-    color: var(--gold);
-
-    font-size: 10px;
-    font-weight: 600;
-
-    text-transform: uppercase;
-    letter-spacing: .2em;
-}
-
-.section-heading h2,
-.search-content h2 {
-    font-family: var(--font-title);
-
-    font-size: clamp(38px, 5vw, 62px);
-
-    line-height: 1;
-
-    font-weight: 500;
-
-    letter-spacing: -.035em;
-}
-
-.section-heading h2::first-letter {
-    color: var(--white);
-}
-
-
-/* =========================================================
-   EVENT CARDS
-========================================================= */
-
-.event-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 1fr);
-
-    gap: 18px;
-}
-
-.event-card {
-    position: relative;
-
-    min-height: 300px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: flex-end;
-
-    padding: 35px;
-
-    overflow: hidden;
-
-    border:
-        1px solid var(--border);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(255,255,255,.06),
-            rgba(255,255,255,.015)
-        );
-
-    transition:
-        transform .6s var(--ease),
-        border-color .5s ease,
-        background .5s ease;
-
-    opacity: 0;
-    transform:
-        translateY(60px)
-        scale(.96);
-}
-
-.event-card.card-visible {
-    opacity: 1;
-
-    transform:
-        translateY(0)
-        scale(1);
-
-    transition:
-        opacity .8s var(--ease),
-        transform .8s var(--ease),
-        border-color .5s ease,
-        background .5s ease;
-}
-
-.event-card:nth-child(2) {
-    transition-delay: .12s;
-}
-
-.event-card:nth-child(3) {
-    transition-delay: .24s;
-}
-
-.event-card::before {
-    content: "";
-
-    position: absolute;
-
-    top: 0;
-    left: 0;
-
-    width: 100%;
-    height: 2px;
-
-    transform: scaleX(0);
-    transform-origin: left;
-
-    background: var(--gold);
-
-    transition: transform .6s var(--ease);
-}
-
-.event-card:hover {
-    transform: translateY(-10px) !important;
-
-    border-color:
-        rgba(213,176,106,.35);
-
-    background:
-        linear-gradient(
-            145deg,
-            rgba(213,176,106,.1),
-            rgba(255,255,255,.02)
-        );
-}
-
-.event-card:hover::before {
-    transform: scaleX(1);
-}
-
-.event-icon {
-    position: absolute;
-
-    top: 35px;
-    right: 35px;
-
-    width: 48px;
-    height: 48px;
-
-    display: grid;
-    place-items: center;
-
-    border-radius: 50%;
-
-    color: var(--gold);
-
-    border: 1px solid rgba(213,176,106,.2);
-
-    font-size: 20px;
-
-    transition:
-        transform .5s var(--ease),
-        background .5s ease;
-}
-
-.event-card:hover .event-icon {
-    transform:
-        rotate(12deg)
-        scale(1.1);
-
-    background:
-        rgba(213,176,106,.1);
-}
-
-.card-label {
-    margin-bottom: 12px;
-
-    color: var(--gray-dark);
-
-    font-size: 9px;
-    font-weight: 600;
-
-    letter-spacing: .2em;
-}
-
-.event-card h3 {
-    max-width: 250px;
-
-    margin-bottom: 7px;
-
-    font-family: var(--font-title);
-
-    font-size: 27px;
-    font-weight: 500;
-}
-
-.event-card p {
-    color: var(--gray);
-
-    font-size: 13px;
-}
-
-.card-link {
-    display: inline-block;
-
-    margin-top: 22px;
-
-    color: var(--gold);
-
-    font-size: 11px;
-    font-weight: 600;
-
-    transition:
-        transform .3s ease,
-        color .3s ease;
-}
-
-.card-link:hover {
-    color: var(--gold-light);
-
-    transform: translateX(5px);
-}
-
-
-/* =========================================================
-   QUOTE
-========================================================= */
-
-.quote-section {
-    width: 100%;
-    max-width: none;
-
-    padding:
-        130px 30px;
-
-    text-align: center;
-
-    border-top:
-        1px solid var(--border);
-
-    border-bottom:
-        1px solid var(--border);
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(213,176,106,.07),
-            transparent 45%
-        );
-}
-
-.quote-decoration {
-    margin-bottom: 20px;
-
-    color: var(--gold);
-
-    font-family: var(--font-title);
-
-    font-size: 80px;
-    line-height: .5;
-
-    animation:
-        quoteFloat 4s ease-in-out infinite;
-}
-
-blockquote {
-    max-width: 850px;
-
-    margin: auto;
-
-    font-family: var(--font-title);
-
-    font-size: clamp(
-        32px,
-        5vw,
-        60px
-    );
-
-    line-height: 1.15;
-
-    letter-spacing: -.03em;
-}
-
-blockquote span {
-    display: block;
-
-    color: var(--gold-light);
-
-    font-style: italic;
-}
-
-.quote-line {
-    width: 80px;
-    height: 1px;
-
-    margin:
-        35px auto 0;
-
-    background: var(--gold);
-}
-
-@keyframes quoteFloat {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-8px);
-    }
-}
-
-
-/* =========================================================
-   ORDER
-========================================================= */
-
-.order-section {
-    padding-bottom: 160px;
-}
-
-.section-intro {
-    max-width: 550px;
-
-    margin:
-        -30px auto 55px;
-
-    color: var(--gray);
-
-    text-align: center;
-
-    font-size: 14px;
-
-    line-height: 1.8;
-}
-
-.order-container {
-    display: grid;
-
-    grid-template-columns:
-        1.15fr
-        .85fr;
-
-    gap: 30px;
-
-    align-items: stretch;
-}
-
-.invitation-form {
-    padding: 45px;
-
-    border:
-        1px solid var(--border);
-
-    background:
-        rgba(255,255,255,.035);
-
-    opacity: 0;
-    transform: translateX(-50px);
-
-    transition:
-        opacity .9s var(--ease),
-        transform .9s var(--ease);
-}
-
-.invitation-form.card-visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.form-group {
-    margin-bottom: 22px;
-}
-
-.form-row {
-    display: grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    gap: 18px;
-}
-
-.form-group label {
-    display: block;
-
-    margin-bottom: 9px;
-
-    color: var(--gray);
-
-    font-size: 10px;
-    font-weight: 600;
-
-    text-transform: uppercase;
-
-    letter-spacing: .15em;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-
-    color: var(--white);
-
-    border:
-        1px solid rgba(255,255,255,.1);
-
-    outline: none;
-
-    border-radius: 3px;
-
-    background:
-        rgba(0,0,0,.3);
-
-    padding: 15px 16px;
-
-    transition:
-        border-color .3s ease,
-        background .3s ease,
-        box-shadow .3s ease;
-}
-
-.form-group textarea {
-    min-height: 120px;
-
-    resize: vertical;
-}
-
-.form-group input::placeholder,
-.form-group textarea::placeholder {
-    color: #555;
-}
-
-.form-group select {
-    color: var(--gray);
-}
-
-.form-group option {
-    background: #151515;
-    color: white;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color:
-        rgba(213,176,106,.65);
-
-    background:
-        rgba(213,176,106,.035);
-
-    box-shadow:
-        0 0 0 4px
-        rgba(213,176,106,.06);
-}
-
-.form-note {
-    margin-top: 17px;
-
-    color: var(--gray-dark);
-
-    font-size: 10px;
-
-    text-align: center;
-}
-
-.order-side {
-    position: relative;
-
-    min-height: 500px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: center;
-
-    overflow: hidden;
-
-    padding: 55px;
-
-    border:
-        1px solid rgba(213,176,106,.16);
-
-    background:
-        radial-gradient(
-            circle at 80% 20%,
-            rgba(213,176,106,.12),
-            transparent 35%
-        ),
-        #0d0d0d;
-
-    opacity: 0;
-    transform: translateX(50px);
-
-    transition:
-        opacity .9s .15s var(--ease),
-        transform .9s .15s var(--ease);
-}
-
-.order-side.card-visible {
-    opacity: 1;
-    transform: translateX(0);
-}
-
-.side-number {
-    position: absolute;
-
-    right: -10px;
-    top: -55px;
-
-    color: rgba(213,176,106,.06);
-
-    font-family: var(--font-title);
-
-    font-size: 300px;
-
-    line-height: 1;
-
-    pointer-events: none;
-}
-
-.order-side h3 {
-    position: relative;
-
-    max-width: 430px;
-
-    margin-bottom: 25px;
-
-    font-family: var(--font-title);
-
-    font-size: clamp(
-        35px,
-        4vw,
-        55px
-    );
-
-    line-height: 1.05;
-
-    font-weight: 500;
-
-    z-index: 2;
-}
-
-.order-side h3 em {
-    display: block;
-
-    color: var(--gold-light);
-
-    font-style: italic;
-}
-
-.order-side p {
-    position: relative;
-
-    max-width: 390px;
-
-    color: var(--gray);
-
-    font-size: 14px;
-
-    line-height: 1.8;
-
-    z-index: 2;
-}
-
-.side-decoration {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-
-    gap: 15px;
-
-    width: 150px;
-
-    margin-top: 35px;
-
-    color: var(--gold);
-
-    z-index: 2;
-}
-
-.side-decoration span {
-    flex: 1;
-
-    height: 1px;
-
-    background: rgba(213,176,106,.3);
-}
-
-
-/* =========================================================
-   SOCIAL
-========================================================= */
-
-.social-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 14px;
-}
-
-.social-card {
-    position: relative;
-
-    min-height: 180px;
-
-    display: flex;
-    flex-direction: column;
-
-    justify-content: space-between;
-
-    padding: 25px;
-
-    overflow: hidden;
-
-    border:
-        1px solid var(--border);
-
-    background:
-        rgba(255,255,255,.025);
-
-    transition:
-        transform .5s var(--ease),
-        border-color .4s ease,
-        background .4s ease;
-}
-
-.social-card::before {
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 3px;
-
-    transform: scaleX(0);
-    transform-origin: left;
-
-    transition: transform .5s var(--ease);
-}
-
-.social-card:hover {
-    transform: translateY(-9px);
-
-    border-color:
-        rgba(255,255,255,.25);
-
-    background:
-        rgba(255,255,255,.06);
-}
-
-.social-card:hover::before {
-    transform: scaleX(1);
-}
-
-.social-icon {
-    display: grid;
-    place-items: center;
-
-    width: 42px;
-    height: 42px;
-
-    border-radius: 12px;
-
-    color: white;
-
-    border: 1px solid rgba(255,255,255,.15);
-
-    font-size: 20px;
-    font-weight: 700;
-
-    transition:
-        transform .5s var(--ease);
-}
-
-.social-card:hover .social-icon {
-    transform:
-        rotate(-8deg)
-        scale(1.1);
-}
-
-.social-card > span:nth-child(2) {
-    display: flex;
-    flex-direction: column;
-
-    gap: 5px;
-}
-
-.social-card small {
-    color: var(--gray);
-
-    font-size: 9px;
-    font-weight: 600;
-
-    text-transform: uppercase;
-
-    letter-spacing: .15em;
-}
-
-.social-card strong {
-    font-size: 14px;
-}
-
-.social-card > b {
-    position: absolute;
-
-    right: 25px;
-    bottom: 25px;
-
-    color: var(--gray-dark);
-
-    font-size: 17px;
-
-    transition:
-        transform .4s ease,
-        color .4s ease;
-}
-
-.social-card:hover > b {
-    color: var(--white);
-
-    transform: translate(3px, -3px);
-}
-
-.youtube .social-icon {
-    background: #ff0000;
-}
-
-.youtube::before {
-    background: #ff0000;
-}
-
-.tiktok .social-icon {
-    background: #111;
-    box-shadow:
-        2px 2px 0 #ff0050,
-        -2px -2px 0 #00f2ea;
-}
-
-.tiktok::before {
-    background:
-        linear-gradient(
-            90deg,
-            #00f2ea,
-            #ff0050
-        );
-}
-
-.facebook .social-icon {
-    background: #1877f2;
-}
-
-.facebook::before {
-    background: #1877f2;
-}
-
-.instagram .social-icon {
-    background:
-        linear-gradient(
-            135deg,
-            #feda75,
-            #d62976,
-            #4f5bd5
-        );
-}
-
-.instagram::before {
-    background:
-        linear-gradient(
-            90deg,
-            #feda75,
-            #d62976,
-            #4f5bd5
-        );
-}
-
-
-/* =========================================================
-   GOOGLE
-========================================================= */
-
-.search-section {
-    width: 100%;
-    max-width: none;
-
-    padding:
-        130px 20px;
-
-    border-top:
-        1px solid var(--border);
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(213,176,106,.06),
-            transparent 45%
-        );
-}
-
-.search-content {
-    width: min(
-        800px,
-        100%
-    );
-
-    margin: auto;
-
-    text-align: center;
-}
-
-.search-content h2 {
-    margin-bottom: 40px;
-}
-
-.search-content h2 em {
-    color: var(--gold-light);
-
-    font-style: italic;
-}
-
-.google-search {
-    width: 100%;
-}
-
-.search-input {
-    position: relative;
-
-    display: flex;
-    align-items: center;
-
-    width: 100%;
-
-    min-height: 64px;
-
-    padding: 7px;
-
-    border:
-        1px solid rgba(255,255,255,.13);
-
-    border-radius: 100px;
-
-    background:
-        rgba(255,255,255,.035);
-
-    transition:
-        border-color .4s ease,
-        box-shadow .4s ease;
-}
-
-.search-input:focus-within {
-    border-color:
-        rgba(213,176,106,.5);
-
-    box-shadow:
-        0 15px 50px rgba(0,0,0,.3),
-        0 0 30px rgba(213,176,106,.05);
-}
-
-.search-input > span {
-    padding-left: 20px;
-
-    color: var(--gold);
-
-    font-size: 25px;
-}
-
-.search-input input {
-    flex: 1;
-
-    min-width: 0;
-
-    height: 50px;
-
-    padding: 0 15px;
-
-    color: white;
-
-    border: 0;
-    outline: 0;
-
-    background: transparent;
-
-    font-size: 14px;
-}
-
-.search-input input::placeholder {
-    color: #666;
-}
-
-.search-input button {
-    height: 50px;
-
-    padding: 0 25px;
-
-    border-radius: 100px;
-
-    color: #111;
-
-    background: var(--gold-light);
-
-    cursor: pointer;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-    letter-spacing: .1em;
-
-    transition:
-        transform .3s ease,
-        background .3s ease;
-}
-
-.search-input button:hover {
-    background: white;
-
-    transform: scale(.97);
-}
-
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    width: min(
-        calc(100% - 40px),
-        var(--container)
-    );
-
-    margin: auto;
-
-    padding:
-        70px 0 35px;
-}
-
-.footer-line {
-    width: 100%;
-    height: 1px;
-
-    margin-bottom: 35px;
-
-    background: var(--border);
-}
-
-.footer-content {
-    display: grid;
-
-    grid-template-columns:
-        1fr
-        1fr
-        1fr;
-
-    align-items: center;
-}
-
-.footer-logo {
-    display: flex;
-    align-items: center;
-
-    gap: 10px;
-
-    font-size: 13px;
-}
-
-.footer-logo span {
-    color: var(--gold);
-}
-
-.footer-content p {
-    color: var(--gray-dark);
-
-    text-align: center;
-
-    font-size: 11px;
-}
-
-.footer-whatsapp {
-    justify-self: end;
-
-    color: var(--gray);
-
-    font-size: 11px;
-
-    transition: color .3s ease;
-}
-
-.footer-whatsapp:hover {
-    color: var(--green);
-}
-
-.copyright {
-    margin-top: 50px;
-
-    color: #444;
-
-    font-size: 9px;
-
-    text-align: center;
-
-    text-transform: uppercase;
-
-    letter-spacing: .15em;
-}
-
-
-/* =========================================================
-   WHATSAPP FLOTANTE
-========================================================= */
-
-.floating-whatsapp {
-    position: fixed;
-
-    right: 25px;
-    bottom: 25px;
-
-    width: 58px;
-    height: 58px;
-
-    display: grid;
-    place-items: center;
-
-    z-index: 90;
-
-    border-radius: 50%;
-
-    color: white;
-
-    background:
-        linear-gradient(
-            135deg,
-            #2be36e,
-            #13a947
-        );
-
-    box-shadow:
-        0 15px 35px rgba(37,211,102,.3);
-
-    animation:
-        whatsappPulse 3s ease-in-out infinite;
-
-    transition:
-        transform .4s var(--ease);
-}
-
-.floating-whatsapp:hover {
-    transform:
-        translateY(-5px)
-        scale(1.08);
-
-    animation: none;
-}
-
-.floating-whatsapp > span {
-    font-size: 25px;
-}
-
-.whatsapp-tooltip {
-    position: absolute;
-
-    right: 72px;
-
-    white-space: nowrap;
-
-    padding: 10px 15px;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 7px;
-
-    color: white;
-
-    background: #111;
-
-    font-size: 11px;
-
-    opacity: 0;
-
-    transform:
-        translateX(10px);
-
-    pointer-events: none;
-
-    transition:
-        opacity .3s ease,
-        transform .3s ease;
-}
-
-.floating-whatsapp:hover .whatsapp-tooltip {
-    opacity: 1;
-
-    transform:
-        translateX(0);
-}
-
-@keyframes whatsappPulse {
-
-    0%,
-    100% {
-        box-shadow:
-            0 15px 35px rgba(37,211,102,.25);
-    }
-
-    50% {
-        box-shadow:
-            0 15px 45px rgba(37,211,102,.45),
-            0 0 0 10px rgba(37,211,102,.04);
-    }
-}
-
-
-/* =========================================================
-   BACK TOP
-========================================================= */
-
-.back-top {
-    position: fixed;
-
-    right: 25px;
-    bottom: 95px;
-
-    width: 42px;
-    height: 42px;
-
-    display: grid;
-    place-items: center;
-
-    z-index: 89;
-
-    border:
-        1px solid var(--border);
-
-    border-radius: 50%;
-
-    color: var(--gray);
-
-    background:
-        rgba(15,15,15,.8);
-
-    backdrop-filter: blur(10px);
-
-    cursor: pointer;
-
-    opacity: 0;
-    visibility: hidden;
-
-    transform:
-        translateY(15px);
-
-    transition:
-        opacity .4s ease,
-        visibility .4s ease,
-        transform .4s ease,
-        color .3s ease,
-        border-color .3s ease;
-}
-
-.back-top.show {
-    opacity: 1;
-
-    visibility: visible;
-
-    transform:
-        translateY(0);
-}
-
-.back-top:hover {
-    color: var(--gold-light);
-
-    border-color:
-        rgba(213,176,106,.4);
-
-    transform:
-        translateY(-3px);
-}
-
-
-/* =========================================================
-   REVEAL DE SECCIONES
-========================================================= */
-
-.section-reveal {
-    opacity: 0;
-
-    transform:
-        translateY(70px)
-        scale(.98);
-
-    filter: blur(5px);
-
-    transition:
-        opacity 1s var(--ease),
-        transform 1s var(--ease),
-        filter 1s var(--ease);
-}
-
-.section-reveal.visible {
-    opacity: 1;
-
-    transform:
-        translateY(0)
-        scale(1);
-
-    filter: blur(0);
-}
-
-
-/* =========================================================
-   RESPONSIVE TABLET
-========================================================= */
-
-@media (max-width: 1000px) {
-
-    .hero {
-        grid-template-columns: 1fr;
-
-        padding-top: 150px;
-
-        text-align: center;
-
-        gap: 30px;
-    }
-
-    .hero-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .hero-description {
-        max-width: 650px;
-    }
-
-    .hero-date {
-        justify-content: center;
-    }
-
-    .hero-visual {
-        min-height: 600px;
-    }
-
-    .event-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .event-card:last-child {
-        grid-column:
-            span 2;
-    }
-
-    .order-container {
-        grid-template-columns: 1fr;
-    }
-
-    .order-side {
-        min-height: 400px;
-    }
-
-    .social-grid {
-        grid-template-columns:
-            repeat(2, 1fr);
-    }
-
-    .footer-content {
-        grid-template-columns: 1fr;
-
-        gap: 20px;
-
-        text-align: center;
-    }
-
-    .footer-logo,
-    .footer-whatsapp {
-        justify-self: center;
-    }
-
-}
-
-
-/* =========================================================
-   RESPONSIVE MOBILE
-========================================================= */
-
-@media (max-width: 700px) {
-
-    html {
-        scroll-padding-top: 75px;
-    }
-
-    .navbar {
-        width:
-            calc(100% - 20px);
-
-        height: 62px;
-
-        margin-top: 10px;
-
-        padding: 0 15px;
-    }
-
-    .nav-links {
-        display: none;
-    }
-
-    .nav-button {
-        padding: 9px 14px;
-    }
-
-    .logo {
-        font-size: 12px;
-    }
-
-    .logo-icon {
-        width: 30px;
-        height: 30px;
-    }
-
-    section {
-        width:
-            calc(100% - 30px);
-    }
-
-    .hero {
-        min-height: auto;
-
-        padding-top: 145px;
-        padding-bottom: 80px;
-    }
-
-    .eyebrow {
-        font-size: 8px;
-        letter-spacing: .16em;
-    }
-
-    .eyebrow span {
-        width: 20px;
-    }
-
-    .hero h1 {
-        font-size:
-            clamp(48px, 16vw, 76px);
-
-        margin-bottom: 22px;
-    }
-
-    .hero-description {
-        font-size: 13px;
-
-        line-height: 1.7;
-    }
-
-    .hero-buttons {
-        width: 100%;
-
-        flex-direction: column;
-    }
-
-    .button {
-        width: 100%;
-    }
-
-    .hero-date {
-        margin-top: 35px;
-    }
-
-    .hero-visual {
-        min-height: 480px;
-
-        margin-top: 10px;
-    }
-
-    .invitation-card {
-        width: 280px;
-
-        padding: 27px;
-    }
-
-    .card-center h2 {
-        font-size: 43px;
-    }
-
-    .visual-ring {
-        width: 330px;
-        height: 330px;
-    }
-
-    .ring-2 {
-        width: 400px;
-        height: 400px;
-    }
-
-    .ring-3 {
-        width: 470px;
-        height: 470px;
-    }
-
-    .event-section,
-    .order-section,
-    .social-section {
-        padding-top: 90px;
-        padding-bottom: 90px;
-    }
-
-    .section-heading {
-        gap: 14px;
-
-        margin-bottom: 40px;
-    }
-
-    .section-heading h2 {
-        font-size: 39px;
-    }
-
-    .section-number {
-        font-size: 9px;
-    }
-
-    .event-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .event-card {
-        min-height: 260px;
-    }
-
-    .event-card:last-child {
-        grid-column: auto;
-    }
-
-    .quote-section {
-        padding:
-            100px 20px;
-    }
-
-    blockquote {
-        font-size: 34px;
-    }
-
-    .order-container {
-        gap: 15px;
-    }
-
-    .invitation-form {
-        padding: 25px 20px;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .order-side {
-        min-height: 390px;
-
-        padding: 35px 25px;
-    }
-
-    .side-number {
-        font-size: 220px;
-    }
-
-    .social-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .social-card {
-        min-height: 150px;
-    }
-
-    .search-section {
-        padding:
-            90px 15px;
-    }
-
-    .search-content h2 {
-        font-size: 40px;
-    }
-
-    .search-input {
-        min-height: 58px;
-    }
-
-    .search-input > span {
-        padding-left: 14px;
-    }
-
-    .search-input input {
-        width: 100%;
-
-        font-size: 13px;
-    }
-
-    .search-input button {
-        height: 44px;
-
-        padding: 0 16px;
-
-        font-size: 9px;
-    }
-
-    .footer {
-        width:
-            calc(100% - 30px);
-
-        padding-top: 55px;
-    }
-
-    .floating-whatsapp {
-        right: 18px;
-        bottom: 18px;
-
-        width: 54px;
-        height: 54px;
-    }
-
-    .back-top {
-        right: 18px;
-        bottom: 85px;
-    }
-
-    .whatsapp-tooltip {
-        display: none;
-    }
-
-}
-
-
-/* =========================================================
-   MOBILE PEQUEÑO
-========================================================= */
-
-@media (max-width: 400px) {
-
-    .hero h1 {
-        font-size: 47px;
-    }
-
-    .hero-visual {
-        min-height: 430px;
-    }
-
-    .invitation-card {
-        width: 250px;
-    }
-
-    .card-center h2 {
-        font-size: 38px;
-    }
-
-    .visual-ring {
-        width: 290px;
-        height: 290px;
-    }
-
-    .ring-2 {
-        width: 340px;
-        height: 340px;
-    }
-
-    .ring-3 {
-        width: 400px;
-        height: 400px;
-    }
-
-    .section-heading h2 {
-        font-size: 34px;
-    }
-
-    blockquote {
-        font-size: 29px;
-    }
-
-}
-
-
-/* =========================================================
-   ACCESIBILIDAD / REDUCIR MOVIMIENTO
-========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: .01ms !important;
-        animation-iteration-count: 1 !important;
-
-        scroll-behavior: auto !important;
-
-        transition-duration: .01ms !important;
-    }
-
-}
-```
