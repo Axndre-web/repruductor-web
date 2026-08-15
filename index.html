@@ -1,863 +1,471 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#090512">
-    <meta name="description" content="Invitación y pedido de empanadas artesanales. 1 € por unidad. A domicilio o recogida en la estación Renfe de Azuqueca de Henares.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Invitación digital y tienda de empanadas de pollo.">
+  <meta name="theme-color" content="#111111">
+  <title>Invitación Digital | Empanadas de Pollo</title>
 
-    <title>Empanadas | Invitación & Pedidos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 
-    <link rel="stylesheet" href="style.css">
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=BAAE-_0bpY5bp5POKN2LqiDTn-tTh6E7JiCQ_pAPSeU4hOum0sHF1sMJzQ0APl7YKnxk-QTxE_2VN90Dy4&components=hosted-buttons&disable-funding=venmo&currency=EUR">
+  </script>
 </head>
 
 <body>
 
-    <!-- FONDO ANIMADO -->
-    <div class="background-effects">
-        <span class="orb orb-1"></span>
-        <span class="orb orb-2"></span>
-        <span class="orb orb-3"></span>
-
-        <span class="spark spark-1">✦</span>
-        <span class="spark spark-2">✧</span>
-        <span class="spark spark-3">✦</span>
-        <span class="spark spark-4">✧</span>
-    </div>
-
-    <!-- BARRA DE NAVEGACIÓN -->
-    <header class="navbar">
-        <a href="#inicio" class="logo">
-            <span>EMPANADAS</span>
-            <small>ARTESANALES</small>
-        </a>
-
-        <nav>
-            <a href="#invitacion">Invitación</a>
-            <a href="#menu">Menú</a>
-            <a href="#pedido">Pedido</a>
-            <a href="#contacto">Contacto</a>
-        </nav>
-    </header>
-
-
-    <main>
-
-        <!-- HERO -->
-        <section class="hero" id="inicio">
-
-            <div class="hero-content">
-
-                <div class="welcome-tag">
-                    <span></span>
-                    UNA INVITACIÓN CON SABOR
-                    <span></span>
-                </div>
-
-                <p class="mini-title">HECHAS PARA COMPARTIR</p>
-
-                <h1>
-                    El sabor que
-                    <strong>merece</strong>
-                    tu celebración
-                </h1>
-
-                <p class="hero-text">
-                    Empanadas artesanales, recién preparadas y listas
-                    para acompañar tus momentos especiales.
-                </p>
-
-                <div class="price-highlight">
-                    <div class="price-number">1€</div>
-                    <div>
-                        <strong>POR UNIDAD</strong>
-                        <small>Pedido mínimo según disponibilidad</small>
-                    </div>
-                </div>
-
-                <div class="hero-buttons">
-                    <a href="#pedido" class="btn btn-primary">
-                        Hacer mi pedido
-                        <span>→</span>
-                    </a>
-
-                    <a href="#invitacion" class="btn btn-outline">
-                        Ver invitación
-                    </a>
-                </div>
-
-            </div>
-
-
-            <!-- PRODUCTO -->
-            <div class="hero-product">
-
-                <div class="product-glow"></div>
-
-                <div class="product-card">
-
-                    <div class="product-badge">
-                        <span>★</span>
-                        ARTESANALES
-                    </div>
-
-                    <img src="imagene empanadas.jpeg"
-                         alt="Empanadas artesanales">
-
-                    <div class="floating-price">
-                        <strong>1€</strong>
-                        <span>unidad</span>
-                    </div>
-
-                </div>
-
-                <div class="floating-note note-one">
-                    <span>🥟</span>
-                    Recién preparadas
-                </div>
-
-                <div class="floating-note note-two">
-                    <span>✨</span>
-                    Perfectas para compartir
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- INVITACIÓN -->
-        <section class="invitation section" id="invitacion">
-
-            <div class="section-header reveal">
-                <span class="section-number">01</span>
-
-                <div>
-                    <p>ESTÁS INVITADO/A</p>
-                    <h2>Una ocasión especial<br><strong>se disfruta mejor</strong></h2>
-                </div>
-            </div>
-
-            <div class="invitation-grid">
-
-                <div class="invitation-text reveal">
-
-                    <div class="quote-mark">“</div>
-
-                    <h3>
-                        Ven a compartir,
-                        <span>nosotros ponemos el sabor.</span>
-                    </h3>
-
-                    <p>
-                        Queremos que esta ocasión sea especial para todos.
-                        Y como una buena celebración siempre merece algo
-                        delicioso, hemos preparado nuestras empanadas
-                        artesanales para acompañarte.
-                    </p>
-
-                    <p>
-                        Puedes indicarnos si asistirás y, si lo deseas,
-                        reservar tus empanadas con antelación.
-                    </p>
-
-                    <a href="#asistencia" class="text-button">
-                        Confirmar asistencia →
-                    </a>
-
-                </div>
-
-
-                <div class="invitation-card reveal">
-
-                    <div class="card-icon">🥟</div>
-
-                    <span>PARA ESTA OCASIÓN</span>
-
-                    <h3>
-                        Empanadas
-                        <strong>artesanales</strong>
-                    </h3>
-
-                    <div class="line"></div>
-
-                    <p>
-                        Un bocado crujiente, sabroso y preparado
-                        con cariño para compartir.
-                    </p>
-
-                    <div class="card-bottom">
-                        <span>1 €</span>
-                        <small>por unidad</small>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- PRODUCTO -->
-        <section class="menu-section section" id="menu">
-
-            <div class="section-header centered reveal">
-
-                <span class="section-number">02</span>
-
-                <div>
-                    <p>NUESTRO PRODUCTO</p>
-                    <h2>Sabor que se <strong>recuerda</strong></h2>
-                </div>
-
-            </div>
-
-
-            <div class="food-showcase">
-
-                <div class="food-image reveal">
-
-                    <div class="image-frame">
-                        <img src="imagene empanadas.jpeg"
-                             alt="Cesta de empanadas artesanales">
-                    </div>
-
-                    <div class="image-caption">
-                        <span>EMPANADAS ARTESANALES</span>
-                        <strong>Preparadas para ti</strong>
-                    </div>
-
-                </div>
-
-
-                <div class="food-info reveal">
-
-                    <span class="small-label">NUESTRA ESPECIALIDAD</span>
-
-                    <h3>
-                        Una por una,
-                        <strong>hechas para disfrutar.</strong>
-                    </h3>
-
-                    <p>
-                        Elaboramos nuestras empanadas pensando en que cada
-                        bocado tenga ese equilibrio perfecto entre una masa
-                        dorada y un relleno lleno de sabor.
-                    </p>
-
-                    <div class="features">
-
-                        <div class="feature">
-                            <span>🥟</span>
-                            <div>
-                                <strong>Artesanales</strong>
-                                <small>Preparadas con dedicación</small>
-                            </div>
-                        </div>
-
-                        <div class="feature">
-                            <span>🔥</span>
-                            <div>
-                                <strong>Recién preparadas</strong>
-                                <small>Para disfrutar al máximo</small>
-                            </div>
-                        </div>
-
-                        <div class="feature">
-                            <span>💜</span>
-                            <div>
-                                <strong>Para compartir</strong>
-                                <small>Ideales para celebraciones</small>
-                            </div>
-                        </div>
-
-                    </div>
-
-                    <div class="simple-price">
-                        <strong>1 €</strong>
-                        <span>por unidad</span>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- SERVICIO -->
-        <section class="service section">
-
-            <div class="service-box reveal">
-
-                <div class="service-content">
-
-                    <span class="small-label">ENTREGA</span>
-
-                    <h2>
-                        Tú eliges cómo
-                        <strong>recibirlas.</strong>
-                    </h2>
-
-                    <p>
-                        Disponemos de servicio a domicilio y también puedes
-                        recoger tu pedido en nuestro punto de entrega.
-                    </p>
-
-                </div>
-
-
-                <div class="delivery-options">
-
-                    <div class="delivery-card">
-                        <div class="delivery-icon">🏠</div>
-                        <div>
-                            <strong>A domicilio</strong>
-                            <span>Consulta disponibilidad</span>
-                        </div>
-                    </div>
-
-                    <div class="delivery-card">
-                        <div class="delivery-icon">🚆</div>
-                        <div>
-                            <strong>Recogida</strong>
-                            <span>Estación Renfe Azuqueca de Henares</span>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- PEDIDO -->
-        <section class="order section" id="pedido">
-
-            <div class="section-header centered reveal">
-
-                <span class="section-number">03</span>
-
-                <div>
-                    <p>RESERVA TUS EMPANADAS</p>
-                    <h2>Haz tu pedido <strong>fácilmente</strong></h2>
-                </div>
-
-            </div>
-
-
-            <div class="order-wrapper reveal">
-
-                <div class="order-intro">
-
-                    <div class="order-icon">🥟</div>
-
-                    <h3>
-                        ¿Cuántas quieres?
-                    </h3>
-
-                    <p>
-                        Selecciona la cantidad y dinos cómo quieres
-                        recibir tu pedido.
-                    </p>
-
-                    <div class="unit-price">
-                        <span>Precio</span>
-                        <strong>1 € / unidad</strong>
-                    </div>
-
-                </div>
-
-
-                <form id="orderForm" class="order-form">
-
-                    <div class="form-group">
-
-                        <label for="nombre">Tu nombre</label>
-
-                        <input
-                            type="text"
-                            id="nombre"
-                            name="nombre"
-                            placeholder="Escribe tu nombre"
-                            required
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="cantidad">Cantidad de empanadas</label>
-
-                        <div class="quantity-control">
-
-                            <button type="button" id="minus">−</button>
-
-                            <input
-                                type="number"
-                                id="cantidad"
-                                name="cantidad"
-                                value="10"
-                                min="1"
-                                max="500"
-                                required
-                            >
-
-                            <button type="button" id="plus">+</button>
-
-                        </div>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="entrega">Forma de entrega</label>
-
-                        <select id="entrega" name="entrega" required>
-
-                            <option value="">Selecciona una opción</option>
-
-                            <option value="A domicilio">
-                                🏠 A domicilio
-                            </option>
-
-                            <option value="Recogida en la estación Renfe de Azuqueca de Henares">
-                                🚆 Recogida en estación Renfe Azuqueca de Henares
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="fecha">Fecha deseada</label>
-
-                        <input
-                            type="date"
-                            id="fecha"
-                            name="fecha"
-                        >
-
-                    </div>
-
-
-                    <div class="form-group">
-
-                        <label for="mensaje">Mensaje adicional</label>
-
-                        <textarea
-                            id="mensaje"
-                            name="mensaje"
-                            rows="3"
-                            placeholder="¿Alguna indicación para tu pedido?"
-                        ></textarea>
-
-                    </div>
-
-
-                    <div class="order-total">
-
-                        <span>Total estimado</span>
-
-                        <strong>
-                            <span id="total">10</span> €
-                        </strong>
-
-                    </div>
-
-
-                    <button type="submit" class="whatsapp-button">
-
-                        <span class="whatsapp-icon">◉</span>
-
-                        Pedir por WhatsApp
-
-                        <span>→</span>
-
-                    </button>
-
-                    <small class="form-note">
-                        Tu pedido se enviará directamente por WhatsApp para confirmar disponibilidad.
-                    </small>
-
-                </form>
-
-            </div>
-
-        </section>
-
-
-        <!-- ASISTENCIA -->
-        <section class="attendance section" id="asistencia">
-
-            <div class="attendance-card reveal">
-
-                <div class="attendance-glow"></div>
-
-                <span class="small-label">CONFIRMACIÓN</span>
-
-                <h2>
-                    ¿Nos acompañas?
-                </h2>
-
-                <p>
-                    Confirma tu asistencia y, si quieres, reserva tus
-                    empanadas para la ocasión.
-                </p>
-
-                <div class="attendance-buttons">
-
-                    <a
-                        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20confirmar%20mi%20asistencia."
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="attendance-btn yes"
-                    >
-                        ✓ Sí, allí estaré
-                    </a>
-
-                    <a
-                        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20informar%20sobre%20mi%20asistencia."
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="attendance-btn"
-                    >
-                        Escribir por WhatsApp
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- REDES SOCIALES -->
-        <section class="social-section section" id="contacto">
-
-            <div class="social-content reveal">
-
-                <span class="small-label">SÍGUENOS</span>
-
-                <h2>
-                    Comparte el <strong>sabor</strong>
-                </h2>
-
-                <p>
-                    Descubre novedades, promociones y más contenido
-                    en nuestras redes sociales.
-                </p>
-
-
-                <div class="social-links">
-
-                    <!-- Sustituye los # por tus enlaces reales -->
-
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="social instagram">
-                        <span>◎</span>
-                        Instagram
-                    </a>
-
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="social tiktok">
-                        <span>♪</span>
-                        TikTok
-                    </a>
-
-                    <a href="#" target="_blank" rel="noopener noreferrer" class="social facebook">
-                        <span>f</span>
-                        Facebook
-                    </a>
-
-                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="social youtube">
-                        <span>▶</span>
-                        YouTube
-                    </a>
-
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- GOOGLE -->
-        <section class="google-section">
-
-            <div class="google-box reveal">
-
-                <div class="google-icon">G</div>
-
-                <div>
-                    <strong>¿Buscas nuestra ubicación?</strong>
-                    <span>Encuéntranos en Google Maps</span>
-                </div>
-
-                <a
-                    href="https://www.google.com/maps/search/?api=1&query=Estacion+Renfe+Azuqueca+de+Henares"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Buscar ubicación →
-                </a>
-
-            </div>
-
-        </section>
-
-    </main>
-
-
-    <!-- FOOTER -->
-    <footer>
-
-        <div class="footer-logo">
-            EMPANADAS
-            <span>ARTESANALES</span>
-        </div>
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-logo">SABOR</div>
+    <div class="loader-line"></div>
+    <span>Cargando experiencia...</span>
+  </div>
+
+  <div class="particles" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <header class="header" id="header">
+    <a href="#inicio" class="logo">
+      <span class="logo-symbol">✦</span>
+      <span>SABOR</span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <a href="#inicio">Inicio</a>
+      <a href="#invitacion">Invitación</a>
+      <a href="#productos">Productos</a>
+      <a href="#redes">Redes</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+
+    <button class="menu-toggle" id="menuToggle" aria-label="Abrir menú">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <main>
+
+    <section class="hero section-animate" id="inicio">
+      <div class="hero-overlay"></div>
+
+      <div class="hero-content">
+        <span class="eyebrow">UNA EXPERIENCIA PARA COMPARTIR</span>
+
+        <h1>
+          Sabores que
+          <span>merecen ser</span>
+          recordados
+        </h1>
 
         <p>
-            Hechas con cariño. Compartidas con alegría.
+          Una invitación especial para disfrutar de nuestras
+          deliciosas empanadas de pollo, preparadas con dedicación
+          y mucho sabor.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="#invitacion" class="btn btn-primary">
+            Descubrir
+            <span>↓</span>
+          </a>
+
+          <a href="#productos" class="btn btn-outline">
+            Ver productos
+          </a>
+        </div>
+      </div>
+
+      <div class="scroll-indicator">
+        <span>DESLIZA</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+
+    <section class="invitation section-animate" id="invitacion">
+      <div class="section-number">01</div>
+
+      <div class="invitation-content reveal">
+        <span class="eyebrow">BIENVENIDOS</span>
+
+        <h2>
+          Una invitación
+          <em>con sabor</em>
+        </h2>
+
+        <div class="gold-line"></div>
+
+        <p>
+          Queremos compartir contigo una experiencia sencilla,
+          deliciosa y especial. Nuestras empanadas de pollo son
+          elaboradas para que cada bocado tenga ese sabor casero
+          que invita a repetir.
+        </p>
+
+        <p>
+          Haz tu pedido fácilmente y disfruta de un producto
+          preparado con cariño.
         </p>
 
         <a
-            href="https://wa.me/34602487576"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="footer-whatsapp"
+          class="text-link"
+          href="https://wa.me/34602487576?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20empanadas%20de%20pollo."
+          target="_blank"
+          rel="noopener noreferrer"
         >
-            WhatsApp · 602 487 576
+          Hacer un pedido por WhatsApp
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="invitation-decoration reveal">
+        <div class="circle circle-one"></div>
+        <div class="circle circle-two"></div>
+
+        <div class="quote-card">
+          <span class="quote-mark">“</span>
+          <p>
+            El mejor ingrediente siempre será
+            compartir momentos.
+          </p>
+          <span class="quote-mark quote-end">”</span>
+        </div>
+      </div>
+    </section>
+
+
+    <section class="products section-animate" id="productos">
+      <div class="section-number">02</div>
+
+      <div class="section-heading reveal">
+        <span class="eyebrow">NUESTRO SABOR</span>
+        <h2>Hecho para <em>disfrutar</em></h2>
+        <p>
+          Elige tu opción favorita y realiza tu pedido.
+        </p>
+      </div>
+
+      <div class="product-grid">
+
+        <article class="product-card reveal">
+          <div class="product-image">
+            <div class="food-illustration">
+              <div class="empanada"></div>
+              <div class="steam steam-one"></div>
+              <div class="steam steam-two"></div>
+            </div>
+
+            <span class="product-badge">FAVORITA</span>
+          </div>
+
+          <div class="product-info">
+            <span class="product-category">ESPECIALIDAD</span>
+
+            <h3>Empanada de Pollo</h3>
+
+            <p>
+              Masa dorada y crujiente rellena de pollo
+              sazonado con una deliciosa combinación
+              de ingredientes.
+            </p>
+
+            <div class="product-bottom">
+              <span class="price">Consultar precio</span>
+
+              <a
+                href="https://wa.me/34602487576?text=Hola%2C%20quiero%20pedir%20empanadas%20de%20pollo."
+                target="_blank"
+                rel="noopener noreferrer"
+                class="order-button"
+              >
+                Pedir
+                <span>→</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+
+        <article class="product-card reveal">
+          <div class="product-image product-image-alt">
+            <div class="food-illustration">
+              <div class="empanada empanada-two"></div>
+              <div class="steam steam-one"></div>
+              <div class="steam steam-two"></div>
+            </div>
+
+            <span class="product-badge">ONLINE</span>
+          </div>
+
+          <div class="product-info">
+            <span class="product-category">PAGO SEGURO</span>
+
+            <h3>Pedido Online</h3>
+
+            <p>
+              Realiza tu pago de forma rápida y segura
+              utilizando PayPal.
+            </p>
+
+            <div class="paypal-container">
+              <div id="paypal-container-8P5SWTNAJR9W4"></div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+
+    <section class="process section-animate">
+      <div class="section-number">03</div>
+
+      <div class="section-heading reveal">
+        <span class="eyebrow">ASÍ DE FÁCIL</span>
+        <h2>Tu pedido en <em>3 pasos</em></h2>
+      </div>
+
+      <div class="process-grid">
+
+        <div class="process-item reveal">
+          <span class="process-number">01</span>
+          <div class="process-icon">✦</div>
+          <h3>Elige</h3>
+          <p>Selecciona tus empanadas favoritas.</p>
+        </div>
+
+        <div class="process-item reveal">
+          <span class="process-number">02</span>
+          <div class="process-icon">◌</div>
+          <h3>Escríbenos</h3>
+          <p>Envíanos tu pedido directamente por WhatsApp.</p>
+        </div>
+
+        <div class="process-item reveal">
+          <span class="process-number">03</span>
+          <div class="process-icon">♡</div>
+          <h3>Disfruta</h3>
+          <p>Recibe tu pedido y disfruta cada bocado.</p>
+        </div>
+
+      </div>
+    </section>
+
+
+    <section class="social-section section-animate" id="redes">
+      <div class="section-number">04</div>
+
+      <div class="section-heading reveal">
+        <span class="eyebrow">SÍGUENOS</span>
+        <h2>Conecta con <em>nosotros</em></h2>
+        <p>
+          Descubre novedades, promociones y mucho más.
+        </p>
+      </div>
+
+      <div class="social-grid">
+
+        <a
+          href="https://www.youtube.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-card youtube reveal"
+        >
+          <span class="social-icon">▶</span>
+          <span class="social-name">YouTube</span>
+          <span class="social-arrow">↗</span>
         </a>
 
-        <div class="footer-line"></div>
+        <a
+          href="https://www.tiktok.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-card tiktok reveal"
+        >
+          <span class="social-icon">♪</span>
+          <span class="social-name">TikTok</span>
+          <span class="social-arrow">↗</span>
+        </a>
 
-        <small>
-            © 2026 · Todos los derechos reservados
-        </small>
+        <a
+          href="https://www.facebook.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-card facebook reveal"
+        >
+          <span class="social-icon">f</span>
+          <span class="social-name">Facebook</span>
+          <span class="social-arrow">↗</span>
+        </a>
 
-    </footer>
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="social-card instagram reveal"
+        >
+          <span class="social-icon">◎</span>
+          <span class="social-name">Instagram</span>
+          <span class="social-arrow">↗</span>
+        </a>
+
+      </div>
+    </section>
 
 
-    <!-- BOTÓN WHATSAPP FLOTANTE -->
-    <a
-        href="https://wa.me/34602487576?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20empanadas."
+    <section class="google-section section-animate">
+      <div class="google-content reveal">
+        <span class="eyebrow">BUSCAR EN INTERNET</span>
+
+        <h2>Encuentra lo que <em>buscas</em></h2>
+
+        <form
+          class="google-search"
+          action="https://www.google.com/search"
+          method="GET"
+          target="_blank"
+        >
+          <div class="search-icon">⌕</div>
+
+          <input
+            type="search"
+            name="q"
+            placeholder="Buscar en Google..."
+            autocomplete="off"
+            aria-label="Buscar en Google"
+            required
+          >
+
+          <button type="submit">
+            Buscar
+          </button>
+        </form>
+      </div>
+    </section>
+
+
+    <section class="contact section-animate" id="contacto">
+      <div class="contact-inner reveal">
+
+        <div class="contact-text">
+          <span class="eyebrow">¿TIENES ALGUNA PREGUNTA?</span>
+
+          <h2>
+            Hablemos
+            <em>directamente.</em>
+          </h2>
+
+          <p>
+            Estamos disponibles para recibir tus pedidos,
+            consultas y solicitudes.
+          </p>
+        </div>
+
+        <a
+          href="https://wa.me/34602487576?text=Hola%2C%20me%20gustar%C3%ADa%20hacer%20un%20pedido."
+          target="_blank"
+          rel="noopener noreferrer"
+          class="whatsapp-button"
+        >
+          <span class="whatsapp-icon">◉</span>
+          <span>
+            <small>ESCRÍBENOS POR</small>
+            WhatsApp
+          </span>
+          <strong>→</strong>
+        </a>
+
+      </div>
+    </section>
+
+  </main>
+
+
+  <footer class="footer">
+
+    <div class="footer-main">
+
+      <div class="footer-brand">
+        <a href="#inicio" class="logo">
+          <span class="logo-symbol">✦</span>
+          <span>SABOR</span>
+        </a>
+
+        <p>
+          Una experiencia creada para compartir
+          buenos momentos alrededor del sabor.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <div>
+          <span>EXPLORA</span>
+          <a href="#inicio">Inicio</a>
+          <a href="#invitacion">Invitación</a>
+          <a href="#productos">Productos</a>
+        </div>
+
+        <div>
+          <span>CONECTA</span>
+          <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer">TikTok</a>
+          <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">YouTube</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 SABOR. Todos los derechos reservados.</span>
+
+      <a
+        href="https://wa.me/34602487576"
         target="_blank"
         rel="noopener noreferrer"
-        class="floating-whatsapp"
-        aria-label="Contactar por WhatsApp"
+      >
+        WhatsApp · 602 487 576
+      </a>
+    </div>
+
+  </footer>
+
+
+  <button class="back-to-top" id="backToTop" aria-label="Volver arriba">
+    ↑
+  </button>
+
+
+  <div class="whatsapp-float">
+    <span class="whatsapp-tooltip">Haz tu pedido</span>
+
+    <a
+      href="https://wa.me/34602487576?text=Hola%2C%20quiero%20hacer%20un%20pedido%20de%20empanadas%20de%20pollo."
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Pedir por WhatsApp"
     >
-        <span>◉</span>
-        <small>Pedido</small>
+      <span>◉</span>
     </a>
+  </div>
 
 
-    <!-- BOTÓN VOLVER ARRIBA -->
-    <button id="backTop" class="back-top" aria-label="Volver arriba">
-        ↑
-    </button>
+  <script>
+    paypal.HostedButtons({
+      hostedButtonId: "8P5SWTNAJR9W4",
+    }).render("#paypal-container-8P5SWTNAJR9W4");
+  </script>
 
+  <script src="script.js"></script>
 
-    <script>
-
-        /* ==============================
-           CANTIDAD Y PRECIO
-        ============================== */
-
-        const quantity = document.getElementById("cantidad");
-        const total = document.getElementById("total");
-        const plus = document.getElementById("plus");
-        const minus = document.getElementById("minus");
-
-        function updateTotal() {
-            let value = parseInt(quantity.value) || 1;
-
-            if (value < 1) value = 1;
-            if (value > 500) value = 500;
-
-            quantity.value = value;
-            total.textContent = value;
-        }
-
-        plus.addEventListener("click", () => {
-            quantity.value = Math.min(parseInt(quantity.value || 1) + 1, 500);
-            updateTotal();
-        });
-
-        minus.addEventListener("click", () => {
-            quantity.value = Math.max(parseInt(quantity.value || 1) - 1, 1);
-            updateTotal();
-        });
-
-        quantity.addEventListener("input", updateTotal);
-
-
-        /* ==============================
-           PEDIDO POR WHATSAPP
-        ============================== */
-
-        document.getElementById("orderForm").addEventListener("submit", function(event) {
-
-            event.preventDefault();
-
-            const nombre = document.getElementById("nombre").value.trim();
-            const cantidad = document.getElementById("cantidad").value;
-            const entrega = document.getElementById("entrega").value;
-            const fecha = document.getElementById("fecha").value;
-            const mensaje = document.getElementById("mensaje").value.trim();
-
-            const totalPedido = cantidad * 1;
-
-            let texto =
-                "🥟 *NUEVO PEDIDO DE EMPANADAS*%0A%0A" +
-                "👤 *Nombre:* " + nombre + "%0A" +
-                "🥟 *Cantidad:* " + cantidad + " unidades%0A" +
-                "💶 *Total:* " + totalPedido + " €%0A" +
-                "📦 *Entrega:* " + entrega;
-
-            if (fecha) {
-                texto += "%0A📅 *Fecha:* " + fecha;
-            }
-
-            if (mensaje) {
-                texto += "%0A📝 *Mensaje:* " + mensaje;
-            }
-
-            texto += "%0A%0A¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.";
-
-            window.open(
-                "https://wa.me/34602487576?text=" + texto,
-                "_blank"
-            );
-
-        });
-
-
-        /* ==============================
-           ANIMACIONES AL HACER SCROLL
-        ============================== */
-
-        const observer = new IntersectionObserver(
-            (entries) => {
-
-                entries.forEach(entry => {
-
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add("visible");
-                    }
-
-                });
-
-            },
-            {
-                threshold: 0.12
-            }
-        );
-
-        document.querySelectorAll(".reveal").forEach(element => {
-            observer.observe(element);
-        });
-
-
-        /* ==============================
-           FECHA MÍNIMA
-        ============================== */
-
-        const dateInput = document.getElementById("fecha");
-
-        const today = new Date();
-
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, "0");
-        const day = String(today.getDate()).padStart(2, "0");
-
-        dateInput.min = `${year}-${month}-${day}`;
-
-
-        /* ==============================
-           BOTÓN VOLVER ARRIBA
-        ============================== */
-
-        const backTop = document.getElementById("backTop");
-
-        window.addEventListener("scroll", () => {
-
-            if (window.scrollY > 500) {
-                backTop.classList.add("show");
-            } else {
-                backTop.classList.remove("show");
-            }
-
-        });
-
-        backTop.addEventListener("click", () => {
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-
-        });
-
-
-        /* ==============================
-           NAVBAR
-        ============================== */
-
-        let lastScroll = 0;
-        const navbar = document.querySelector(".navbar");
-
-        window.addEventListener("scroll", () => {
-
-            const currentScroll = window.scrollY;
-
-            if (currentScroll > 80 && currentScroll > lastScroll) {
-                navbar.classList.add("nav-hidden");
-            } else {
-                navbar.classList.remove("nav-hidden");
-            }
-
-            lastScroll = currentScroll;
-
-        });
-
-
-        /* ==============================
-           EFECTO PARALLAX SUAVE
-        ============================== */
-
-        window.addEventListener("mousemove", (event) => {
-
-            const x = (event.clientX / window.innerWidth - 0.5) * 2;
-            const y = (event.clientY / window.innerHeight - 0.5) * 2;
-
-            document.querySelectorAll(".orb").forEach((orb, index) => {
-
-                const speed = (index + 1) * 5;
-
-                orb.style.transform =
-                    `translate(${x * speed}px, ${y * speed}px)`;
-
-            });
-
-        });
-<div id="paypal-container-8P5SWTNAJR9W4"></div>
-<script>
-  paypal.HostedButtons({
-    hostedButtonId: "8P5SWTNAJR9W4",
-  }).render("#paypal-container-8P5SWTNAJR9W4")
-</script>
-    </script>
-<script 
-  src="https://www.paypal.com/sdk/js?client-id=BAAE-_0bpY5bp5POKN2LqiDTn-tTh6E7JiCQ_pAPSeU4hOum0sHF1sMJzQ0APl7YKnxk-QTxE_2VN90Dy4&components=hosted-buttons&disable-funding=venmo&currency=EUR">
-</script>
 </body>
 </html>
