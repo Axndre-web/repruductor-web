@@ -23,8 +23,19 @@ const stationGrid = document.getElementById('stationGrid');
 const newsList = document.getElementById('newsList');
 const refreshNews = document.getElementById('refreshNews');
 const visitCount = document.getElementById('visitCount');
+const volumeBar = document.getElementById('volumeBar');
+const volumeValue = document.getElementById('volumeValue');
+const speedBar = document.getElementById('speedBar');
+const speedValue = document.getElementById('speedValue');
+const equalizerBtn = document.getElementById('equalizerBtn');
+const onlineClock = document.getElementById('onlineClock');
 let tracks = [];
 let currentTrack = -1;
+audio.volume = Number(volumeBar.value);
+
+function updateClock() {
+  onlineClock.textContent = new Date().toLocaleTimeString('es-ES', { hour12: false });
+}
 
 function registerVisit() {
   const storageKey = 'axndre-neon-tape-visits';
@@ -153,9 +164,27 @@ audio.addEventListener('ended', () => { if (currentTrack < tracks.length - 1) lo
 audio.addEventListener('loadedmetadata', () => { durationDisplay.textContent = formatTime(audio.duration); statusText.textContent = 'READY TO PLAY'; });
 audio.addEventListener('timeupdate', () => { progressBar.value = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0; timeDisplay.textContent = formatTime(audio.currentTime); });
 progressBar.addEventListener('input', () => { if (audio.duration) audio.currentTime = (progressBar.value / 100) * audio.duration; });
+volumeBar.addEventListener('input', () => {
+  audio.volume = Number(volumeBar.value);
+  audio.muted = audio.volume === 0;
+  volumeValue.textContent = `${Math.round(audio.volume * 100)}%`;
+  btnMute.classList.toggle('active', audio.muted);
+});
+speedBar.addEventListener('input', () => {
+  audio.playbackRate = Number(speedBar.value);
+  speedValue.textContent = `${audio.playbackRate.toFixed(2)}x`;
+});
+equalizerBtn.addEventListener('click', () => {
+  const enabled = equalizerBtn.getAttribute('aria-pressed') !== 'true';
+  equalizerBtn.setAttribute('aria-pressed', String(enabled));
+  equalizerBtn.classList.toggle('active', enabled);
+  equalizerBtn.querySelector('span').textContent = enabled ? 'BOOST' : 'STANDARD';
+});
 modeMusic.addEventListener('click', () => setMode('music'));
 modeRadio.addEventListener('click', () => setMode('radio'));
 modeNews.addEventListener('click', () => setMode('news'));
 refreshNews.addEventListener('click', loadNews);
 renderStations();
 registerVisit();
+updateClock();
+setInterval(updateClock, 1000);

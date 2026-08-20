@@ -24,6 +24,15 @@
       <button class="mode-btn" id="modeNews" type="button">NOTICIAS</button>
     </nav>
 
+    <nav class="social-links" aria-label="Redes sociales">
+      <a class="social-link youtube" href="https://www.youtube.com/" target="_blank" rel="noopener" aria-label="YouTube"><span class="social-logo">▶</span><span>YouTube</span></a>
+      <a class="social-link tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><span class="social-logo">♪</span><span>TikTok</span></a>
+      <a class="social-link facebook" href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook"><span class="social-logo">f</span><span>Facebook</span></a>
+      <a class="social-link google" href="https://www.google.com/" target="_blank" rel="noopener" aria-label="Google"><span class="social-logo">G</span><span>Google</span></a>
+      <a class="social-link x" href="https://x.com/" target="_blank" rel="noopener" aria-label="X"><span class="social-logo">X</span><span>X</span></a>
+      <a class="social-link instagram" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><span class="social-logo">◎</span><span>Instagram</span></a>
+    </nav>
+
     <section class="deck" aria-label="Reproductor MP3">
       <div class="deck-screen">
         <div class="screen-top"><span id="trackNumber">TRACK 01</span><span id="timeDisplay">00:00</span></div>
@@ -65,6 +74,12 @@
         <input id="progressBar" type="range" min="0" max="100" value="0" aria-label="Progreso de la pista">
         <div class="progress-labels"><span>00:00</span><span id="durationDisplay">00:00</span></div>
       </div>
+
+      <div class="audio-controls" aria-label="Controles avanzados de audio">
+        <label class="control-group"><span>VOLUMEN <output id="volumeValue">80%</output></span><input id="volumeBar" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen"></label>
+        <label class="control-group"><span>VELOCIDAD <output id="speedValue">1.00x</output></span><input id="speedBar" type="range" min="0.5" max="2" step="0.05" value="1" aria-label="Velocidad de reproducción"></label>
+        <button class="equalizer-btn" id="equalizerBtn" type="button" aria-pressed="false">EQ <span>STANDARD</span></button>
+      </div>
     </section>
 
     <section class="playlist-panel">
@@ -74,7 +89,7 @@
       </ol>
     </section>
 
-    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot" aria-label="Sistema activo"></span><span id="statusText">READY TO PLAY</span><span class="visit-counter" aria-label="Contador de visitas"><span id="visitCount">0</span> VISITAS</span></footer>
+    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot" aria-label="Sistema activo"></span><span id="statusText">READY TO PLAY</span><span class="visit-counter" aria-label="Contador de visitas"><span id="visitCount">0</span> VISITAS</span><time class="online-clock" id="onlineClock" aria-label="Hora local">00:00:00</time></footer>
     <audio id="audioPlayer" preload="metadata"></audio>
   </main>
 

@@ -32,6 +32,11 @@ body {
 .mode-switcher { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-bottom: 12px; padding: 4px; border: 1px solid #3a1c4d; background: #0d0612; }
 .mode-btn { border: 1px solid transparent; background: transparent; color: var(--muted); padding: 9px 5px; font: 10px 'Space Mono', monospace; letter-spacing: 1px; cursor: pointer; }
 .mode-btn:hover, .mode-btn.active { color: var(--text); border-color: var(--pink); background: #241032; box-shadow: 0 0 10px #ed4dff33; }
+.social-links { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; margin-bottom: 12px; }
+.social-link { display: flex; align-items: center; justify-content: center; gap: 5px; min-width: 0; padding: 8px 3px; border: 1px solid #302039; color: var(--muted); text-decoration: none; font: 9px 'Space Mono', monospace; transition: .2s ease; }
+.social-link:hover { transform: translateY(-2px); color: #fff; border-color: currentColor; box-shadow: 0 0 12px currentColor; }
+.social-logo { display: grid; place-items: center; width: 17px; height: 17px; font: 700 14px 'Chakra Petch', sans-serif; }
+.youtube:hover { color: #ff304f; }.tiktok:hover { color: #25f4ee; }.facebook:hover { color: #3984ff; }.google:hover { color: #fbbc05; }.x:hover { color: #fff; }.instagram:hover { color: #ff5b9d; }
 .brand-mark { border: 1px solid var(--pink); color: var(--pink); font-size: 24px; font-weight: 700; width: 42px; height: 42px; display: grid; place-items: center; box-shadow: 0 0 14px #ed4dff80; }
 .kicker, footer { font: 10px 'Space Mono', monospace; letter-spacing: 2px; color: var(--muted); margin: 0 0 2px; }
 h1 { font-size: clamp(24px, 6vw, 38px); letter-spacing: 4px; line-height: 1; margin: 0; }
@@ -77,6 +82,10 @@ button { font-family: 'Space Mono', monospace; color: var(--text); cursor: point
 .play-btn { background: var(--violet); border-color: var(--pink); padding-inline: 23px; }
 .progress-wrap { margin-top: 3px; } input[type='range'] { width: 100%; accent-color: var(--pink); cursor: pointer; }
 .progress-labels { font-size: 9px; margin-top: 2px; }
+.audio-controls { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; margin-top: 18px; padding-top: 15px; border-top: 1px solid #3d2050; }
+.control-group { display: grid; gap: 7px; color: var(--muted); font: 9px 'Space Mono', monospace; letter-spacing: 1px; }
+.control-group span { display: flex; justify-content: space-between; gap: 5px; }.control-group output { color: var(--pink); }
+.audio-controls input[type='range'] { accent-color: var(--pink); }.equalizer-btn { min-height: 34px; padding: 7px 9px; border: 1px solid #7740a0; background: #1a0b24; color: var(--text); font-size: 9px; transition: .2s ease; }.equalizer-btn span { color: var(--muted); }.equalizer-btn:hover, .equalizer-btn.active { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 12px #39ff8866; }.equalizer-btn.active span { color: var(--neon-green); }
 .playlist-panel { margin-top: 25px; display: block; border-top: 1px solid #4d2960; padding-top: 14px; }
 .playlist-heading { color: var(--pink); }
 .playlist { padding: 0; margin: 10px 0 0; list-style: none; max-height: 180px; overflow-y: auto; }
@@ -85,10 +94,11 @@ button { font-family: 'Space Mono', monospace; color: var(--text); cursor: point
 .track-index, .track-state { font: 10px 'Space Mono', monospace; color: var(--muted); } .track-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .empty-state { color: var(--muted); font-size: 13px; padding: 10px 8px; }
 footer { gap: 8px; margin-top: 22px; min-width: 0; } footer .status-dot { margin-left: auto; width: 5px; height: 5px; } footer span:last-child { color: var(--neon-green); }
+.online-clock { margin-left: auto; padding: 5px 8px; color: #16c7ff; background: #050608; border: 1px solid #b88722; box-shadow: 0 0 10px #16c7ff55, inset 0 0 8px #b8872222; font: 11px 'Space Mono', monospace; letter-spacing: 1px; }
 .visit-counter { color: var(--muted); font: 9px 'Space Mono', monospace; letter-spacing: 1px; white-space: nowrap; }
 .visit-counter span { color: var(--neon-green); }
 .signature { position: fixed; right: max(14px, 2vw); bottom: max(12px, 2vw); color: var(--neon-green); font: 700 12px 'Space Mono', monospace; letter-spacing: 2px; opacity: .82; text-shadow: 0 0 9px var(--neon-green); pointer-events: none; }
 @keyframes spin { to { transform: rotate(360deg); } } @keyframes pulse { to { height: 95%; opacity: .55; } }
-@media (max-width: 520px) { .station-grid { grid-template-columns: 1fr; } .news-item { grid-template-columns: 1fr; gap: 4px; } .news-item span { display: none; } footer { flex-wrap: wrap; font-size: 8px; } footer .status-dot { margin-left: 0; } }
+@media (max-width: 520px) { .social-link span:last-child { display: none; } .station-grid { grid-template-columns: 1fr; } .news-item { grid-template-columns: 1fr; gap: 4px; } .news-item span { display: none; } .audio-controls { grid-template-columns: 1fr 1fr; } .equalizer-btn { grid-column: 1 / -1; } footer { flex-wrap: wrap; font-size: 8px; } footer .status-dot { margin-left: 0; } .online-clock { margin-left: auto; } }
 @media (max-width: 420px) { body { align-items: flex-start; padding: 22px 10px 62px; } .topbar { gap: 10px; } .kicker { font-size: 8px; letter-spacing: 1px; } h1 { font-size: 21px; letter-spacing: 2px; } .brand-mark { width: 36px; height: 36px; font-size: 20px; } .mode-btn { font-size: 8px; padding: 11px 2px; } .deck { padding: 14px 11px; } .reel-window { height: 92px; margin: 14px 0; } .reel { width: 66px; height: 66px; border-width: 5px; } .reel b { left: 23px; top: 6px; width: 9px; height: 9px; } .reel b:nth-child(2) { left: 6px; top: 40px; } .reel b:nth-child(3) { left: 40px; top: 40px; } .drop-zone { padding: 16px 8px; } .transport { gap: 5px; padding-top: 17px; } .transport-btn { min-width: 46px; padding: 11px 8px; } .play-btn { padding-inline: 16px; } .signature { right: 10px; bottom: 10px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
