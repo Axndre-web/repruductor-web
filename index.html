@@ -18,6 +18,12 @@
       <div class="power-light" title="Sistema activo"></div>
     </header>
 
+    <nav class="mode-switcher" aria-label="Fuentes de audio y noticias">
+      <button class="mode-btn active" id="modeMusic" type="button">MP3 LOCAL</button>
+      <button class="mode-btn" id="modeRadio" type="button">RADIO FM</button>
+      <button class="mode-btn" id="modeNews" type="button">NOTICIAS</button>
+    </nav>
+
     <section class="deck" aria-label="Reproductor MP3">
       <div class="deck-screen">
         <div class="screen-top"><span id="trackNumber">TRACK 01</span><span id="timeDisplay">00:00</span></div>
@@ -37,6 +43,16 @@
         <span>o pulsa para seleccionar archivos de audio</span>
         <input id="fileInput" type="file" accept="audio/*,.mp3" multiple>
       </div>
+
+      <section class="radio-panel" id="radioPanel" hidden aria-label="Emisoras de radio">
+        <div class="section-label"><span>EMISORAS EN DIRECTO</span><span>ONE CLICK AUDIO</span></div>
+        <div class="station-grid" id="stationGrid"></div>
+      </section>
+
+      <section class="news-panel" id="newsPanel" hidden aria-label="Noticias">
+        <div class="section-label"><span>FLASH NEWS</span><button class="refresh-btn" id="refreshNews" type="button">ACTUALIZAR</button></div>
+        <div class="news-list" id="newsList"><p class="news-loading">CARGANDO TITULARES...</p></div>
+      </section>
 
       <div class="transport">
         <button class="transport-btn" id="btnBack" type="button" aria-label="Pista anterior">|&lt;</button>
@@ -58,9 +74,11 @@
       </ol>
     </section>
 
-    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot"></span><span id="statusText">READY TO PLAY</span></footer>
+    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot" aria-label="Sistema activo"></span><span id="statusText">READY TO PLAY</span><span class="visit-counter" aria-label="Contador de visitas"><span id="visitCount">0</span> VISITAS</span></footer>
     <audio id="audioPlayer" preload="metadata"></audio>
   </main>
+
+  <div class="signature" aria-label="Marca Axndre">Axndre</div>
 
   <template id="trackTemplate">
     <li class="track-item"><button type="button" class="track-button"><span class="track-index"></span><span class="track-name"></span><span class="track-state">PLAY</span></button></li>
