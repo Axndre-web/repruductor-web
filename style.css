@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  --black: #07030b;
+  --panel: #11091a;
+  --purple: #a855f7;
+  --violet: #6d28d9;
+  --pink: #ed4dff;
+  --text: #f6eaff;
+  --muted: #9b7cad;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Chakra Petch', sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 36px 16px;
+  background: radial-gradient(circle at 50% 0%, #29113d 0, #0c0611 38%, var(--black) 75%);
+  margin: 0;
+  color: var(--text);
+}
+
+.player-shell { width: min(100%, 680px); }
+.topbar, .playlist-panel, footer { display: flex; align-items: center; }
+.topbar { gap: 14px; margin-bottom: 18px; }
+.brand-mark { border: 1px solid var(--pink); color: var(--pink); font-size: 24px; font-weight: 700; width: 42px; height: 42px; display: grid; place-items: center; box-shadow: 0 0 14px #ed4dff80; }
+.kicker, footer { font: 10px 'Space Mono', monospace; letter-spacing: 2px; color: var(--muted); margin: 0 0 2px; }
+h1 { font-size: clamp(24px, 6vw, 38px); letter-spacing: 4px; line-height: 1; margin: 0; }
+h1 span { color: var(--pink); }
+.power-light, .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #d8ff69; box-shadow: 0 0 12px #d8ff69; margin-left: auto; }
+.deck { border: 1px solid var(--purple); background: linear-gradient(145deg, #1b0b28, #0b0610 65%); padding: clamp(18px, 4vw, 32px); box-shadow: 0 0 0 4px #0d0514, 0 0 24px #9c46ff55, inset 0 0 30px #000; position: relative; }
+.deck::before, .deck::after { content: ''; position: absolute; width: 9px; height: 9px; border: 1px solid var(--pink); }
+.deck::before { top: -5px; left: -5px; } .deck::after { right: -5px; bottom: -5px; }
+.deck-screen { border: 1px solid #bb5cff; background: #10021c; padding: 14px 16px 10px; box-shadow: inset 0 0 16px #6d28d955, 0 0 10px #a855f733; }
+.screen-top, .progress-labels, .playlist-heading { display: flex; justify-content: space-between; font: 11px 'Space Mono', monospace; letter-spacing: 1px; color: var(--muted); }
+.screen-title { color: #f58aff; font-size: clamp(17px, 4vw, 26px); letter-spacing: 3px; margin-top: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.equalizer { height: 30px; display: flex; align-items: end; gap: 3px; margin-top: 8px; }
+.equalizer i { display: block; width: 100%; background: var(--pink); box-shadow: 0 0 8px var(--pink); animation: pulse 1s ease-in-out infinite alternate; }
+.equalizer i:nth-child(3n) { height: 70%; animation-delay: -.3s; } .equalizer i:nth-child(3n+1) { height: 35%; animation-delay: -.7s; } .equalizer i:nth-child(3n+2) { height: 90%; animation-delay: -.1s; }
+.reel-window { height: 112px; margin: 20px 0; background: #080509; border-block: 1px solid #49215d; display: flex; justify-content: center; align-items: center; gap: 7%; overflow: hidden; }
+.reel { width: 94px; height: 94px; border: 7px solid #5e3271; border-radius: 50%; background: repeating-conic-gradient(#211029 0 16deg, #9e58bc 17deg 20deg); box-shadow: 0 0 10px #a855f766; position: relative; animation: spin 4s linear infinite; }
+.reel::after { content: ''; position: absolute; inset: 33%; border: 5px solid #16091d; border-radius: 50%; background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.reel b { position: absolute; width: 12px; height: 12px; background: #100713; border-radius: 50%; left: 34px; top: 8px; z-index: 1; }
+.reel b:nth-child(2) { left: 10px; top: 57px; } .reel b:nth-child(3) { left: 58px; top: 57px; }
+.tape-line { width: 20%; height: 2px; background: var(--pink); box-shadow: 0 0 8px var(--pink); }
+.drop-zone { border: 1px dashed #c566ff; padding: 20px 12px; text-align: center; cursor: pointer; transition: .2s ease; background: #18092380; }
+.drop-zone:hover, .drop-zone.dragging { background: #32104d; border-color: #fff; box-shadow: inset 0 0 20px #a855f733; }
+.drop-icon { font-size: 27px; line-height: 20px; color: var(--pink); }
+.drop-zone strong { display: block; letter-spacing: 2px; margin-top: 8px; } .drop-zone span { color: var(--muted); font-size: 12px; }
+#fileInput { display: none; }
+.transport { display: flex; justify-content: center; gap: 9px; padding: 22px 0 15px; }
+button { font-family: 'Space Mono', monospace; color: var(--text); cursor: pointer; }
+.transport-btn { min-width: 54px; border: 1px solid #7740a0; background: #1a0b24; padding: 10px 13px; font-size: 11px; transition: .2s; }
+.transport-btn:hover, .transport-btn.active { color: #fff; border-color: var(--pink); box-shadow: 0 0 12px #ed4dff66; }
+.play-btn { background: var(--violet); border-color: var(--pink); padding-inline: 23px; }
+.progress-wrap { margin-top: 3px; } input[type='range'] { width: 100%; accent-color: var(--pink); cursor: pointer; }
+.progress-labels { font-size: 9px; margin-top: 2px; }
+.playlist-panel { margin-top: 25px; display: block; border-top: 1px solid #4d2960; padding-top: 14px; }
+.playlist-heading { color: var(--pink); }
+.playlist { padding: 0; margin: 10px 0 0; list-style: none; max-height: 180px; overflow-y: auto; }
+.track-button { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; width: 100%; text-align: left; padding: 10px 8px; border: 0; border-bottom: 1px solid #291534; background: transparent; }
+.track-button:hover, .track-item.current .track-button { background: #241032; color: var(--pink); }
+.track-index, .track-state { font: 10px 'Space Mono', monospace; color: var(--muted); } .track-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty-state { color: var(--muted); font-size: 13px; padding: 10px 8px; }
+footer { gap: 8px; margin-top: 22px; } footer .status-dot { margin-left: auto; width: 5px; height: 5px; } footer span:last-child { color: #d8ff69; }
+@keyframes spin { to { transform: rotate(360deg); } } @keyframes pulse { to { height: 95%; opacity: .55; } }
+@media (max-width: 420px) { .reel { width: 76px; height: 76px; border-width: 5px; } .reel b { left: 27px; top: 7px; } .reel b:nth-child(2) { left: 7px; top: 46px; } .reel b:nth-child(3) { left: 45px; top: 46px; } }

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09030f">
+  <title>Neon Tape MP3</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="player-shell">
+    <header class="topbar">
+      <div class="brand-mark" aria-hidden="true">N</div>
+      <div>
+        <p class="kicker">SOUND SYSTEM // 1984</p>
+        <h1>NEON TAPE <span>MP3</span></h1>
+      </div>
+      <div class="power-light" title="Sistema activo"></div>
+    </header>
+
+    <section class="deck" aria-label="Reproductor MP3">
+      <div class="deck-screen">
+        <div class="screen-top"><span id="trackNumber">TRACK 01</span><span id="timeDisplay">00:00</span></div>
+        <div class="screen-title" id="trackTitle">DROP YOUR SOUND</div>
+        <div class="equalizer" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="reel-window" aria-hidden="true">
+        <div class="reel reel-left"><b></b><b></b><b></b></div>
+        <div class="tape-line"></div>
+        <div class="reel reel-right"><b></b><b></b><b></b></div>
+      </div>
+
+      <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra archivos MP3 aqui o pulsa para buscarlos">
+        <div class="drop-icon">+</div>
+        <strong>ARRASTRA TU MP3 AQUI</strong>
+        <span>o pulsa para seleccionar archivos de audio</span>
+        <input id="fileInput" type="file" accept="audio/*,.mp3" multiple>
+      </div>
+
+      <div class="transport">
+        <button class="transport-btn" id="btnBack" type="button" aria-label="Pista anterior">|&lt;</button>
+        <button class="transport-btn play-btn" id="btnPlay" type="button" aria-label="Reproducir">PLAY</button>
+        <button class="transport-btn" id="btnNext" type="button" aria-label="Pista siguiente">&gt;|</button>
+        <button class="transport-btn" id="btnMute" type="button" aria-label="Silenciar">VOL</button>
+      </div>
+
+      <div class="progress-wrap">
+        <input id="progressBar" type="range" min="0" max="100" value="0" aria-label="Progreso de la pista">
+        <div class="progress-labels"><span>00:00</span><span id="durationDisplay">00:00</span></div>
+      </div>
+    </section>
+
+    <section class="playlist-panel">
+      <div class="playlist-heading"><span>PLAYLIST</span><span id="fileCount">0 FILES</span></div>
+      <ol id="playlist" class="playlist">
+        <li class="empty-state">Aun no hay pistas cargadas.</li>
+      </ol>
+    </section>
+
+    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot"></span><span id="statusText">READY TO PLAY</span></footer>
+    <audio id="audioPlayer" preload="metadata"></audio>
+  </main>
+
+  <template id="trackTemplate">
+    <li class="track-item"><button type="button" class="track-button"><span class="track-index"></span><span class="track-name"></span><span class="track-state">PLAY</span></button></li>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>
