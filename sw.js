@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pulse-player-v1';
+const CACHE_NAME = 'pulse-player-v2';
 const APP_SHELL = ['/', '/index.html', '/style.css', '/script.js', '/manifest.webmanifest', '/icon.svg'];
 
 self.addEventListener('install', (event) => {

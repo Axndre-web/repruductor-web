@@ -34,15 +34,16 @@
       <p class="eyebrow section-subtitle">REPRODUCTOR MULTIMEDIA</p>
       <h1 id="pageTitle" class="main-title">Tu música,<br><em>sin subirla.</em></h1>
       <p class="intro-copy description">Reproduce archivos directamente desde tu dispositivo. Privado, rápido y sin esperas.</p>
-      <section class="drop-zone dropzone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra un archivo MP3 o MP4 aquí o pulsa para seleccionarlo">
+      <section class="drop-zone dropzone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra archivos multimedia aquí o pulsa para seleccionarlos">
         <div class="drop-icon folder-icon" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 9v6M9 12h6"></path></svg></div>
         <h2 class="drop-title">Arrastra tu archivo aquí</h2>
         <p class="drop-subtitle">o <strong>selecciona uno</strong> desde tu dispositivo</p>
-        <small class="formats">MP3 · WAV · MP4 · WEBM</small>
-        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm" hidden>
+        <small class="formats">MP3 · WAV · MP4 · WEBM · VTT</small>
+        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm,.vtt" multiple hidden>
       </section>
       <section class="player" id="player" hidden aria-label="Reproductor multimedia">
         <div class="media-frame" id="mediaFrame"></div>
+        <canvas class="audio-visualizer" id="audioVisualizer" aria-label="Visualizador de audio"></canvas>
         <div class="track-info"><span class="file-type" id="fileType">AUDIO</span><h2 id="fileName">Archivo seleccionado</h2><p id="fileMeta">Listo para reproducir</p></div>
         <div class="player-actions">
           <button class="play-button" id="playButton" type="button" aria-label="Reproducir o pausar">▶</button>
@@ -50,8 +51,9 @@
           <div class="control-menu"><button class="control-button" id="volumeToggle" type="button" aria-expanded="false" aria-controls="volumePanel">VOL <span id="volumeValue">80%</span></button><div class="control-panel" id="volumePanel" hidden><label>VOLUMEN <output id="volumeOutput">80%</output><input id="volumeControl" type="range" min="0" max="1" step="0.01" value="0.8"></label></div></div>
           <div class="control-menu"><button class="control-button" id="speedToggle" type="button" aria-expanded="false" aria-controls="speedPanel">1×</button><div class="control-panel" id="speedPanel" hidden><span>VELOCIDAD</span><div class="speed-options"><button type="button" data-speed="0.75">0.75×</button><button type="button" data-speed="1">1×</button><button type="button" data-speed="1.25">1.25×</button><button type="button" data-speed="1.5">1.5×</button></div></div></div>
           <div class="control-menu"><button class="control-button" id="eqToggle" type="button" aria-expanded="false" aria-controls="eqPanel">EQ</button><div class="control-panel eq-panel" id="eqPanel" hidden><span>ECUALIZADOR</span><label>GRAVES <output id="bassOutput">0 dB</output><input id="bassControl" type="range" min="-12" max="12" value="0"></label><label>AGUDOS <output id="trebleOutput">0 dB</output><input id="trebleControl" type="range" min="-12" max="12" value="0"></label></div></div>
-          <a class="download-button" id="downloadButton" download>↓ <span>DESCARGAR</span></a>
+          <button class="control-button" id="pipButton" type="button" hidden>▣ PIP</button><button class="control-button" id="themeButton" type="button" aria-pressed="false">◐ AMOLED</button><a class="download-button" id="downloadButton" download>↓ <span>DESCARGAR</span></a>
         </div>
+        <div class="queue" id="queue" hidden><div class="queue-heading"><span>COLA DE REPRODUCCIÓN</span><span id="queueCount">0</span></div><ol id="queueList"></ol></div>
       </section>
     </section>
 
