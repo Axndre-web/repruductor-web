@@ -28,13 +28,69 @@ const volumeValue = document.getElementById('volumeValue');
 const speedBar = document.getElementById('speedBar');
 const speedValue = document.getElementById('speedValue');
 const equalizerBtn = document.getElementById('equalizerBtn');
+const volumeToggle = document.getElementById('volumeToggle');
+const speedToggle = document.getElementById('speedToggle');
+const volumePanel = document.getElementById('volumePanel');
+const speedPanel = document.getElementById('speedPanel');
+const equalizerPanel = document.getElementById('equalizerPanel');
+const bassBar = document.getElementById('bassBar');
+const trebleBar = document.getElementById('trebleBar');
+const bassValue = document.getElementById('bassValue');
+const trebleValue = document.getElementById('trebleValue');
 const onlineClock = document.getElementById('onlineClock');
+const newsFilters = document.querySelectorAll('.news-filter');
+const vrPreview = document.getElementById('vrPreview');
+const vrClose = document.getElementById('vrClose');
+const vrStatus = document.getElementById('vrStatus');
+const crossfader = document.getElementById('crossfader');
+const cueButtons = document.querySelectorAll('.cue-btn');
+const deckPlayA = document.getElementById('deckPlayA');
+const deckPlayB = document.getElementById('deckPlayB');
+const deckATitle = document.getElementById('deckATitle');
+const deckBTitle = document.getElementById('deckBTitle');
+const syncDecks = document.getElementById('syncDecks');
+const resetMix = document.getElementById('resetMix');
+const radioFilters = document.querySelectorAll('.radio-filter');
+const playlistDrop = document.getElementById('playlistDrop');
+const radioAudioA = document.getElementById('radioAudioA');
+const radioAudioB = document.getElementById('radioAudioB');
+const radioChannelA = document.getElementById('radioChannelA');
+const radioChannelB = document.getElementById('radioChannelB');
+const radioPlayMix = document.getElementById('radioPlayMix');
+const radioStopMix = document.getElementById('radioStopMix');
+const radioCrossfader = document.getElementById('radioCrossfader');
+let selectedRadioChannel = 'A';
 let tracks = [];
 let currentTrack = -1;
+let activeFeed = 'tech';
+let audioContext;
+let bassFilter;
+let trebleFilter;
 audio.volume = Number(volumeBar.value);
 
 function updateClock() {
   onlineClock.textContent = new Date().toLocaleTimeString('es-ES', { hour12: false });
+}
+
+async function openVrWatermarkTest() {
+  vrPreview.hidden = false;
+  document.body.classList.add('vr-active');
+  vrStatus.textContent = 'PREVISUALIZACIÓN ESPACIAL ACTIVA';
+  if (!navigator.xr) {
+    vrStatus.textContent = 'MODO COMPATIBLE ACTIVO // WEBXR NO DISPONIBLE';
+    return;
+  }
+  try {
+    const supported = await navigator.xr.isSessionSupported('immersive-vr');
+    vrStatus.textContent = supported ? 'WEBXR DISPONIBLE // MARCA LISTA PARA ESCENA VR' : 'PREVIEW 3D ACTIVA // VISOR VR NO DETECTADO';
+  } catch (error) {
+    vrStatus.textContent = 'PREVIEW 3D ACTIVA // WEBXR REQUIERE HTTPS';
+  }
+}
+
+function closeVrWatermarkTest() {
+  vrPreview.hidden = true;
+  document.body.classList.remove('vr-active');
 }
 
 function registerVisit() {
@@ -45,11 +101,22 @@ function registerVisit() {
 }
 
 const stations = [
-  { name: 'Radio Paradise', genre: 'Eclectic mix', url: 'https://stream.radioparadise.com/mp3-128', color: 'pink' },
-  { name: 'SomaFM Groove', genre: 'Chill / electronica', url: 'https://ice1.somafm.com/groovesalad-128-mp3', color: 'violet' },
-  { name: 'NPR News', genre: 'News / talk', url: 'https://npr-ice.streamguys1.com/live.mp3', color: 'lime' },
-  { name: 'BBC World Service', genre: 'Noticias globales', url: 'https://stream.live.vc.bbcmedia.co.uk/bbc_world_service', color: 'blue' }
+  { name: 'LOS40 Urban', genre: 'Urbano / España', style: 'urban', url: 'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40URBAN.mp3', color: 'pink' },
+  { name: 'Hit FM', genre: 'Dance / urbano', style: 'urban', url: 'https://hitfm.ondemand.stream.radiojar.com/8s5u5tpdtwzuv', color: 'blue' },
+  { name: 'Hip Hop Hits', genre: 'Hip hop / rap', style: 'hiphop', url: 'https://streaming.radio.co/s7748d7e3a/listen', color: 'violet' },
+  { name: 'Urban Radio', genre: 'R&B / hip hop', style: 'hiphop', url: 'https://stream.zeno.fm/0r0xa792kwzuv', color: 'blue' },
+  { name: 'Bachata Radio', genre: 'Bachata / latina', style: 'latin', url: 'https://stream.zeno.fm/4wz7kq8z4qzuv', color: 'pink' },
+  { name: 'Salsa Caribe', genre: 'Salsa / tropical', style: 'latin', url: 'https://stream.zeno.fm/8s4u5v0n6qzuv', color: 'lime' },
+  { name: 'Onda Cero', genre: 'Actualidad / radio', style: 'all', url: 'https://atres-live-ondacero.flumotion.com/ondacero/stream.mp3', color: 'violet' },
+  { name: 'Radio Marca', genre: 'Deportes en directo', style: 'all', url: 'https://radiomarca-cope.flumotion.com/radiomarca/radiomarca.mp3', color: 'lime' }
 ];
+
+const newsFeeds = {
+  tech: 'https://feeds.bbci.co.uk/news/technology/rss.xml',
+  science: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
+  crypto: 'https://www.coindesk.com/arc/outboundfeeds/rss/',
+  latam: 'https://feeds.bbci.co.uk/mundo/rss.xml'
+};
 
 const formatTime = (seconds) => {
   if (!Number.isFinite(seconds)) return '00:00';
@@ -92,9 +159,10 @@ function addFiles(files) {
   renderPlaylist();
 }
 
-function renderStations() {
-  stationGrid.innerHTML = stations.map((station, index) => `<button class="station-card ${station.color}" type="button" data-station="${index}"><span class="station-live">LIVE</span><strong>${station.name}</strong><small>${station.genre}</small><span class="station-play">PLAY</span></button>`).join('');
-  stationGrid.querySelectorAll('[data-station]').forEach((button) => button.addEventListener('click', () => playStation(Number(button.dataset.station))));
+function renderStations(style = 'all') {
+  const visibleStations = stations.filter((station) => style === 'all' || station.style === style);
+  stationGrid.innerHTML = visibleStations.map((station) => `<article class="station-card ${station.color}"><span class="station-live">LIVE</span><strong>${station.name}</strong><small>${station.genre}</small><div class="station-actions"><button type="button" data-radio-channel="A" data-station="${stations.indexOf(station)}">A</button><button type="button" data-radio-channel="B" data-station="${stations.indexOf(station)}">B</button></div></article>`).join('');
+  stationGrid.querySelectorAll('[data-station]').forEach((button) => button.addEventListener('click', () => loadRadioChannel(Number(button.dataset.station), button.dataset.radioChannel)));
 }
 
 function playStation(index) {
@@ -103,21 +171,89 @@ function playStation(index) {
   audio.src = station.url;
   audio.load();
   trackTitle.textContent = station.name.toUpperCase();
+  deckATitle.textContent = station.name.toUpperCase();
+  deckBTitle.textContent = 'NEXT // ' + station.genre.toUpperCase();
   trackNumber.textContent = 'LIVE // FM';
   statusText.textContent = 'CONNECTING TO RADIO';
   audio.play().catch(() => { statusText.textContent = 'PRESS PLAY TO CONNECT'; });
 }
 
-async function loadNews() {
+function loadRadioChannel(index, channel = selectedRadioChannel) {
+  const station = stations[index];
+  if (!station) return;
+  selectedRadioChannel = channel;
+  const player = channel === 'A' ? radioAudioA : radioAudioB;
+  const label = channel === 'A' ? radioChannelA : radioChannelB;
+  player.src = station.url;
+  player.load();
+  label.textContent = `${channel} // ${station.name.toUpperCase()}`;
+  radioChannelA.classList.toggle('active', channel === 'A');
+  radioChannelB.classList.toggle('active', channel === 'B');
+  statusText.textContent = `RADIO ${channel} LISTA // ${station.name.toUpperCase()}`;
+}
+
+function updateRadioMix() {
+  const mix = Number(radioCrossfader.value) / 100;
+  radioAudioA.volume = 1 - mix;
+  radioAudioB.volume = mix;
+}
+
+function playDeckA() {
+  if (!tracks.length) {
+    fileInput.click();
+    return;
+  }
+  if (audio.paused) audio.play().catch(() => {});
+  else audio.pause();
+}
+
+function prepareDeckB() {
+  const nextIndex = currentTrack < tracks.length - 1 ? currentTrack + 1 : 0;
+  if (!tracks[nextIndex]) {
+    statusText.textContent = 'CARGA UNA SEGUNDA PISTA PARA DECK B';
+    return;
+  }
+  deckBTitle.textContent = tracks[nextIndex].name.replace(/\.[^/.]+$/, '').toUpperCase();
+  statusText.textContent = `DECK B LISTO // TRACK ${String(nextIndex + 1).padStart(2, '0')}`;
+}
+
+const escapeHtml = (value) => String(value).replace(/[&<>'"]/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[character]));
+
+async function loadNews(feedName = activeFeed) {
+  activeFeed = feedName;
   newsList.innerHTML = '<p class="news-loading">CARGANDO TITULARES...</p>';
   try {
-    const response = await fetch('https://api.rss2json.com/v1/api.json?rss_url=https%3A%2F%2Ffeeds.bbci.co.uk%2Fnews%2Fworld%2Frss.xml');
+    const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(newsFeeds[feedName])}`);
     const data = await response.json();
     const items = (data.items || []).slice(0, 6);
-    newsList.innerHTML = items.length ? items.map((item) => `<a class="news-item" href="${item.link}" target="_blank" rel="noopener"><time>${new Date(item.pubDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}</time><strong>${item.title}</strong><span>ABRIR NOTICIA ↗</span></a>`).join('') : '<p class="news-loading">NO HAY TITULARES DISPONIBLES.</p>';
+    newsList.innerHTML = items.length ? items.map((item) => `<a class="news-item" href="${escapeHtml(item.link)}" target="_blank" rel="noopener"><time>${new Date(item.pubDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })}</time><strong>${escapeHtml(item.title)}</strong><span>ABRIR NOTICIA ↗</span></a>`).join('') : '<p class="news-loading">NO HAY TITULARES DISPONIBLES.</p>';
   } catch (error) {
     newsList.innerHTML = '<p class="news-loading">NO SE PUDO CONECTAR AL FEED. INTENTA ACTUALIZAR.</p>';
   }
+}
+
+function togglePanel(button, panel) {
+  const isOpen = button.getAttribute('aria-expanded') === 'true';
+  document.querySelectorAll('.control-toggle').forEach((control) => control.setAttribute('aria-expanded', 'false'));
+  document.querySelectorAll('.control-panel').forEach((control) => { control.hidden = true; });
+  button.setAttribute('aria-expanded', String(!isOpen));
+  panel.hidden = isOpen;
+}
+
+function ensureAudioGraph() {
+  if (audioContext) return;
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextClass) return;
+  audioContext = new AudioContextClass();
+  const source = audioContext.createMediaElementSource(audio);
+  bassFilter = audioContext.createBiquadFilter();
+  bassFilter.type = 'lowshelf';
+  bassFilter.frequency.value = 180;
+  trebleFilter = audioContext.createBiquadFilter();
+  trebleFilter.type = 'highshelf';
+  trebleFilter.frequency.value = 3500;
+  source.connect(bassFilter).connect(trebleFilter).connect(audioContext.destination);
+  audioContext.resume().catch(() => {});
 }
 
 function setMode(mode) {
@@ -153,6 +289,11 @@ btnMute.addEventListener('click', () => {
 btnBack.addEventListener('click', () => loadTrack(Math.max(0, currentTrack - 1), true));
 btnNext.addEventListener('click', () => loadTrack(Math.min(tracks.length - 1, currentTrack + 1), true));
 fileInput.addEventListener('change', (event) => addFiles(event.target.files));
+playlistDrop.addEventListener('click', () => fileInput.click());
+playlistDrop.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') fileInput.click(); });
+['dragenter', 'dragover'].forEach((eventName) => playlistDrop.addEventListener(eventName, (event) => { event.preventDefault(); playlistDrop.classList.add('dragging'); }));
+['dragleave', 'drop'].forEach((eventName) => playlistDrop.addEventListener(eventName, (event) => { event.preventDefault(); playlistDrop.classList.remove('dragging'); }));
+playlistDrop.addEventListener('drop', (event) => addFiles(event.dataTransfer.files));
 dropZone.addEventListener('click', () => fileInput.click());
 dropZone.addEventListener('keydown', (event) => { if (event.key === 'Enter' || event.key === ' ') fileInput.click(); });
 ['dragenter', 'dragover'].forEach((eventName) => dropZone.addEventListener(eventName, (event) => { event.preventDefault(); dropZone.classList.add('dragging'); }));
@@ -168,18 +309,96 @@ volumeBar.addEventListener('input', () => {
   audio.volume = Number(volumeBar.value);
   audio.muted = audio.volume === 0;
   volumeValue.textContent = `${Math.round(audio.volume * 100)}%`;
+  volumeToggle.querySelector('output').textContent = volumeValue.textContent;
+  volumePanel.querySelector('output').textContent = volumeValue.textContent;
   btnMute.classList.toggle('active', audio.muted);
 });
 speedBar.addEventListener('input', () => {
   audio.playbackRate = Number(speedBar.value);
   speedValue.textContent = `${audio.playbackRate.toFixed(2)}x`;
+  speedToggle.querySelector('output').textContent = speedValue.textContent;
+  speedPanel.querySelector('output').textContent = speedValue.textContent;
 });
-equalizerBtn.addEventListener('click', () => {
-  const enabled = equalizerBtn.getAttribute('aria-pressed') !== 'true';
-  equalizerBtn.setAttribute('aria-pressed', String(enabled));
-  equalizerBtn.classList.toggle('active', enabled);
-  equalizerBtn.querySelector('span').textContent = enabled ? 'BOOST' : 'STANDARD';
+volumeToggle.addEventListener('click', () => togglePanel(volumeToggle, volumePanel));
+speedToggle.addEventListener('click', () => togglePanel(speedToggle, speedPanel));
+equalizerBtn.addEventListener('click', () => togglePanel(equalizerBtn, equalizerPanel));
+document.querySelectorAll('[data-speed]').forEach((button) => button.addEventListener('click', () => {
+  speedBar.value = button.dataset.speed;
+  speedBar.dispatchEvent(new Event('input'));
+  document.querySelectorAll('[data-speed]').forEach((preset) => preset.classList.toggle('active', preset === button));
+}));
+bassBar.addEventListener('input', () => {
+  ensureAudioGraph();
+  if (bassFilter) bassFilter.gain.value = Number(bassBar.value);
+  bassValue.textContent = `${bassBar.value} dB`;
+  equalizerBtn.querySelector('output').textContent = 'CUSTOM';
 });
+trebleBar.addEventListener('input', () => {
+  ensureAudioGraph();
+  if (trebleFilter) trebleFilter.gain.value = Number(trebleBar.value);
+  trebleValue.textContent = `${trebleBar.value} dB`;
+  equalizerBtn.querySelector('output').textContent = 'CUSTOM';
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key !== 'Escape') return;
+  document.querySelectorAll('.control-toggle').forEach((control) => control.setAttribute('aria-expanded', 'false'));
+  document.querySelectorAll('.control-panel').forEach((control) => { control.hidden = true; });
+});
+document.addEventListener('click', (event) => {
+  if (event.target.closest('.control-menu')) return;
+  document.querySelectorAll('.control-toggle').forEach((control) => control.setAttribute('aria-expanded', 'false'));
+  document.querySelectorAll('.control-panel').forEach((control) => { control.hidden = true; });
+});
+cueButtons.forEach((button) => button.addEventListener('click', () => {
+  const active = button.getAttribute('aria-pressed') !== 'true';
+  cueButtons.forEach((cue) => { cue.setAttribute('aria-pressed', 'false'); cue.classList.remove('active'); });
+  button.setAttribute('aria-pressed', String(active));
+  button.classList.toggle('active', active);
+}));
+deckPlayA.addEventListener('click', playDeckA);
+deckPlayB.addEventListener('click', () => {
+  if (!tracks.length) {
+    fileInput.click();
+    return;
+  }
+  const nextIndex = currentTrack < tracks.length - 1 ? currentTrack + 1 : 0;
+  loadTrack(nextIndex, true);
+  deckBTitle.textContent = tracks[nextIndex].name.replace(/\.[^/.]+$/, '').toUpperCase();
+});
+syncDecks.addEventListener('click', () => {
+  speedBar.value = '1';
+  speedBar.dispatchEvent(new Event('input'));
+  statusText.textContent = 'DECKS SINCRONIZADOS // 128 BPM';
+});
+resetMix.addEventListener('click', () => {
+  crossfader.value = '50';
+  crossfader.dispatchEvent(new Event('input'));
+});
+crossfader.addEventListener('input', () => {
+  const mix = Number(crossfader.value);
+  crossfader.closest('.dj-mixer').style.setProperty('--mix-position', `${mix}%`);
+});
+radioFilters.forEach((filter) => filter.addEventListener('click', () => {
+  radioFilters.forEach((button) => button.classList.toggle('active', button === filter));
+  renderStations(filter.dataset.genre);
+}));
+radioChannelA.addEventListener('click', () => { selectedRadioChannel = 'A'; radioChannelA.classList.add('active'); radioChannelB.classList.remove('active'); });
+radioChannelB.addEventListener('click', () => { selectedRadioChannel = 'B'; radioChannelB.classList.add('active'); radioChannelA.classList.remove('active'); });
+radioPlayMix.addEventListener('click', () => {
+  updateRadioMix();
+  Promise.all([radioAudioA.play(), radioAudioB.play()]).catch(() => { statusText.textContent = 'PULSA PLAY MIX PARA CONECTAR LAS RADIOS'; });
+  statusText.textContent = 'RADIO MIX // A + B EN DIRECTO';
+});
+radioStopMix.addEventListener('click', () => { radioAudioA.pause(); radioAudioB.pause(); statusText.textContent = 'RADIO MIX DETENIDA'; });
+radioCrossfader.addEventListener('input', updateRadioMix);
+updateRadioMix();
+newsFilters.forEach((filter) => filter.addEventListener('click', () => {
+  newsFilters.forEach((button) => { button.classList.toggle('active', button === filter); button.setAttribute('aria-selected', String(button === filter)); });
+  loadNews(filter.dataset.feed);
+}));
+vrClose.addEventListener('click', closeVrWatermarkTest);
+vrPreview.addEventListener('click', (event) => { if (event.target === vrPreview) closeVrWatermarkTest(); });
+document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !vrPreview.hidden) closeVrWatermarkTest(); });
 modeMusic.addEventListener('click', () => setMode('music'));
 modeRadio.addEventListener('click', () => setMode('radio'));
 modeNews.addEventListener('click', () => setMode('news'));

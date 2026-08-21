@@ -2,8 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#09030f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#050505">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>Neon Tape MP3</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -15,7 +18,7 @@
         <p class="kicker">SOUND SYSTEM // 1984</p>
         <h1>NEON TAPE <span>MP3</span></h1>
       </div>
-      <div class="power-light" title="Sistema activo"></div>
+      <div class="system-status"><time class="online-clock" id="onlineClock" aria-label="Hora local">00:00:00</time><span class="power-light" title="Sistema activo"></span></div>
     </header>
 
     <nav class="mode-switcher" aria-label="Fuentes de audio y noticias">
@@ -46,6 +49,15 @@
         <div class="reel reel-right"><b></b><b></b><b></b></div>
       </div>
 
+      <section class="dj-console" aria-label="Consola DJ de estudio">
+        <div class="dj-console-head"><span>DJ STUDIO // LIVE MIX</span><span class="dj-live"><i></i> READY</span></div>
+        <div class="dj-decks">
+          <article class="dj-deck deck-a"><span class="deck-tag">DECK A</span><strong id="deckATitle">LOCAL PLAYER</strong><span class="deck-bpm">128.0 BPM</span><div class="deck-actions"><button class="deck-btn deck-play" id="deckPlayA" type="button">PLAY A</button><button class="cue-btn" id="cueA" type="button" aria-pressed="false">CUE</button></div></article>
+          <div class="dj-mixer"><span>MIX</span><input id="crossfader" type="range" min="0" max="100" value="50" aria-label="Crossfader entre Deck A y Deck B"><div class="mixer-actions"><button class="mixer-btn" id="syncDecks" type="button">SYNC</button><button class="mixer-btn" id="resetMix" type="button">CENTER</button></div><div class="mixer-lights"><i></i><i></i><i></i><i></i><i></i></div></div>
+          <article class="dj-deck deck-b"><span class="deck-tag">DECK B</span><strong id="deckBTitle">STANDBY CHANNEL</strong><span class="deck-bpm">124.0 BPM</span><div class="deck-actions"><button class="deck-btn deck-play" id="deckPlayB" type="button">PLAY B</button><button class="cue-btn" id="cueB" type="button" aria-pressed="false">CUE</button></div></article>
+        </div>
+      </section>
+
       <div class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra archivos MP3 aqui o pulsa para buscarlos">
         <div class="drop-icon">+</div>
         <strong>ARRASTRA TU MP3 AQUI</strong>
@@ -54,12 +66,20 @@
       </div>
 
       <section class="radio-panel" id="radioPanel" hidden aria-label="Emisoras de radio">
-        <div class="section-label"><span>EMISORAS EN DIRECTO</span><span>ONE CLICK AUDIO</span></div>
+        <div class="section-label"><span>EMISORAS EN DIRECTO</span><span>EUROPA // ESPAÑA</span></div>
+        <div class="radio-filters" role="tablist" aria-label="Estilos musicales"><button class="radio-filter active" type="button" data-genre="all">TODAS</button><button class="radio-filter" type="button" data-genre="urban">URBANO</button><button class="radio-filter" type="button" data-genre="hiphop">HIP HOP</button><button class="radio-filter" type="button" data-genre="latin">BACHATA / SALSA</button></div>
+        <div class="radio-mixer"><div><span class="mix-channel active" id="radioChannelA">A // VACÍO</span><span class="mix-channel" id="radioChannelB">B // VACÍO</span></div><div class="radio-mixer-actions"><button id="radioPlayMix" type="button">PLAY MIX</button><button id="radioStopMix" type="button">STOP</button><input id="radioCrossfader" type="range" min="0" max="100" value="50" aria-label="Mezcla entre radio A y radio B"></div><small>SELECCIONA A O B Y PULSA UNA EMISORA</small></div>
         <div class="station-grid" id="stationGrid"></div>
       </section>
 
       <section class="news-panel" id="newsPanel" hidden aria-label="Noticias">
         <div class="section-label"><span>FLASH NEWS</span><button class="refresh-btn" id="refreshNews" type="button">ACTUALIZAR</button></div>
+        <div class="news-filters" role="tablist" aria-label="Categorías de noticias">
+          <button class="news-filter active" type="button" data-feed="tech" role="tab" aria-selected="true">TECNOLOGÍA</button>
+          <button class="news-filter" type="button" data-feed="science" role="tab" aria-selected="false">CIENCIA</button>
+          <button class="news-filter" type="button" data-feed="crypto" role="tab" aria-selected="false">CRYPTO</button>
+          <button class="news-filter" type="button" data-feed="latam" role="tab" aria-selected="false">LATAM</button>
+        </div>
         <div class="news-list" id="newsList"><p class="news-loading">CARGANDO TITULARES...</p></div>
       </section>
 
@@ -76,24 +96,40 @@
       </div>
 
       <div class="audio-controls" aria-label="Controles avanzados de audio">
-        <label class="control-group"><span>VOLUMEN <output id="volumeValue">80%</output></span><input id="volumeBar" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen"></label>
-        <label class="control-group"><span>VELOCIDAD <output id="speedValue">1.00x</output></span><input id="speedBar" type="range" min="0.5" max="2" step="0.05" value="1" aria-label="Velocidad de reproducción"></label>
-        <button class="equalizer-btn" id="equalizerBtn" type="button" aria-pressed="false">EQ <span>STANDARD</span></button>
+        <div class="control-menu">
+          <button class="control-toggle" type="button" aria-expanded="false" aria-controls="volumePanel" id="volumeToggle"><span class="control-icon">VOL</span><span>VOLUMEN</span><output id="volumeValue">80%</output></button>
+          <div class="control-panel" id="volumePanel" hidden><label class="control-group"><span>NIVEL <output>80%</output></span><input id="volumeBar" type="range" min="0" max="1" step="0.01" value="0.8" aria-label="Volumen"></label></div>
+        </div>
+        <div class="control-menu">
+          <button class="control-toggle" type="button" aria-expanded="false" aria-controls="speedPanel" id="speedToggle"><span class="control-icon">1×</span><span>VELOCIDAD</span><output id="speedValue">1.00x</output></button>
+          <div class="control-panel speed-panel" id="speedPanel" hidden><label class="control-group"><span>RITMO <output>1.00x</output></span><input id="speedBar" type="range" min="0.5" max="2" step="0.05" value="1" aria-label="Velocidad de reproducción"></label><div class="speed-presets"><button type="button" data-speed="0.75">0.75x</button><button type="button" data-speed="1">1x</button><button type="button" data-speed="1.25">1.25x</button><button type="button" data-speed="1.5">1.5x</button></div></div>
+        </div>
+        <div class="control-menu">
+          <button class="control-toggle" type="button" aria-expanded="false" aria-controls="equalizerPanel" id="equalizerBtn" aria-pressed="false"><span class="control-icon">EQ</span><span>ECUALIZADOR</span><output>FLAT</output></button>
+          <div class="control-panel eq-panel" id="equalizerPanel" hidden><label class="control-group"><span>GRAVES <output id="bassValue">0 dB</output></span><input id="bassBar" type="range" min="-12" max="12" step="1" value="0" aria-label="Graves"></label><label class="control-group"><span>AGUDOS <output id="trebleValue">0 dB</output></span><input id="trebleBar" type="range" min="-12" max="12" step="1" value="0" aria-label="Agudos"></label><small class="eq-note">AJUSTE DIGITAL // 2 BANDAS</small></div>
       </div>
     </section>
 
     <section class="playlist-panel">
       <div class="playlist-heading"><span>PLAYLIST</span><span id="fileCount">0 FILES</span></div>
+      <div class="playlist-drop" id="playlistDrop" tabindex="0" role="button" aria-label="Arrastra archivos de audio aquí para añadirlos a la playlist"><strong>+ AÑADIR A PLAYLIST</strong><span>ARRASTRA TUS ARCHIVOS AQUÍ O PULSA PARA BUSCAR</span></div>
       <ol id="playlist" class="playlist">
         <li class="empty-state">Aun no hay pistas cargadas.</li>
       </ol>
     </section>
 
-    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot" aria-label="Sistema activo"></span><span id="statusText">READY TO PLAY</span><span class="visit-counter" aria-label="Contador de visitas"><span id="visitCount">0</span> VISITAS</span><time class="online-clock" id="onlineClock" aria-label="Hora local">00:00:00</time></footer>
+    <footer><span>DRAG. DROP. PLAY.</span><span class="status-dot" aria-label="Sistema activo"></span><span id="statusText">READY TO PLAY</span><span class="visit-counter" aria-label="Contador de visitas"><span id="visitCount">0</span> VISITAS</span></footer>
     <audio id="audioPlayer" preload="metadata"></audio>
+    <audio id="radioAudioA" preload="none"></audio><audio id="radioAudioB" preload="none"></audio>
   </main>
 
   <div class="signature" aria-label="Marca Axndre">Axndre</div>
+
+  <section class="vr-preview" id="vrPreview" hidden aria-label="Prueba VR de la marca de agua">
+    <button class="vr-close" id="vrClose" type="button" aria-label="Cerrar prueba VR">CERRAR</button>
+    <div class="vr-space" aria-hidden="true"><span class="vr-watermark">Axndre</span></div>
+    <div class="vr-copy"><span class="vr-label">VR / 3D WATERMARK TEST</span><strong>AXNDRE</strong><small id="vrStatus">PREVISUALIZACIÓN ESPACIAL ACTIVA</small></div>
+  </section>
 
   <template id="trackTemplate">
     <li class="track-item"><button type="button" class="track-button"><span class="track-index"></span><span class="track-name"></span><span class="track-state">PLAY</span></button></li>
