@@ -38,10 +38,11 @@
         <div class="drop-icon folder-icon" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 9v6M9 12h6"></path></svg></div>
         <h2 class="drop-title">Arrastra tu archivo aquí</h2>
         <p class="drop-subtitle">o <strong>selecciona uno</strong> desde tu dispositivo</p>
-        <small class="formats">MP3 · WAV · MP4 · WEBM · VTT</small>
-        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm,.vtt" multiple hidden>
+        <small class="formats">MP3 · WAV · MP4 · WEBM · VTT · SRT</small>
+        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm,.vtt,.srt" multiple hidden>
       </section>
       <section class="player" id="player" hidden aria-label="Reproductor multimedia">
+        <div class="ambilight" id="ambilight" aria-hidden="true"></div>
         <div class="media-frame" id="mediaFrame"></div>
         <canvas class="audio-visualizer" id="audioVisualizer" aria-label="Visualizador de audio"></canvas>
         <div class="track-info"><span class="file-type" id="fileType">AUDIO</span><h2 id="fileName">Archivo seleccionado</h2><p id="fileMeta">Listo para reproducir</p></div>
@@ -51,7 +52,7 @@
           <div class="control-menu"><button class="control-button" id="volumeToggle" type="button" aria-expanded="false" aria-controls="volumePanel">VOL <span id="volumeValue">80%</span></button><div class="control-panel" id="volumePanel" hidden><label>VOLUMEN <output id="volumeOutput">80%</output><input id="volumeControl" type="range" min="0" max="1" step="0.01" value="0.8"></label></div></div>
           <div class="control-menu"><button class="control-button" id="speedToggle" type="button" aria-expanded="false" aria-controls="speedPanel">1×</button><div class="control-panel" id="speedPanel" hidden><span>VELOCIDAD</span><div class="speed-options"><button type="button" data-speed="0.75">0.75×</button><button type="button" data-speed="1">1×</button><button type="button" data-speed="1.25">1.25×</button><button type="button" data-speed="1.5">1.5×</button></div></div></div>
           <div class="control-menu"><button class="control-button" id="eqToggle" type="button" aria-expanded="false" aria-controls="eqPanel">EQ</button><div class="control-panel eq-panel" id="eqPanel" hidden><span>ECUALIZADOR</span><label>GRAVES <output id="bassOutput">0 dB</output><input id="bassControl" type="range" min="-12" max="12" value="0"></label><label>AGUDOS <output id="trebleOutput">0 dB</output><input id="trebleControl" type="range" min="-12" max="12" value="0"></label></div></div>
-          <button class="control-button" id="pipButton" type="button" hidden>▣ PIP</button><button class="control-button" id="themeButton" type="button" aria-pressed="false">◐ AMOLED</button><a class="download-button" id="downloadButton" download>↓ <span>DESCARGAR</span></a>
+          <button class="control-button" id="pipButton" type="button" hidden>▣ PIP</button><button class="control-button" id="spatialButton" type="button" aria-pressed="false">◉ 3D</button><button class="control-button" id="normalizeButton" type="button" aria-pressed="false">↕ AUTO</button><button class="control-button" id="themeButton" type="button" aria-pressed="false">◐ AMOLED</button><button class="control-button" id="zenButton" type="button" aria-pressed="false">ZEN</button><button class="control-button" id="fullscreenButton" type="button">⛶</button><button class="control-button" id="captureButton" type="button" hidden>▣ FOTO</button><a class="download-button" id="downloadButton" download>↓ <span>DESCARGAR</span></a>
         </div>
         <div class="queue" id="queue" hidden><div class="queue-heading"><span>COLA DE REPRODUCCIÓN</span><span id="queueCount">0</span></div><ol id="queueList"></ol></div>
       </section>
@@ -73,7 +74,10 @@
       <article class="globe-info" id="globeInfo" hidden><span class="globe-info-kicker">UBICACIÓN SELECCIONADA</span><h3 id="globeInfoTitle">Madrid, España</h3><p id="globeInfoText">Explora esta ubicación en el globo interactivo.</p><small id="globeInfoCoords">40.4168° N · 3.7038° O</small></article>
     </section>
 
-    <p class="privacy-note card-footer"><span class="sparkle" aria-hidden="true">✦</span> Tus archivos locales no salen de tu dispositivo</p>
+    <footer class="app-footer card-footer">
+      <p class="privacy-note"><span class="sparkle" aria-hidden="true">✦</span> Tus archivos locales no salen de tu dispositivo</p>
+      <div class="usage-counters" aria-label="Estadísticas de uso"><span>VISITAS <strong id="visitCount">0</strong></span><span>DESCARGAS <strong id="downloadCount">0</strong></span></div>
+    </footer>
   </main>
   <nav class="floating-socials" aria-label="Enlaces sociales">
     <a class="social-link youtube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir YouTube" title="YouTube"><span aria-hidden="true">▶</span><b>YouTube</b></a>
@@ -94,6 +98,24 @@
   <button class="app-download-link" id="appDownloadLink" type="button" aria-label="Instalar Pulse Player" title="Instalar Pulse Player"><span class="download-glyph" aria-hidden="true">↓</span><span><strong>INSTALAR APP</strong><small>PULSE PLAYER</small></span></button>
   <section class="install-help" id="installHelp" hidden aria-labelledby="installHelpTitle" role="dialog" aria-modal="true">
     <div class="install-help-card"><button class="install-help-close" id="installHelpClose" type="button" aria-label="Cerrar instrucciones">×</button><span class="install-help-icon" aria-hidden="true">↓</span><h2 id="installHelpTitle">Instalar Pulse Player</h2><p>Añade Pulse Player a tu pantalla de inicio para abrirlo como una app.</p><ol><li>En iPhone: pulsa <strong>Compartir</strong> y después <strong>Añadir a pantalla de inicio</strong>.</li><li>En Android o escritorio: abre el menú del navegador y elige <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</li></ol><button class="install-help-action" id="installHelpAction" type="button">ENTENDIDO</button></div>
+  </section>
+  <section class="payment-modal" id="paymentModal" hidden aria-labelledby="paymentTitle" role="dialog" aria-modal="true"><div class="payment-card">
+  <div class="payment-card">
+<button class="payment-close" id="paymentCloseBtn" type="button">&times;</button>
+<h3>Desbloquear Descarga</h3>
+<p>Escanea el código QR con tu móvil para completar el pago.</p>
+
+<div class="payment-tabs">
+<button class="pay-tab active" id="tab1Euro" type="button">Pagar 1,00 €</button>
+<button class="pay-tab" id="tabLibre" type="button">Aportación Libre</button>
+</div>
+
+<div class="qr-container">
+<img id="paymentQrImg" src="paypal-qr-1euro.png" alt="Código QR PayPal">
+</div>
+
+<button class="btn-confirm-pay" id="confirmPayBtn" type="button">Ya he realizado el pago</button>
+</div>
   </section>
   <section class="vr-overlay" id="vrOverlay" hidden aria-label="Vista 3D de Pulse Player"><button class="vr-close" id="vrClose" type="button">CERRAR</button><div class="vr-stage"><div class="vr-grid"></div><strong>PULSE</strong><span>VISTA ESPACIAL ACTIVA</span></div></section>
   <script src="script.js"></script>
