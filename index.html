@@ -11,28 +11,28 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="app-card">
-    <header class="app-header">
+  <main class="app-card player-card">
+    <header class="app-header player-header">
       <div class="brand"><span class="brand-mark" aria-hidden="true">P</span><span>PULSE PLAYER</span></div>
-      <div class="system-status"><button class="vr-button" id="vrButton" type="button" aria-label="Abrir vista 3D">3D</button><span class="power-light" title="Sistema activo"></span><time id="onlineClock" aria-label="Hora local">00:00:00</time></div>
+      <div class="system-status header-controls"><button class="vr-button badge-3d" id="vrButton" type="button" aria-label="Abrir vista 3D">3D</button><span class="power-light status-dot" title="Sistema activo"></span><time class="clock-display" id="onlineClock" aria-label="Hora local">00:00:00</time></div>
     </header>
 
-    <nav class="tabs" aria-label="Secciones de la aplicación">
-      <button class="tab active" id="musicTab" type="button">MÚSICA LOCAL</button>
-      <button class="tab" id="radioTab" type="button">RADIO FM</button>
-      <button class="tab" id="newsTab" type="button">NOTICIAS</button>
+    <nav class="tabs nav-tabs" aria-label="Secciones de la aplicación">
+      <button class="tab nav-tab active" id="musicTab" type="button">MÚSICA LOCAL</button>
+      <button class="tab nav-tab" id="radioTab" type="button">RADIO FM</button>
+      <button class="tab nav-tab" id="newsTab" type="button">NOTICIAS</button>
     </nav>
 
-    <section class="intro" id="musicView" aria-labelledby="pageTitle">
-      <p class="eyebrow">REPRODUCTOR MULTIMEDIA</p>
-      <h1 id="pageTitle">Tu música,<br><em>sin subirla.</em></h1>
-      <p class="intro-copy">Reproduce archivos directamente desde tu dispositivo. Privado, rápido y sin esperas.</p>
-      <section class="drop-zone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra un archivo MP3 o MP4 aquí o pulsa para seleccionarlo">
-        <div class="drop-icon" aria-hidden="true"><span></span></div>
-        <h2>Arrastra tu archivo aquí</h2>
-        <p>o <strong>selecciona uno</strong> desde tu dispositivo</p>
-        <small>MP3 · WAV · MP4 · WEBM</small>
-        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm">
+    <section class="intro player-content" id="musicView" aria-labelledby="pageTitle">
+      <p class="eyebrow section-subtitle">REPRODUCTOR MULTIMEDIA</p>
+      <h1 id="pageTitle" class="main-title">Tu música,<br><em>sin subirla.</em></h1>
+      <p class="intro-copy description">Reproduce archivos directamente desde tu dispositivo. Privado, rápido y sin esperas.</p>
+      <section class="drop-zone dropzone" id="dropZone" tabindex="0" role="button" aria-label="Arrastra un archivo MP3 o MP4 aquí o pulsa para seleccionarlo">
+        <div class="drop-icon folder-icon" aria-hidden="true"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><path d="M12 9v6M9 12h6"></path></svg></div>
+        <h2 class="drop-title">Arrastra tu archivo aquí</h2>
+        <p class="drop-subtitle">o <strong>selecciona uno</strong> desde tu dispositivo</p>
+        <small class="formats">MP3 · WAV · MP4 · WEBM</small>
+        <input id="fileInput" type="file" accept="audio/*,video/*,.mp3,.wav,.mp4,.webm" hidden>
       </section>
       <section class="player" id="player" hidden aria-label="Reproductor multimedia">
         <div class="media-frame" id="mediaFrame"></div>
@@ -61,7 +61,7 @@
       <div class="news-carousel"><button class="carousel-button" id="newsPrevious" type="button" aria-label="Titular anterior">‹</button><div class="news-list" id="newsList" aria-live="polite"><p class="news-status">Selecciona una categoría para cargar titulares.</p></div><button class="carousel-button" id="newsNext" type="button" aria-label="Titular siguiente">›</button></div>
     </section>
 
-    <p class="privacy-note"><span aria-hidden="true">✦</span> Tus archivos locales no salen de tu dispositivo</p>
+    <p class="privacy-note card-footer"><span class="sparkle" aria-hidden="true">✦</span> Tus archivos locales no salen de tu dispositivo</p>
   </main>
   <section class="vr-overlay" id="vrOverlay" hidden aria-label="Vista 3D de Pulse Player"><button class="vr-close" id="vrClose" type="button">CERRAR</button><div class="vr-stage"><div class="vr-grid"></div><strong>PULSE</strong><span>VISTA ESPACIAL ACTIVA</span></div></section>
   <script src="script.js"></script>

@@ -11,6 +11,36 @@ body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding
 @keyframes background-drift { to { background-position: 100% 40%; } } @keyframes float { 50% { transform: translateY(-7px); } } @keyframes reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 640px) { body { padding: 12px; align-items: start; }.app-card { padding: 21px 16px; border-radius: 20px; }.tabs { margin-top: 22px; }.tab { font-size: 8px; }.intro { margin-top: 43px; }.intro h1 { font-size: 44px; }.player-actions { flex-wrap: wrap; }.seek { min-width: calc(100% - 56px); order: 2; }.download-button { flex: 1; justify-content: center; order: 3; }.control-panel { position: fixed; left: 50%; right: auto; bottom: 18px; transform: translateX(-50%); width: min(280px, calc(100vw - 32px)); }.station-grid { grid-template-columns: 1fr; }.news-filters { grid-template-columns: repeat(2, 1fr); }.news-item { grid-template-columns: 1fr; gap: 5px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+.drop-icon { display: grid; place-items: center; border: 0; color: #d28cff; }
+.drop-icon svg { filter: drop-shadow(0 0 8px #d28cff88); }
+
+/* Visual reference finish */
+body { background: linear-gradient(135deg, #090d16 0%, #111827 50%, #1a162b 100%); font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.app-card { max-width: 580px; padding: 28px; border-radius: 20px; background: rgba(17, 24, 39, .75); border-color: rgba(255, 255, 255, .12); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, .6); }
+.app-header { margin-bottom: 24px; }
+.brand-mark { width: 32px; height: 32px; border: 2px solid #eab308; border-radius: 4px; color: #eab308; background: transparent; box-shadow: none; }
+.brand { gap: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.system-status { gap: 8px; padding: 6px 12px; border: 1px solid rgba(255,255,255,.08); border-radius: 20px; background: rgba(0,0,0,.4); }
+.system-status time { padding: 0; border: 0; box-shadow: none; background: transparent; color: #38bdf8; font-family: monospace; }
+.power-light { width: 6px; height: 6px; }
+.tabs { margin: 0 0 28px; border-radius: 10px; gap: 4px; padding: 4px; border-color: rgba(255,255,255,.05); background: rgba(0,0,0,.35); }
+.tab { min-height: 0; padding: 10px 8px; border-radius: 8px; color: #94a3b8; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: .75rem; font-weight: 700; letter-spacing: .5px; }
+.tab:hover, .tab.active { color: #fff; border-color: rgba(234,179,8,.6); background: rgba(255,255,255,.05); box-shadow: none; }
+.intro { margin: 0; }
+.eyebrow { color: #94a3b8; letter-spacing: 1.5px; }
+.intro h1 { margin-bottom: 12px; font-size: 2.2rem; line-height: 1.15; letter-spacing: 0; }
+.intro h1 em { color: #fff; font-style: italic; font-weight: 300; }
+.intro-copy { margin: 0 0 24px; color: #94a3b8; font-size: .9rem; line-height: 1.5; }
+.drop-zone { padding: 32px 16px; border-color: rgba(234,179,8,.4); border-radius: 14px; background: rgba(0,0,0,.2); }
+.drop-zone:hover, .drop-zone:focus-visible { border-color: rgba(234,179,8,.8); background: rgba(0,0,0,.3); transform: none; box-shadow: none; }
+.drop-icon { color: #64748b; margin-bottom: 12px; }
+.drop-zone h2 { margin-bottom: 6px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 1.1rem; }
+.drop-zone p { margin-bottom: 16px; color: #94a3b8; font-size: .85rem; }
+.drop-zone p strong { color: #fff; text-decoration: underline; }
+.drop-zone small { color: #64748b; font-size: .75rem; letter-spacing: 1px; }
+.privacy-note { margin-top: 20px; justify-content: flex-start; color: #94a3b8; font-size: .8rem; text-align: left; }
+.privacy-note span { color: #f59e0b; }
+@media (max-width: 480px) { .app-card { padding: 20px; border-radius: 16px; } .intro h1 { font-size: 1.75rem; } .tab { padding: 8px 4px; font-size: .68rem; } .drop-zone { padding: 24px 12px; } }
 .vr-button { min-height: 28px; padding: 0 7px; border: 1px solid var(--violet); border-radius: 5px; color: #d1a6ff; background: #120d20; font: 9px 'Space Mono', monospace; }
 .vr-button:hover { color: var(--gold-bright); border-color: var(--gold); box-shadow: 0 0 12px #9b59ff88; }
 .news-carousel { display: grid; grid-template-columns: 34px minmax(0, 1fr) 34px; gap: 8px; align-items: stretch; margin-top: 12px; }
