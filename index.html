@@ -4,17 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#050505">
+  <meta name="description" content="Pulse Player: reproductor local, radio y globo mundial interactivo.">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
   <title>Pulse Player | Audio local, radio y noticias</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/globe.gl"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app-card player-card">
     <header class="app-header player-header">
       <div class="brand"><span class="brand-mark" aria-hidden="true">P</span><span>PULSE PLAYER</span></div>
-      <div class="system-status header-controls"><button class="vr-button badge-3d" id="vrButton" type="button" aria-label="Abrir vista 3D">3D</button><span class="power-light status-dot" title="Sistema activo"></span><time class="clock-display" id="onlineClock" aria-label="Hora local">00:00:00</time></div>
+      <div class="system-status header-controls"><button class="install-button" id="installButton" type="button" hidden>INSTALAR APP</button><button class="vr-button badge-3d" id="vrButton" type="button" aria-label="Abrir vista 3D">3D</button><span class="power-light status-dot" title="Sistema activo"></span><time class="clock-display" id="onlineClock" aria-label="Hora local">00:00:00</time></div>
     </header>
 
     <nav class="tabs nav-tabs" aria-label="Secciones de la aplicación">
@@ -51,18 +58,41 @@
     <section class="content-view" id="radioView" hidden aria-labelledby="radioTitle">
       <div class="section-heading"><div><p class="eyebrow">EUROPA // ESPAÑA</p><h2 id="radioTitle">Radio en directo</h2></div><span class="live-badge"><i></i> LIVE</span></div>
       <div class="radio-toolbar"><label for="radioSelect">SINTONIZADOR</label><select id="radioSelect"><option value="">Selecciona una emisora</option></select><button id="radioPlay" type="button">▶ ESCUCHAR</button><button id="radioStop" type="button">■ PARAR</button></div>
+      <div class="radio-filters" role="tablist" aria-label="Filtrar emisoras"><button class="radio-filter active" data-genre="all" type="button">TODAS</button><button class="radio-filter" data-genre="bachata" type="button">BACHATA</button><button class="radio-filter" data-genre="salsa" type="button">SALSA</button><button class="radio-filter" data-genre="merengue" type="button">MERENGUE</button></div>
       <div class="station-grid" id="stationGrid"></div>
       <audio id="radioAudio" preload="none"></audio>
     </section>
 
-    <section class="content-view" id="newsView" hidden aria-labelledby="newsTitle">
-      <div class="section-heading"><div><p class="eyebrow">EUROPA // LATINOAMÉRICA</p><h2 id="newsTitle">Noticias al día</h2><small class="sync-status" id="syncStatus">SINCRONIZACIÓN WEB PENDIENTE</small></div><button class="refresh-button" id="refreshNews" type="button">↻ ACTUALIZAR</button></div>
-      <div class="news-filters" role="tablist"><button class="news-filter active" data-feed="tech" type="button">TECNOLOGÍA</button><button class="news-filter" data-feed="science" type="button">CIENCIA</button><button class="news-filter" data-feed="crypto" type="button">CRYPTO</button><button class="news-filter" data-feed="world" type="button">MUNDO</button><button class="news-filter" data-feed="conflicts" type="button">CONFLICTOS</button><button class="news-filter" data-feed="latam" type="button">LATAM</button></div>
-      <div class="news-carousel"><button class="carousel-button" id="newsPrevious" type="button" aria-label="Titular anterior">‹</button><div class="news-list" id="newsList" aria-live="polite"><p class="news-status">Selecciona una categoría para cargar titulares.</p></div><button class="carousel-button" id="newsNext" type="button" aria-label="Titular siguiente">›</button></div>
+    <section class="content-view globe-view" id="newsView" hidden aria-labelledby="globeTitle">
+      <div class="section-heading"><div><p class="eyebrow">MUNDO // ONLINE</p><h2 id="globeTitle">Explora el planeta</h2><small class="sync-status" id="syncStatus">GLOBO INTERACTIVO EN LÍNEA</small></div></div>
+      <div class="globe-tools"><label class="globe-search"><span aria-hidden="true">⌕</span><input id="globeSearch" type="search" placeholder="Buscar ciudad o país" aria-label="Buscar ciudad o país"><button id="globeSearchButton" type="button">UBICAR</button></label><div class="globe-actions"><button id="globeReset" type="button" aria-label="Centrar el globo">⌖ CENTRAR</button><button id="globeZoomOut" type="button" aria-label="Alejar el globo">−</button><button id="globeZoomIn" type="button" aria-label="Acercar el globo">+</button></div></div>
+      <div class="globe-stage" id="globeStage" aria-label="Globo terrestre 3D interactivo"></div>
+      <p class="globe-location" id="globeLocation">Selecciona una ubicación para centrarla</p>
+      <article class="globe-info" id="globeInfo" hidden><span class="globe-info-kicker">UBICACIÓN SELECCIONADA</span><h3 id="globeInfoTitle">Madrid, España</h3><p id="globeInfoText">Explora esta ubicación en el globo interactivo.</p><small id="globeInfoCoords">40.4168° N · 3.7038° O</small></article>
     </section>
 
     <p class="privacy-note card-footer"><span class="sparkle" aria-hidden="true">✦</span> Tus archivos locales no salen de tu dispositivo</p>
   </main>
+  <nav class="floating-socials" aria-label="Enlaces sociales">
+    <a class="social-link youtube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir YouTube" title="YouTube"><span aria-hidden="true">▶</span><b>YouTube</b></a>
+    <a class="social-link google" href="https://www.google.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Google" title="Google"><span aria-hidden="true">G</span><b>Google</b></a>
+    <a class="social-link tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir TikTok" title="TikTok"><span aria-hidden="true">♪</span><b>TikTok</b></a>
+    <a class="social-link facebook" href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Facebook" title="Facebook"><span aria-hidden="true">f</span><b>Facebook</b></a>
+    <a class="social-link instagram" href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram" title="Instagram"><span aria-hidden="true">◎</span><b>Instagram</b></a>
+    <a class="social-link x-social" href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir X" title="X"><span aria-hidden="true">X</span><b>X</b></a>
+  </nav>
+  <nav class="floating-tools" aria-label="Enlaces de herramientas">
+    <a class="tool-link bwin" href="https://www.bwin.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir BWIN" title="BWIN"><span aria-hidden="true">B</span><b>BWIN</b></a>
+    <a class="tool-link bybit" href="https://www.bybit.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Bybit" title="Bybit"><span aria-hidden="true">₿</span><b>BYBIT</b></a>
+    <a class="tool-link tradingview" href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir TradingView" title="TradingView"><span aria-hidden="true">TV</span><b>TRADINGVIEW</b></a>
+    <a class="tool-link calculator" href="https://www.google.com/search?q=calculadora" target="_blank" rel="noopener noreferrer" aria-label="Abrir calculadora" title="Calculadora"><span aria-hidden="true">=</span><b>CALCULADORA</b></a>
+    <a class="tool-link wallapop" href="https://es.wallapop.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Wallapop" title="Wallapop"><span aria-hidden="true">W</span><b>WALLAPOP</b></a>
+    <a class="tool-link netflix" href="https://www.netflix.com/" target="_blank" rel="noopener noreferrer" aria-label="Abrir Netflix" title="Netflix"><span aria-hidden="true">N</span><b>NETFLIX</b></a>
+  </nav>
+  <button class="app-download-link" id="appDownloadLink" type="button" aria-label="Instalar Pulse Player" title="Instalar Pulse Player"><span class="download-glyph" aria-hidden="true">↓</span><span><strong>INSTALAR APP</strong><small>PULSE PLAYER</small></span></button>
+  <section class="install-help" id="installHelp" hidden aria-labelledby="installHelpTitle" role="dialog" aria-modal="true">
+    <div class="install-help-card"><button class="install-help-close" id="installHelpClose" type="button" aria-label="Cerrar instrucciones">×</button><span class="install-help-icon" aria-hidden="true">↓</span><h2 id="installHelpTitle">Instalar Pulse Player</h2><p>Añade Pulse Player a tu pantalla de inicio para abrirlo como una app.</p><ol><li>En iPhone: pulsa <strong>Compartir</strong> y después <strong>Añadir a pantalla de inicio</strong>.</li><li>En Android o escritorio: abre el menú del navegador y elige <strong>Instalar aplicación</strong> o <strong>Añadir a pantalla de inicio</strong>.</li></ol><button class="install-help-action" id="installHelpAction" type="button">ENTENDIDO</button></div>
+  </section>
   <section class="vr-overlay" id="vrOverlay" hidden aria-label="Vista 3D de Pulse Player"><button class="vr-close" id="vrClose" type="button">CERRAR</button><div class="vr-stage"><div class="vr-grid"></div><strong>PULSE</strong><span>VISTA ESPACIAL ACTIVA</span></div></section>
   <script src="script.js"></script>
 </body>
