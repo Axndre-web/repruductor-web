@@ -1,31 +1,33 @@
-const fileInput = document.getElementById("fileInput");
+const $ = id => document.getElementById(id);
 
-const videoPlayer = document.getElementById("videoPlayer");
-const audioPlayer = document.getElementById("audioPlayer");
+const fileInput = $("fileInput");
+const videoPlayer = $("videoPlayer");
+const audioPlayer = $("audioPlayer");
+const emptyState = $("emptyState");
 
-const mediaContainer = document.getElementById("mediaContainer");
-const emptyState = document.getElementById("emptyState");
+const playBtn = $("playBtn");
+const backBtn = $("backBtn");
+const forwardBtn = $("forwardBtn");
 
-const playBtn = document.getElementById("playBtn");
-const backBtn = document.getElementById("backBtn");
-const forwardBtn = document.getElementById("forwardBtn");
+const progress = $("progress");
+const currentTime = $("currentTime");
+const duration = $("duration");
 
-const progress = document.getElementById("progress");
-const currentTime = document.getElementById("currentTime");
-const duration = document.getElementById("duration");
+const volume = $("volume");
+const volumeValue = $("volumeValue");
+const muteBtn = $("muteBtn");
 
-const volume = document.getElementById("volume");
-const volumeValue = document.getElementById("volumeValue");
-const muteBtn = document.getElementById("muteBtn");
+const fullscreenBtn = $("fullscreenBtn");
+const mediaContainer = $("mediaContainer");
 
-const fullscreenBtn = document.getElementById("fullscreenBtn");
+const currentTitle = $("currentTitle");
+const mediaType = $("mediaType");
 
-const currentTitle = document.getElementById("currentTitle");
-const mediaType = document.getElementById("mediaType");
+const playlistElement = $("playlist");
+const trackCount = $("trackCount");
+const clearPlaylistBtn = $("clearPlaylist");
 
-const playlistElement = document.getElementById("playlist");
-const trackCount = document.getElementById("trackCount");
-const clearPlaylistBtn = document.getElementById("clearPlaylist");
+const myMusicList = $("myMusicList");
 
 let playlist = [];
 let currentIndex = -1;
@@ -33,33 +35,55 @@ let activeMedia = null;
 let lastVolume = 1;
 
 
-/* =========================
-   CARGAR ARCHIVOS
-========================= */
+/* =========================================
+   MI MUSICA
+========================================= */
 
-fileInput.addEventListener("change", (event) => {
+const miMusica = Array.from(
+    { length: 25 },
+    (_, i) => {
 
-    const files = Array.from(event.target.files);
+        const numero =
+            String(i + 1).padStart(2, "0");
 
-    files.forEach(file => {
+        return {
+            name: `${numero}-cancion.mp3`,
+            url: `musica/${numero}-cancion.mp3`,
+            type: "audio/mp3",
+            personal: true
+        };
+    }
+);
 
-        if (!file.type.startsWith("audio/") &&
-            !file.type.startsWith("video/")) {
-            return;
-        }
+
+/* =========================================
+   ARCHIVOS
+========================================= */
+
+fileInput.addEventListener("change", e => {
+
+    [...e.target.files].forEach(file => {
+
+        if (
+            !file.type.startsWith("audio/") &&
+            !file.type.startsWith("video/")
+        ) return;
 
         playlist.push({
-            file: file,
+            file,
             url: URL.createObjectURL(file),
             name: file.name,
-            type: file.type
+            type: file.type,
+            temporary: true
         });
-
     });
 
     renderPlaylist();
 
-    if (currentIndex === -1 && playlist.length > 0) {
+    if (
+        currentIndex === -1 &&
+        playlist.length
+    ) {
         loadTrack(0);
     }
 
@@ -67,17 +91,28 @@ fileInput.addEventListener("change", (event) => {
 });
 
 
-/* =========================
-   CARGAR PISTA
-========================= */
+/* =========================================
+   CARGAR CANCION
+========================================= */
 
 function loadTrack(index, autoplay = true) {
 
-    if (index < 0 || index >= playlist.length) {
-        return;
-    }
+    if (
+        index < 0 ||
+        index >= playlist.length
+    ) return;
 
     currentIndex = index;
+
+    mediaContainer.classList.remove(
+        "media-changing"
+    );
+
+    void mediaContainer.offsetWidth;
+
+    mediaContainer.classList.add(
+        "media-changing"
+    );
 
     const track = playlist[index];
 
@@ -114,100 +149,197 @@ function loadTrack(index, autoplay = true) {
 
     currentTitle.textContent = track.name;
 
-    activeMedia.volume = Number(volume.value);
+    activeMedia.volume =
+        Number(volume.value);
 
     renderPlaylist();
+    updateMyMusicActive();
 
     if (autoplay) {
         activeMedia.play().catch(() => {});
     }
+
+    updatePlayButton();
 }
 
 
-/* =========================
-   PLAY / PAUSE
-========================= */
+function stopPlayers() {
 
-playBtn.addEventListener("click", togglePlay);
+    videoPlayer.pause();
+    audioPlayer.pause();
+}
+
+
+/* =========================================
+   PLAY / PAUSE
+========================================= */
+
+playBtn.addEventListener(
+    "click",
+    togglePlay
+);
 
 function togglePlay() {
 
     if (!activeMedia) {
-        if (playlist.length > 0) {
+
+        if (playlist.length) {
             loadTrack(0);
         }
+
         return;
     }
 
-    if (activeMedia.paused) {
-        activeMedia.play();
-    } else {
-        activeMedia.pause();
-    }
+    activeMedia.paused
+        ? activeMedia.play().catch(() => {})
+        : activeMedia.pause();
 }
 
-
-/* =========================
-   ACTUALIZAR BOTÓN PLAY
-========================= */
 
 function updatePlayButton() {
 
-    if (!activeMedia || activeMedia.paused) {
-        playBtn.textContent = "▶";
-        playBtn.title = "Reproducir";
-    } else {
-        playBtn.textContent = "⏸";
-        playBtn.title = "Pausar";
-    }
+    const playing =
+        activeMedia &&
+        !activeMedia.paused;
+
+    playBtn.textContent =
+        playing ? "⏸" : "▶";
+
+    playBtn.classList.toggle(
+        "playing",
+        playing
+    );
+
+    mediaContainer.classList.toggle(
+        "playing",
+        playing
+    );
+
+    updateEqualizer();
 }
 
 
-/* =========================
-   TIEMPO Y PROGRESO
-========================= */
+/* =========================================
+   ECUALIZADOR
+========================================= */
+
+function createEqualizer() {
+
+    const equalizer =
+        document.createElement("div");
+
+    equalizer.className =
+        "equalizer";
+
+    equalizer.innerHTML = `
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    `;
+
+    return equalizer;
+}
+
+
+function updateEqualizer() {
+
+    document
+        .querySelectorAll(".equalizer")
+        .forEach(eq => {
+            eq.classList.remove("playing");
+        });
+
+    if (
+        !activeMedia ||
+        activeMedia.paused
+    ) return;
+
+    const activeTrack =
+        document.querySelector(
+            ".track.active"
+        );
+
+    if (!activeTrack) return;
+
+    let equalizer =
+        activeTrack.querySelector(
+            ".equalizer"
+        );
+
+    if (!equalizer) {
+
+        equalizer =
+            createEqualizer();
+
+        const number =
+            activeTrack.querySelector(
+                ".track-number"
+            );
+
+        if (number) {
+            number.replaceWith(equalizer);
+        }
+    }
+
+    equalizer.classList.add("playing");
+}
+
+
+/* =========================================
+   PROGRESO
+========================================= */
 
 function updateProgress() {
 
-    if (!activeMedia) {
-        return;
-    }
+    if (!activeMedia) return;
 
-    const current = activeMedia.currentTime || 0;
-    const total = activeMedia.duration || 0;
+    const current =
+        activeMedia.currentTime || 0;
 
-    if (total > 0) {
-        progress.value = (current / total) * 100;
-    } else {
-        progress.value = 0;
-    }
+    const total =
+        activeMedia.duration || 0;
 
-    currentTime.textContent = formatTime(current);
-    duration.textContent = formatTime(total);
+    progress.value =
+        total
+            ? current / total * 100
+            : 0;
+
+    currentTime.textContent =
+        formatTime(current);
+
+    duration.textContent =
+        formatTime(total);
 }
 
 
 progress.addEventListener("input", () => {
 
-    if (!activeMedia || !activeMedia.duration) {
-        return;
-    }
+    if (
+        !activeMedia ||
+        !activeMedia.duration
+    ) return;
 
     activeMedia.currentTime =
-        (Number(progress.value) / 100) * activeMedia.duration;
+        progress.value / 100 *
+        activeMedia.duration;
 });
 
 
-/* =========================
-   AVANZAR / RETROCEDER
-========================= */
+/* =========================================
+   AVANCE
+========================================= */
 
 backBtn.addEventListener("click", () => {
 
     if (!activeMedia) return;
 
     activeMedia.currentTime =
-        Math.max(0, activeMedia.currentTime - 10);
+        Math.max(
+            0,
+            activeMedia.currentTime - 10
+        );
 });
 
 
@@ -223,13 +355,14 @@ forwardBtn.addEventListener("click", () => {
 });
 
 
-/* =========================
+/* =========================================
    VOLUMEN
-========================= */
+========================================= */
 
 volume.addEventListener("input", () => {
 
-    const value = Number(volume.value);
+    const value =
+        Number(volume.value);
 
     if (activeMedia) {
         activeMedia.volume = value;
@@ -240,7 +373,8 @@ volume.addEventListener("input", () => {
         lastVolume = value;
     }
 
-    volumeValue.textContent = `${Math.round(value * 100)}%`;
+    volumeValue.textContent =
+        `${Math.round(value * 100)}%`;
 
     updateMuteIcon();
 });
@@ -250,25 +384,32 @@ muteBtn.addEventListener("click", () => {
 
     if (!activeMedia) return;
 
-    if (activeMedia.muted || activeMedia.volume === 0) {
+    if (
+        activeMedia.muted ||
+        activeMedia.volume === 0
+    ) {
 
         activeMedia.muted = false;
 
-        const newVolume = lastVolume || 1;
+        const value =
+            lastVolume || 1;
 
-        activeMedia.volume = newVolume;
-        volume.value = newVolume;
+        activeMedia.volume = value;
+        volume.value = value;
 
     } else {
 
-        lastVolume = activeMedia.volume;
+        lastVolume =
+            activeMedia.volume;
 
         activeMedia.muted = true;
         volume.value = 0;
     }
 
     volumeValue.textContent =
-        `${Math.round(Number(volume.value) * 100)}%`;
+        `${Math.round(
+            Number(volume.value) * 100
+        )}%`;
 
     updateMuteIcon();
 });
@@ -276,95 +417,108 @@ muteBtn.addEventListener("click", () => {
 
 function updateMuteIcon() {
 
-    if (!activeMedia || activeMedia.muted ||
-        Number(volume.value) === 0) {
-
+    if (
+        !activeMedia ||
+        activeMedia.muted ||
+        Number(volume.value) === 0
+    ) {
         muteBtn.textContent = "🔇";
-
-    } else if (Number(volume.value) < 0.5) {
-
+    } else if (
+        Number(volume.value) < .5
+    ) {
         muteBtn.textContent = "🔉";
-
     } else {
-
         muteBtn.textContent = "🔊";
     }
 }
 
 
-/* =========================
+/* =========================================
    PANTALLA COMPLETA
-========================= */
+========================================= */
 
 fullscreenBtn.addEventListener("click", () => {
 
-    if (!activeMedia || activeMedia !== videoPlayer) {
+    if (activeMedia !== videoPlayer)
         return;
-    }
 
-    if (document.fullscreenElement) {
-
-        document.exitFullscreen();
-
-    } else {
-
-        if (videoPlayer.requestFullscreen) {
-            videoPlayer.requestFullscreen();
-        }
-    }
+    document.fullscreenElement
+        ? document.exitFullscreen()
+        : videoPlayer.requestFullscreen?.();
 });
 
 
-/* =========================
-   FINAL DE PISTA
-========================= */
+/* =========================================
+   SIGUIENTE
+========================================= */
 
-videoPlayer.addEventListener("ended", playNext);
-audioPlayer.addEventListener("ended", playNext);
+videoPlayer.addEventListener(
+    "ended",
+    playNext
+);
 
+audioPlayer.addEventListener(
+    "ended",
+    playNext
+);
 
 function playNext() {
 
-    if (playlist.length === 0) {
-        return;
-    }
+    if (!playlist.length) return;
 
-    if (currentIndex < playlist.length - 1) {
-
-        loadTrack(currentIndex + 1);
-
-    } else {
-
-        loadTrack(0);
-    }
+    loadTrack(
+        currentIndex <
+        playlist.length - 1
+            ? currentIndex + 1
+            : 0
+    );
 }
 
 
-/* =========================
-   EVENTOS DEL REPRODUCTOR
-========================= */
+/* =========================================
+   EVENTOS
+========================================= */
 
-[videoPlayer, audioPlayer].forEach(player => {
+[videoPlayer, audioPlayer]
+.forEach(player => {
 
-    player.addEventListener("play", updatePlayButton);
-    player.addEventListener("pause", updatePlayButton);
-    player.addEventListener("timeupdate", updateProgress);
+    player.addEventListener(
+        "play",
+        updatePlayButton
+    );
 
-    player.addEventListener("loadedmetadata", () => {
-        updateProgress();
-    });
+    player.addEventListener(
+        "pause",
+        updatePlayButton
+    );
+
+    player.addEventListener(
+        "timeupdate",
+        updateProgress
+    );
+
+    player.addEventListener(
+        "loadedmetadata",
+        updateProgress
+    );
+
+    player.addEventListener(
+        "ended",
+        updatePlayButton
+    );
 });
 
 
-/* =========================
+/* =========================================
    PLAYLIST
-========================= */
+========================================= */
 
 function renderPlaylist() {
 
-    trackCount.textContent = playlist.length;
+    trackCount.textContent =
+        playlist.length;
 
-    if (playlist.length === 0) {
+    if (!playlist.length) {
 
         playlistElement.innerHTML = `
             <div class="playlist-empty">
@@ -381,10 +535,15 @@ function renderPlaylist() {
 
     playlist.forEach((track, index) => {
 
-        const item = document.createElement("div");
+        const item =
+            document.createElement("div");
 
         item.className =
-            `track ${index === currentIndex ? "active" : ""}`;
+            `track ${
+                index === currentIndex
+                    ? "active"
+                    : ""
+            }`;
 
         item.innerHTML = `
             <span class="track-number">
@@ -392,115 +551,136 @@ function renderPlaylist() {
             </span>
 
             <span class="track-icon">
-                ${track.type.startsWith("video/") ? "🎬" : "🎵"}
+                ${
+                    track.type.startsWith("video/")
+                        ? "🎬"
+                        : "🎵"
+                }
             </span>
 
             <div class="track-info">
-                <span class="track-name"
-                      title="${escapeHTML(track.name)}">
+                <span class="track-name">
                     ${escapeHTML(track.name)}
                 </span>
 
                 <span class="track-type">
-                    ${track.type.startsWith("video/")
-                        ? "Vídeo"
-                        : "Audio"}
+                    ${
+                        track.type.startsWith("video/")
+                            ? "Vídeo"
+                            : "Audio"
+                    }
                 </span>
             </div>
 
             <button class="remove-track"
-                    data-index="${index}"
                     title="Eliminar">
                 ✕
             </button>
         `;
 
-        item.addEventListener("click", (event) => {
+        item.addEventListener("click", e => {
 
-            if (event.target.closest(".remove-track")) {
-                return;
-            }
+            if (
+                e.target.closest(".remove-track")
+            ) return;
 
             loadTrack(index);
         });
 
-        const removeButton =
-            item.querySelector(".remove-track");
+        item.querySelector(
+            ".remove-track"
+        ).addEventListener(
+            "click",
+            e => {
 
-        removeButton.addEventListener("click", (event) => {
+                e.stopPropagation();
 
-            event.stopPropagation();
-
-            removeTrack(index);
-        });
+                removeTrack(index);
+            }
+        );
 
         playlistElement.appendChild(item);
     });
+
+    updateEqualizer();
 }
 
 
-/* =========================
-   ELIMINAR PISTA
-========================= */
-
 function removeTrack(index) {
 
-    const wasCurrent = index === currentIndex;
+    const track = playlist[index];
 
-    URL.revokeObjectURL(playlist[index].url);
+    if (
+        track?.temporary &&
+        track.url
+    ) {
+        URL.revokeObjectURL(track.url);
+    }
+
+    const wasCurrent =
+        index === currentIndex;
 
     playlist.splice(index, 1);
 
-    if (playlist.length === 0) {
+    if (!playlist.length) {
 
         resetPlayer();
         currentIndex = -1;
 
     } else if (wasCurrent) {
 
-        const newIndex =
-            Math.min(index, playlist.length - 1);
-
         currentIndex = -1;
 
-        loadTrack(newIndex);
-
-    } else if (index < currentIndex) {
-
-        currentIndex--;
-
-        renderPlaylist();
+        loadTrack(
+            Math.min(
+                index,
+                playlist.length - 1
+            )
+        );
 
     } else {
 
+        if (index < currentIndex)
+            currentIndex--;
+
         renderPlaylist();
     }
+
+    updateMyMusicActive();
 }
 
 
-/* =========================
-   VACIAR PLAYLIST
-========================= */
+clearPlaylistBtn.addEventListener(
+    "click",
+    () => {
 
-clearPlaylistBtn.addEventListener("click", () => {
+        playlist.forEach(track => {
 
-    playlist.forEach(track => {
-        URL.revokeObjectURL(track.url);
-    });
+            if (
+                track.temporary &&
+                track.url
+            ) {
+                URL.revokeObjectURL(
+                    track.url
+                );
+            }
+        });
 
-    playlist = [];
+        playlist = [];
 
-    resetPlayer();
+        resetPlayer();
 
-    currentIndex = -1;
+        currentIndex = -1;
 
-    renderPlaylist();
-});
+        renderPlaylist();
+        updateMyMusicActive();
+    }
+);
 
 
-/* =========================
-   REINICIAR REPRODUCTOR
-========================= */
+/* =========================================
+   RESET
+========================================= */
 
 function resetPlayer() {
 
@@ -517,6 +697,11 @@ function resetPlayer() {
 
     fullscreenBtn.classList.remove("visible");
 
+    mediaContainer.classList.remove(
+        "playing",
+        "media-changing"
+    );
+
     currentTitle.textContent =
         "Ningún archivo seleccionado";
 
@@ -528,46 +713,578 @@ function resetPlayer() {
     duration.textContent = "00:00";
 
     playBtn.textContent = "▶";
+    playBtn.classList.remove("playing");
 }
 
 
-/* =========================
-   DETENER REPRODUCTORES
-========================= */
+/* =========================================
+   MI MUSICA
+========================================= */
 
-function stopPlayers() {
+function renderMyMusic() {
 
-    videoPlayer.pause();
-    audioPlayer.pause();
+    myMusicList.innerHTML = "";
+
+    miMusica.forEach((song, index) => {
+
+        const item =
+            document.createElement("div");
+
+        item.className = "my-song";
+        item.dataset.url = song.url;
+
+        item.innerHTML = `
+            <span class="my-song-number">
+                ${String(index + 1).padStart(2, "0")}
+            </span>
+
+            <span class="my-song-icon">
+                🎵
+            </span>
+
+            <div class="my-song-info">
+                <span class="my-song-name">
+                    ${escapeHTML(song.name)}
+                </span>
+
+                <span class="my-song-type">
+                    MP3 • Mi biblioteca
+                </span>
+            </div>
+
+            <button class="my-song-play">
+                ▶
+            </button>
+        `;
+
+        item.addEventListener(
+            "click",
+            () => playPersonalSong(song)
+        );
+
+        myMusicList.appendChild(item);
+    });
 }
 
 
-/* =========================
-   FORMATO DE TIEMPO
-========================= */
+function playPersonalSong(song) {
+
+    const existing =
+        playlist.findIndex(
+            track => track.url === song.url
+        );
+
+    if (existing !== -1) {
+
+        loadTrack(existing);
+
+    } else {
+
+        playlist.push({
+            file:null,
+            url:song.url,
+            name:song.name,
+            type:song.type,
+            personal:true
+        });
+
+        renderPlaylist();
+
+        loadTrack(
+            playlist.length - 1
+        );
+    }
+
+    updateMyMusicActive();
+}
+
+
+function updateMyMusicActive() {
+
+    document
+        .querySelectorAll(".my-song")
+        .forEach(item => {
+
+            item.classList.remove("active");
+
+            if (
+                activeMedia &&
+                playlist[currentIndex] &&
+                playlist[currentIndex].url ===
+                item.dataset.url
+            ) {
+                item.classList.add("active");
+            }
+        });
+}
+
+
+/* =========================================
+   RADIO
+========================================= */
+
+const radioAudio = $("radioAudio");
+const radioPlay = $("radioPlay");
+const radioName = $("radioName");
+const radioGenre = $("radioGenre");
+const radioStatus = $("radioStatus");
+const radioVolume = $("radioVolume");
+const radioVolumeValue = $("radioVolumeValue");
+const radioList = $("radioList");
+
+const radios = [
+
+    {
+        name:"LOS40 España",
+        country:"España",
+        genre:"Pop / Éxitos",
+        icon:"🇪🇸",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Classic",
+        country:"España",
+        genre:"Clásicos",
+        icon:"🎸",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Urban",
+        country:"España",
+        genre:"Urbano / Reguetón",
+        icon:"🔥",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Dance",
+        country:"Europa",
+        genre:"Dance / Electrónica",
+        icon:"💿",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"KISS FM",
+        country:"España",
+        genre:"80s / 90s / Pop",
+        icon:"💜",
+        url:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+        web:"https://www.kissfm.es/"
+    },
+
+    {
+        name:"Radio Nacional",
+        country:"España",
+        genre:"Actualidad / Música",
+        icon:"🇪🇸",
+        url:"https://dispatcher.rndfnk.com/crtve/rne1/main/mp3/high",
+        web:"https://www.rtve.es/play/radio/rne/"
+    },
+
+    {
+        name:"Radio 3",
+        country:"España",
+        genre:"Música alternativa",
+        icon:"🎧",
+        url:"https://radio3.rtveradio.cires21.com/radio3_hc.mp3",
+        web:"https://www.rtve.es/play/radio/radio-3/"
+    },
+
+    {
+        name:"Radio Clásica",
+        country:"España",
+        genre:"Clásica",
+        icon:"🎻",
+        url:"https://radioclasica.rtveradio.cires21.com/radioclasica_hc.mp3",
+        web:"https://www.rtve.es/play/radio/"
+    },
+
+    {
+        name:"Cadena Dial",
+        country:"España",
+        genre:"Pop en español",
+        icon:"🎤",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CADENADIAL.mp3",
+        web:"https://www.cadenadial.com/"
+    },
+
+    {
+        name:"Radiolé",
+        country:"España",
+        genre:"Español / Latino",
+        icon:"💃",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3",
+        web:"https://www.radiole.com/"
+    }
+];
+
+let currentRadio = -1;
+
+
+/* =========================================
+   RADIOS
+========================================= */
+
+function renderRadios(filter = "all") {
+
+    radioList.innerHTML = "";
+
+    radios
+        .filter(r =>
+            filter === "all" ||
+            r.country === filter ||
+            r.genre.toLowerCase().includes(
+                filter.toLowerCase()
+            )
+        )
+        .forEach((radio, index) => {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                `radio-item ${
+                    index === currentRadio
+                        ? "active"
+                        : ""
+                }`;
+
+            item.innerHTML = `
+                <span class="radio-item-icon">
+                    ${radio.icon}
+                </span>
+
+                <div class="radio-item-info">
+                    <span class="radio-item-name">
+                        ${escapeHTML(radio.name)}
+                    </span>
+
+                    <span class="radio-item-genre">
+                        ${escapeHTML(radio.genre)}
+                    </span>
+                </div>
+
+                <span class="radio-item-play">
+                    ▶
+                </span>
+            `;
+
+            item.addEventListener(
+                "click",
+                () => playRadio(index)
+            );
+
+            radioList.appendChild(item);
+        });
+}
+
+
+function playRadio(index) {
+
+    const radio = radios[index];
+
+    if (!radio) return;
+
+    currentRadio = index;
+
+    radioAudio.src = radio.url;
+    radioAudio.volume =
+        Number(radioVolume.value);
+
+    radioAudio.play()
+        .then(() => {
+
+            radioName.textContent =
+                radio.name;
+
+            radioGenre.textContent =
+                radio.genre;
+
+            radioStatus.textContent =
+                "● EN DIRECT";
+
+            radioStatus.classList.add(
+                "live"
+            );
+
+            radioPlay.textContent =
+                "⏸";
+
+            renderRadios(
+                document
+                    .querySelector(
+                        ".radio-filter.active"
+                    )
+                    ?.dataset.filter ||
+                "all"
+            );
+        })
+        .catch(() => {
+
+            radioStatus.textContent =
+                "NO DISPONIBLE";
+
+            radioStatus.classList.remove(
+                "live"
+            );
+
+            radioPlay.textContent =
+                "▶";
+
+            if (
+                confirm(
+                    `${radio.name} no permite la reproducción directa en este navegador.\n\n¿Abrir su web oficial?`
+                )
+            ) {
+                window.open(
+                    radio.web,
+                    "_blank",
+                    "noopener"
+                );
+            }
+        });
+}
+
+
+radioPlay.addEventListener(
+    "click",
+    () => {
+
+        if (!radioAudio.src) {
+
+            if (radios.length)
+                playRadio(0);
+
+            return;
+        }
+
+        if (radioAudio.paused) {
+
+            radioAudio.play()
+                .catch(() => {});
+
+        } else {
+
+            radioAudio.pause();
+        }
+    }
+);
+
+
+radioAudio.addEventListener(
+    "play",
+    () => {
+
+        radioPlay.textContent = "⏸";
+
+        radioStatus.textContent =
+            "● EN DIRECT";
+
+        radioStatus.classList.add(
+            "live"
+        );
+    }
+);
+
+
+radioAudio.addEventListener(
+    "pause",
+    () => {
+
+        radioPlay.textContent = "▶";
+
+        radioStatus.textContent =
+            "PAUSADA";
+
+        radioStatus.classList.remove(
+            "live"
+        );
+    }
+);
+
+
+radioAudio.addEventListener(
+    "error",
+    () => {
+
+        radioStatus.textContent =
+            "SEÑAL NO DISPONIBLE";
+
+        radioStatus.classList.remove(
+            "live"
+        );
+    }
+);
+
+
+/* =========================================
+   VOLUMEN RADIO
+========================================= */
+
+radioVolume.addEventListener(
+    "input",
+    () => {
+
+        const value =
+            Number(radioVolume.value);
+
+        radioAudio.volume = value;
+
+        radioVolumeValue.textContent =
+            `${Math.round(value * 100)}%`;
+    }
+);
+
+
+/* =========================================
+   FILTROS
+========================================= */
+
+document
+    .querySelectorAll(".radio-filter")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                document
+                    .querySelectorAll(
+                        ".radio-filter"
+                    )
+                    .forEach(b =>
+                        b.classList.remove(
+                            "active"
+                        )
+                    );
+
+                button.classList.add(
+                    "active"
+                );
+
+                renderRadios(
+                    button.dataset.filter
+                );
+            }
+        );
+    });
+
+
+/* =========================================
+   TECLADO
+========================================= */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (!activeMedia) return;
+
+        if (
+            event.target.tagName === "INPUT" ||
+            event.target.tagName === "TEXTAREA"
+        ) return;
+
+        switch (event.code) {
+
+            case "Space":
+                event.preventDefault();
+                togglePlay();
+                break;
+
+            case "ArrowLeft":
+                activeMedia.currentTime =
+                    Math.max(
+                        0,
+                        activeMedia.currentTime - 5
+                    );
+                break;
+
+            case "ArrowRight":
+                activeMedia.currentTime =
+                    Math.min(
+                        activeMedia.duration ||
+                        Infinity,
+                        activeMedia.currentTime + 5
+                    );
+                break;
+
+            case "ArrowUp":
+                event.preventDefault();
+
+                activeMedia.volume =
+                    Math.min(
+                        1,
+                        activeMedia.volume + .05
+                    );
+
+                volume.value =
+                    activeMedia.volume;
+
+                volumeValue.textContent =
+                    `${Math.round(
+                        activeMedia.volume * 100
+                    )}%`;
+
+                break;
+
+            case "ArrowDown":
+                event.preventDefault();
+
+                activeMedia.volume =
+                    Math.max(
+                        0,
+                        activeMedia.volume - .05
+                    );
+
+                volume.value =
+                    activeMedia.volume;
+
+                volumeValue.textContent =
+                    `${Math.round(
+                        activeMedia.volume * 100
+                    )}%`;
+
+                break;
+        }
+    }
+);
+
+
+/* =========================================
+   UTILIDADES
+========================================= */
 
 function formatTime(seconds) {
 
-    if (!Number.isFinite(seconds)) {
+    if (!Number.isFinite(seconds))
         return "00:00";
-    }
 
-    seconds = Math.max(0, Math.floor(seconds));
+    seconds =
+        Math.max(
+            0,
+            Math.floor(seconds)
+        );
 
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-
-    return `${String(minutes).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    return `${String(
+        Math.floor(seconds / 60)
+    ).padStart(2,"0")}:${String(
+        seconds % 60
+    ).padStart(2,"0")}`;
 }
 
 
-/* =========================
-   SEGURIDAD PARA NOMBRES
-========================= */
-
 function escapeHTML(text) {
 
-    const div = document.createElement("div");
+    const div =
+        document.createElement("div");
 
     div.textContent = text;
 
@@ -575,78 +1292,13 @@ function escapeHTML(text) {
 }
 
 
-/* =========================
-   ATAJOS DE TECLADO
-========================= */
-
-document.addEventListener("keydown", (event) => {
-
-    if (!activeMedia) {
-        return;
-    }
-
-    // No interferir cuando el usuario está escribiendo
-    if (
-        event.target.tagName === "INPUT" ||
-        event.target.tagName === "TEXTAREA"
-    ) {
-        return;
-    }
-
-    switch (event.code) {
-
-        case "Space":
-            event.preventDefault();
-            togglePlay();
-            break;
-
-        case "ArrowLeft":
-            activeMedia.currentTime =
-                Math.max(0, activeMedia.currentTime - 5);
-            break;
-
-        case "ArrowRight":
-            activeMedia.currentTime =
-                Math.min(
-                    activeMedia.duration || Infinity,
-                    activeMedia.currentTime + 5
-                );
-            break;
-
-        case "ArrowUp":
-            event.preventDefault();
-
-            activeMedia.volume =
-                Math.min(1, activeMedia.volume + 0.05);
-
-            volume.value = activeMedia.volume;
-
-            volumeValue.textContent =
-                `${Math.round(activeMedia.volume * 100)}%`;
-
-            updateMuteIcon();
-            break;
-
-        case "ArrowDown":
-            event.preventDefault();
-
-            activeMedia.volume =
-                Math.max(0, activeMedia.volume - 0.05);
-
-            volume.value = activeMedia.volume;
-
-            volumeValue.textContent =
-                `${Math.round(activeMedia.volume * 100)}%`;
-
-            updateMuteIcon();
-            break;
-    }
-});
-
-
-/* =========================
+/* =========================================
    INICIO
-========================= */
+========================================= */
 
 renderPlaylist();
-updateMuteIcon();
+renderMyMusic();
+renderRadios();
+
+volumeValue.textContent = "100%";
+radioVolumeValue.textContent = "100%";
