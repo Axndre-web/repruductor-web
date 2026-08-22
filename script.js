@@ -3,11 +3,18 @@ const $ = id => document.getElementById(id);
 const fileInput = $("fileInput");
 const videoPlayer = $("videoPlayer");
 const audioPlayer = $("audioPlayer");
+const radioAudio = $("radioAudio");
+
+const visualizer = $("visualizer");
+const visualizerContainer = $("visualizerContainer");
 const emptyState = $("emptyState");
 
 const playBtn = $("playBtn");
 const backBtn = $("backBtn");
 const forwardBtn = $("forwardBtn");
+const shuffleBtn = $("shuffleBtn");
+const repeatBtn = $("repeatBtn");
+const favoriteBtn = $("favoriteBtn");
 
 const progress = $("progress");
 const currentTime = $("currentTime");
@@ -18,9 +25,8 @@ const volumeValue = $("volumeValue");
 const muteBtn = $("muteBtn");
 
 const fullscreenBtn = $("fullscreenBtn");
-const mediaContainer = $("mediaContainer");
-
 const currentTitle = $("currentTitle");
+const currentMeta = $("currentMeta");
 const mediaType = $("mediaType");
 
 const playlistElement = $("playlist");
@@ -28,11 +34,54 @@ const trackCount = $("trackCount");
 const clearPlaylistBtn = $("clearPlaylist");
 
 const myMusicList = $("myMusicList");
+const favoritesList = $("favoritesList");
+const historyList = $("historyList");
+
+const radioPlay = $("radioPlay");
+const radioName = $("radioName");
+const radioGenre = $("radioGenre");
+const radioStatus = $("radioStatus");
+const radioVolume = $("radioVolume");
+const radioVolumeValue = $("radioVolumeValue");
+const radioList = $("radioList");
+const radioFavorite = $("radioFavorite");
 
 let playlist = [];
 let currentIndex = -1;
 let activeMedia = null;
 let lastVolume = 1;
+
+let shuffle = false;
+let repeat = "off";
+
+let playlistCategory = "all";
+let playlistSearch = "";
+
+let currentRadio = -1;
+let radioFilter = "all";
+let radioSearch = "";
+
+let sleepTimer = null;
+let sleepEnd = null;
+
+let favorites = JSON.parse(
+    localStorage.getItem("neonFavorites") || "[]"
+);
+
+let favoriteRadios = JSON.parse(
+    localStorage.getItem("neonFavoriteRadios") || "[]"
+);
+
+let history = JSON.parse(
+    localStorage.getItem("neonHistory") || "[]"
+);
+
+const themes = ["purple", "blue", "synthwave", "matrix"];
+let themeIndex = themes.indexOf(
+    localStorage.getItem("neonTheme") || "purple"
+);
+
+if (themeIndex < 0) themeIndex = 0;
 
 
 /* =========================================
@@ -40,50 +89,269 @@ let lastVolume = 1;
 ========================================= */
 
 const miMusica = Array.from(
-    { length: 25 },
-    (_, i) => {
-
-        const numero =
-            String(i + 1).padStart(2, "0");
+    {length:25},
+    (_,i) => {
+        const numero = String(i + 1).padStart(2,"0");
 
         return {
-            name: `${numero}-cancion.mp3`,
-            url: `musica/${numero}-cancion.mp3`,
-            type: "audio/mp3",
-            personal: true
+            name:`${numero}-cancion.mp3`,
+            url:`musica/${numero}-cancion.mp3`,
+            type:"audio/mp3",
+            personal:true
         };
     }
 );
 
 
 /* =========================================
+   RADIOS
+========================================= */
+
+const radios = [
+
+    {
+        name:"LOS40 España",
+        country:"España",
+        genre:"Pop / Éxitos",
+        tags:["Pop"],
+        icon:"🇪🇸",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Classic",
+        country:"España",
+        genre:"Clásicos",
+        tags:["Clásica"],
+        icon:"🎸",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Urban",
+        country:"España",
+        genre:"Urbano / Reguetón",
+        tags:["Urbano"],
+        icon:"🔥",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"LOS40 Dance",
+        country:"Europa",
+        genre:"Dance / Electrónica",
+        tags:["Urbano"],
+        icon:"💿",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3",
+        web:"https://los40.com/"
+    },
+
+    {
+        name:"KISS FM",
+        country:"España",
+        genre:"80s / 90s / Pop",
+        tags:["Pop"],
+        icon:"💜",
+        url:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+        web:"https://www.kissfm.es/"
+    },
+
+    {
+        name:"Radio Nacional",
+        country:"España",
+        genre:"Actualidad / Música",
+        tags:["Pop"],
+        icon:"🇪🇸",
+        url:"https://dispatcher.rndfnk.com/crtve/rne1/main/mp3/high",
+        web:"https://www.rtve.es/play/radio/rne/"
+    },
+
+    {
+        name:"Radio 3",
+        country:"España",
+        genre:"Música alternativa",
+        tags:["Pop","Urbano"],
+        icon:"🎧",
+        url:"https://radio3.rtveradio.cires21.com/radio3_hc.mp3",
+        web:"https://www.rtve.es/play/radio/radio-3/"
+    },
+
+    {
+        name:"Radio Clásica",
+        country:"España",
+        genre:"Música clásica",
+        tags:["Clásica"],
+        icon:"🎻",
+        url:"https://radioclasica.rtveradio.cires21.com/radioclasica_hc.mp3",
+        web:"https://www.rtve.es/play/radio/"
+    },
+
+    {
+        name:"Cadena Dial",
+        country:"España",
+        genre:"Pop en español",
+        tags:["Pop"],
+        icon:"🎤",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CADENADIAL.mp3",
+        web:"https://www.cadenadial.com/"
+    },
+
+    {
+        name:"Radiolé",
+        country:"España",
+        genre:"Español / Latino",
+        tags:["Pop"],
+        icon:"💃",
+        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3",
+        web:"https://www.radiole.com/"
+    }
+];
+
+
+/* =========================================
+   STORAGE
+========================================= */
+
+function saveData(){
+    localStorage.setItem(
+        "neonFavorites",
+        JSON.stringify(favorites)
+    );
+
+    localStorage.setItem(
+        "neonFavoriteRadios",
+        JSON.stringify(favoriteRadios)
+    );
+
+    localStorage.setItem(
+        "neonHistory",
+        JSON.stringify(history.slice(0,50))
+    );
+}
+
+
+/* =========================================
+   TEMA
+========================================= */
+
+function applyTheme(){
+    document.body.removeAttribute("data-theme");
+
+    const theme = themes[themeIndex];
+
+    if(theme !== "purple"){
+        document.body.dataset.theme = theme;
+    }
+
+    localStorage.setItem("neonTheme",theme);
+}
+
+$("themeBtn").addEventListener("click",() => {
+
+    themeIndex =
+        (themeIndex + 1) % themes.length;
+
+    applyTheme();
+
+    const names = {
+        purple:"Neon Purple",
+        blue:"Cyber Blue",
+        synthwave:"Synthwave",
+        matrix:"Matrix"
+    };
+
+    showToast(`Tema: ${names[themes[themeIndex]]}`);
+});
+
+applyTheme();
+
+
+/* =========================================
+   NAVEGACIÓN
+========================================= */
+
+function openSection(section){
+
+    document
+        .querySelectorAll(".page-section")
+        .forEach(el =>
+            el.classList.remove("active")
+        );
+
+    document
+        .querySelectorAll(".nav-btn")
+        .forEach(el =>
+            el.classList.remove("active")
+        );
+
+    const target = $(`section-${section}`);
+
+    if(target){
+        target.classList.add("active");
+    }
+
+    const nav = document.querySelector(
+        `.nav-btn[data-section="${section}"]`
+    );
+
+    if(nav){
+        nav.classList.add("active");
+    }
+
+    if(section === "favorites")
+        renderFavorites();
+
+    if(section === "history")
+        renderHistory();
+}
+
+document
+    .querySelectorAll("[data-section]")
+    .forEach(button => {
+
+        button.addEventListener("click",() => {
+
+            openSection(
+                button.dataset.section
+            );
+
+        });
+    });
+
+
+/* =========================================
    ARCHIVOS
 ========================================= */
 
-fileInput.addEventListener("change", e => {
+fileInput.addEventListener("change",e => {
 
     [...e.target.files].forEach(file => {
 
-        if (
+        if(
             !file.type.startsWith("audio/") &&
             !file.type.startsWith("video/")
-        ) return;
+        ){
+            return;
+        }
 
         playlist.push({
             file,
-            url: URL.createObjectURL(file),
-            name: file.name,
-            type: file.type,
-            temporary: true
+            url:URL.createObjectURL(file),
+            name:file.name,
+            type:file.type,
+            temporary:true
         });
     });
 
     renderPlaylist();
 
-    if (
+    if(
         currentIndex === -1 &&
         playlist.length
-    ) {
+    ){
         loadTrack(0);
     }
 
@@ -92,33 +360,33 @@ fileInput.addEventListener("change", e => {
 
 
 /* =========================================
-   CARGAR CANCION
+   CARGAR TRACK
 ========================================= */
 
-function loadTrack(index, autoplay = true) {
+function loadTrack(index,autoplay=true){
 
-    if (
+    if(
         index < 0 ||
         index >= playlist.length
     ) return;
 
     currentIndex = index;
 
-    mediaContainer.classList.remove(
-        "media-changing"
-    );
-
-    void mediaContainer.offsetWidth;
-
-    mediaContainer.classList.add(
-        "media-changing"
-    );
-
     const track = playlist[index];
 
     stopPlayers();
 
-    if (track.type.startsWith("video/")) {
+    visualizerContainer.classList.add(
+        "changing"
+    );
+
+    setTimeout(() => {
+        visualizerContainer.classList.remove(
+            "changing"
+        );
+    },350);
+
+    if(track.type.startsWith("video/")){
 
         activeMedia = videoPlayer;
 
@@ -130,8 +398,9 @@ function loadTrack(index, autoplay = true) {
         fullscreenBtn.classList.add("visible");
 
         mediaType.textContent = "VÍDEO";
+        currentMeta.textContent = "Archivo de vídeo";
 
-    } else {
+    }else{
 
         activeMedia = audioPlayer;
 
@@ -143,6 +412,9 @@ function loadTrack(index, autoplay = true) {
         fullscreenBtn.classList.remove("visible");
 
         mediaType.textContent = "AUDIO";
+        currentMeta.textContent = track.personal
+            ? "Mi biblioteca"
+            : "Archivo local";
     }
 
     emptyState.classList.add("hidden");
@@ -153,20 +425,16 @@ function loadTrack(index, autoplay = true) {
         Number(volume.value);
 
     renderPlaylist();
+    updateFavoriteButton();
     updateMyMusicActive();
 
-    if (autoplay) {
-        activeMedia.play().catch(() => {});
+    addHistory(track);
+
+    if(autoplay){
+        activeMedia.play().catch(()=>{});
     }
 
     updatePlayButton();
-}
-
-
-function stopPlayers() {
-
-    videoPlayer.pause();
-    audioPlayer.pause();
 }
 
 
@@ -174,16 +442,16 @@ function stopPlayers() {
    PLAY / PAUSE
 ========================================= */
 
-playBtn.addEventListener(
-    "click",
-    togglePlay
-);
+function stopPlayers(){
+    videoPlayer.pause();
+    audioPlayer.pause();
+}
 
-function togglePlay() {
+function togglePlay(){
 
-    if (!activeMedia) {
+    if(!activeMedia){
 
-        if (playlist.length) {
+        if(playlist.length){
             loadTrack(0);
         }
 
@@ -191,12 +459,16 @@ function togglePlay() {
     }
 
     activeMedia.paused
-        ? activeMedia.play().catch(() => {})
+        ? activeMedia.play().catch(()=>{})
         : activeMedia.pause();
 }
 
+playBtn.addEventListener(
+    "click",
+    togglePlay
+);
 
-function updatePlayButton() {
+function updatePlayButton(){
 
     const playing =
         activeMedia &&
@@ -210,80 +482,18 @@ function updatePlayButton() {
         playing
     );
 
-    mediaContainer.classList.toggle(
+    visualizerContainer.classList.toggle(
         "playing",
         playing
     );
 
-    updateEqualizer();
-}
+    $("visualizerStatus").textContent =
+        playing ? "● PLAYING" : "● PAUSED";
 
-
-/* =========================================
-   ECUALIZADOR
-========================================= */
-
-function createEqualizer() {
-
-    const equalizer =
-        document.createElement("div");
-
-    equalizer.className =
-        "equalizer";
-
-    equalizer.innerHTML = `
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-    `;
-
-    return equalizer;
-}
-
-
-function updateEqualizer() {
-
-    document
-        .querySelectorAll(".equalizer")
-        .forEach(eq => {
-            eq.classList.remove("playing");
-        });
-
-    if (
-        !activeMedia ||
-        activeMedia.paused
-    ) return;
-
-    const activeTrack =
-        document.querySelector(
-            ".track.active"
-        );
-
-    if (!activeTrack) return;
-
-    let equalizer =
-        activeTrack.querySelector(
-            ".equalizer"
-        );
-
-    if (!equalizer) {
-
-        equalizer =
-            createEqualizer();
-
-        const number =
-            activeTrack.querySelector(
-                ".track-number"
-            );
-
-        if (number) {
-            number.replaceWith(equalizer);
-        }
-    }
-
-    equalizer.classList.add("playing");
+    $("visualizerStatus").classList.toggle(
+        "playing",
+        playing
+    );
 }
 
 
@@ -291,9 +501,9 @@ function updateEqualizer() {
    PROGRESO
 ========================================= */
 
-function updateProgress() {
+function updateProgress(){
 
-    if (!activeMedia) return;
+    if(!activeMedia) return;
 
     const current =
         activeMedia.currentTime || 0;
@@ -302,9 +512,7 @@ function updateProgress() {
         activeMedia.duration || 0;
 
     progress.value =
-        total
-            ? current / total * 100
-            : 0;
+        total ? current / total * 100 : 0;
 
     currentTime.textContent =
         formatTime(current);
@@ -313,10 +521,9 @@ function updateProgress() {
         formatTime(total);
 }
 
+progress.addEventListener("input",() => {
 
-progress.addEventListener("input", () => {
-
-    if (
+    if(
         !activeMedia ||
         !activeMedia.duration
     ) return;
@@ -331,9 +538,9 @@ progress.addEventListener("input", () => {
    AVANCE
 ========================================= */
 
-backBtn.addEventListener("click", () => {
+backBtn.addEventListener("click",() => {
 
-    if (!activeMedia) return;
+    if(!activeMedia) return;
 
     activeMedia.currentTime =
         Math.max(
@@ -342,10 +549,9 @@ backBtn.addEventListener("click", () => {
         );
 });
 
+forwardBtn.addEventListener("click",() => {
 
-forwardBtn.addEventListener("click", () => {
-
-    if (!activeMedia) return;
+    if(!activeMedia) return;
 
     activeMedia.currentTime =
         Math.min(
@@ -356,101 +562,97 @@ forwardBtn.addEventListener("click", () => {
 
 
 /* =========================================
-   VOLUMEN
+   SHUFFLE / REPEAT
 ========================================= */
 
-volume.addEventListener("input", () => {
+shuffleBtn.addEventListener("click",() => {
 
-    const value =
-        Number(volume.value);
+    shuffle = !shuffle;
 
-    if (activeMedia) {
-        activeMedia.volume = value;
-        activeMedia.muted = value === 0;
-    }
+    shuffleBtn.classList.toggle(
+        "active",
+        shuffle
+    );
 
-    if (value > 0) {
-        lastVolume = value;
-    }
-
-    volumeValue.textContent =
-        `${Math.round(value * 100)}%`;
-
-    updateMuteIcon();
+    $("shuffleStatus").textContent =
+        shuffle
+            ? "ALEATORIO ON"
+            : "ALEATORIO OFF";
 });
 
+repeatBtn.addEventListener("click",() => {
 
-muteBtn.addEventListener("click", () => {
-
-    if (!activeMedia) return;
-
-    if (
-        activeMedia.muted ||
-        activeMedia.volume === 0
-    ) {
-
-        activeMedia.muted = false;
-
-        const value =
-            lastVolume || 1;
-
-        activeMedia.volume = value;
-        volume.value = value;
-
-    } else {
-
-        lastVolume =
-            activeMedia.volume;
-
-        activeMedia.muted = true;
-        volume.value = 0;
+    if(repeat === "off"){
+        repeat = "one";
+    }else if(repeat === "one"){
+        repeat = "all";
+    }else{
+        repeat = "off";
     }
 
-    volumeValue.textContent =
-        `${Math.round(
-            Number(volume.value) * 100
-        )}%`;
+    repeatBtn.classList.toggle(
+        "active",
+        repeat !== "off"
+    );
 
-    updateMuteIcon();
-});
+    repeatBtn.textContent =
+        repeat === "one"
+            ? "🔂"
+            : "🔁";
 
-
-function updateMuteIcon() {
-
-    if (
-        !activeMedia ||
-        activeMedia.muted ||
-        Number(volume.value) === 0
-    ) {
-        muteBtn.textContent = "🔇";
-    } else if (
-        Number(volume.value) < .5
-    ) {
-        muteBtn.textContent = "🔉";
-    } else {
-        muteBtn.textContent = "🔊";
-    }
-}
-
-
-/* =========================================
-   PANTALLA COMPLETA
-========================================= */
-
-fullscreenBtn.addEventListener("click", () => {
-
-    if (activeMedia !== videoPlayer)
-        return;
-
-    document.fullscreenElement
-        ? document.exitFullscreen()
-        : videoPlayer.requestFullscreen?.();
+    $("repeatStatus").textContent =
+        repeat === "one"
+            ? "REPETIR CANCIÓN"
+            : repeat === "all"
+                ? "REPETIR PLAYLIST"
+                : "REPETIR OFF";
 });
 
 
 /* =========================================
    SIGUIENTE
 ========================================= */
+
+function playNext(){
+
+    if(!playlist.length) return;
+
+    if(repeat === "one"){
+
+        loadTrack(currentIndex);
+
+        return;
+    }
+
+    let next;
+
+    if(shuffle && playlist.length > 1){
+
+        do{
+            next =
+                Math.floor(
+                    Math.random() *
+                    playlist.length
+                );
+        }while(next === currentIndex);
+
+    }else{
+
+        next = currentIndex + 1;
+
+        if(next >= playlist.length){
+
+            if(repeat === "all"){
+                next = 0;
+            }else{
+                updatePlayButton();
+                return;
+            }
+        }
+    }
+
+    loadTrack(next);
+}
 
 videoPlayer.addEventListener(
     "ended",
@@ -462,24 +664,12 @@ audioPlayer.addEventListener(
     playNext
 );
 
-function playNext() {
-
-    if (!playlist.length) return;
-
-    loadTrack(
-        currentIndex <
-        playlist.length - 1
-            ? currentIndex + 1
-            : 0
-    );
-}
-
 
 /* =========================================
-   EVENTOS
+   EVENTOS MEDIA
 ========================================= */
 
-[videoPlayer, audioPlayer]
+[videoPlayer,audioPlayer]
 .forEach(player => {
 
     player.addEventListener(
@@ -501,30 +691,144 @@ function playNext() {
         "loadedmetadata",
         updateProgress
     );
-
-    player.addEventListener(
-        "ended",
-        updatePlayButton
-    );
 });
+
+
+/* =========================================
+   FAVORITOS
+========================================= */
+
+function trackKey(track){
+
+    if(!track) return "";
+
+    return `${track.name}::${track.url}`;
+}
+
+function isFavorite(track){
+
+    return favorites.includes(
+        trackKey(track)
+    );
+}
+
+function toggleFavorite(track){
+
+    if(!track) return;
+
+    const key = trackKey(track);
+
+    if(favorites.includes(key)){
+
+        favorites =
+            favorites.filter(
+                item => item !== key
+            );
+
+        showToast("Eliminado de favoritos");
+
+    }else{
+
+        favorites.push(key);
+
+        showToast("❤️ Añadido a favoritos");
+    }
+
+    saveData();
+
+    updateFavoriteButton();
+    renderPlaylist();
+    renderFavorites();
+    updateCounters();
+}
+
+favoriteBtn.addEventListener(
+    "click",
+    () => {
+
+        if(activeMedia && playlist[currentIndex]){
+            toggleFavorite(
+                playlist[currentIndex]
+            );
+        }
+    }
+);
+
+function updateFavoriteButton(){
+
+    const active =
+        playlist[currentIndex];
+
+    const favorite =
+        active && isFavorite(active);
+
+    favoriteBtn.textContent =
+        favorite ? "♥" : "♡";
+
+    favoriteBtn.classList.toggle(
+        "active",
+        favorite
+    );
+}
 
 
 /* =========================================
    PLAYLIST
 ========================================= */
 
-function renderPlaylist() {
+function renderPlaylist(){
 
     trackCount.textContent =
         playlist.length;
 
-    if (!playlist.length) {
+    const filtered =
+        playlist.filter((track,index) => {
+
+            const search =
+                playlistSearch.toLowerCase();
+
+            const matchesSearch =
+                !search ||
+                track.name
+                    .toLowerCase()
+                    .includes(search);
+
+            let matchesCategory = true;
+
+            if(playlistCategory === "audio"){
+                matchesCategory =
+                    track.type.startsWith("audio/");
+            }
+
+            if(playlistCategory === "video"){
+                matchesCategory =
+                    track.type.startsWith("video/");
+            }
+
+            if(playlistCategory === "favorites"){
+                matchesCategory =
+                    isFavorite(track);
+            }
+
+            return matchesSearch &&
+                   matchesCategory;
+        });
+
+    if(!filtered.length){
 
         playlistElement.innerHTML = `
             <div class="playlist-empty">
                 <span>🎵</span>
-                <p>Tu lista está vacía</p>
-                <small>Carga archivos para añadirlos</small>
+                <p>${
+                    playlist.length
+                        ? "No se encontraron resultados"
+                        : "Tu lista está vacía"
+                }</p>
+                <small>${
+                    playlist.length
+                        ? "Prueba con otra búsqueda"
+                        : "Carga archivos para comenzar"
+                }</small>
             </div>
         `;
 
@@ -533,7 +837,10 @@ function renderPlaylist() {
 
     playlistElement.innerHTML = "";
 
-    playlist.forEach((track, index) => {
+    filtered.forEach(track => {
+
+        const index =
+            playlist.indexOf(track);
 
         const item =
             document.createElement("div");
@@ -545,9 +852,12 @@ function renderPlaylist() {
                     : ""
             }`;
 
+        const favorite =
+            isFavorite(track);
+
         item.innerHTML = `
             <span class="track-number">
-                ${String(index + 1).padStart(2, "0")}
+                ${String(index + 1).padStart(2,"0")}
             </span>
 
             <span class="track-icon">
@@ -572,20 +882,38 @@ function renderPlaylist() {
                 </span>
             </div>
 
-            <button class="remove-track"
-                    title="Eliminar">
+            <button class="track-favorite ${
+                favorite ? "active" : ""
+            }">
+                ${favorite ? "♥" : "♡"}
+            </button>
+
+            <button class="remove-track">
                 ✕
             </button>
         `;
 
-        item.addEventListener("click", e => {
+        item.addEventListener("click",e => {
 
-            if (
-                e.target.closest(".remove-track")
+            if(
+                e.target.closest(".remove-track") ||
+                e.target.closest(".track-favorite")
             ) return;
 
             loadTrack(index);
         });
+
+        item.querySelector(
+            ".track-favorite"
+        ).addEventListener(
+            "click",
+            e => {
+
+                e.stopPropagation();
+
+                toggleFavorite(track);
+            }
+        );
 
         item.querySelector(
             ".remove-track"
@@ -601,33 +929,71 @@ function renderPlaylist() {
 
         playlistElement.appendChild(item);
     });
-
-    updateEqualizer();
 }
 
+$("playlistSearch").addEventListener(
+    "input",
+    e => {
 
-function removeTrack(index) {
+        playlistSearch =
+            e.target.value;
+
+        renderPlaylist();
+    }
+);
+
+document
+    .querySelectorAll(".category-btn")
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                document
+                    .querySelectorAll(".category-btn")
+                    .forEach(b =>
+                        b.classList.remove("active")
+                    );
+
+                button.classList.add("active");
+
+                playlistCategory =
+                    button.dataset.category;
+
+                renderPlaylist();
+            }
+        );
+    });
+
+
+/* =========================================
+   ELIMINAR
+========================================= */
+
+function removeTrack(index){
 
     const track = playlist[index];
 
-    if (
-        track?.temporary &&
+    if(
+        track &&
+        track.temporary &&
         track.url
-    ) {
+    ){
         URL.revokeObjectURL(track.url);
     }
 
     const wasCurrent =
         index === currentIndex;
 
-    playlist.splice(index, 1);
+    playlist.splice(index,1);
 
-    if (!playlist.length) {
+    if(!playlist.length){
 
         resetPlayer();
         currentIndex = -1;
 
-    } else if (wasCurrent) {
+    }else if(wasCurrent){
 
         currentIndex = -1;
 
@@ -638,17 +1004,17 @@ function removeTrack(index) {
             )
         );
 
-    } else {
+    }else{
 
-        if (index < currentIndex)
+        if(index < currentIndex){
             currentIndex--;
+        }
 
         renderPlaylist();
     }
 
-    updateMyMusicActive();
+    updateFavoriteButton();
 }
-
 
 clearPlaylistBtn.addEventListener(
     "click",
@@ -656,13 +1022,11 @@ clearPlaylistBtn.addEventListener(
 
         playlist.forEach(track => {
 
-            if (
+            if(
                 track.temporary &&
                 track.url
-            ) {
-                URL.revokeObjectURL(
-                    track.url
-                );
+            ){
+                URL.revokeObjectURL(track.url);
             }
         });
 
@@ -673,7 +1037,6 @@ clearPlaylistBtn.addEventListener(
         currentIndex = -1;
 
         renderPlaylist();
-        updateMyMusicActive();
     }
 );
 
@@ -682,7 +1045,7 @@ clearPlaylistBtn.addEventListener(
    RESET
 ========================================= */
 
-function resetPlayer() {
+function resetPlayer(){
 
     stopPlayers();
 
@@ -697,23 +1060,28 @@ function resetPlayer() {
 
     fullscreenBtn.classList.remove("visible");
 
-    mediaContainer.classList.remove(
-        "playing",
-        "media-changing"
-    );
-
     currentTitle.textContent =
         "Ningún archivo seleccionado";
 
-    mediaType.textContent = "---";
+    currentMeta.textContent =
+        "Neon Player X";
+
+    mediaType.textContent =
+        "---";
 
     progress.value = 0;
 
-    currentTime.textContent = "00:00";
-    duration.textContent = "00:00";
+    currentTime.textContent =
+        "00:00";
+
+    duration.textContent =
+        "00:00";
 
     playBtn.textContent = "▶";
     playBtn.classList.remove("playing");
+
+    $("visualizerStatus").textContent =
+        "● READY";
 }
 
 
@@ -721,26 +1089,38 @@ function resetPlayer() {
    MI MUSICA
 ========================================= */
 
-function renderMyMusic() {
+function renderMyMusic(){
+
+    const search =
+        ($("librarySearch").value || "")
+            .toLowerCase();
 
     myMusicList.innerHTML = "";
 
-    miMusica.forEach((song, index) => {
+    const filtered =
+        miMusica.filter(song =>
+            song.name
+                .toLowerCase()
+                .includes(search)
+        );
+
+    filtered.forEach((song,index) => {
 
         const item =
             document.createElement("div");
 
-        item.className = "my-song";
-        item.dataset.url = song.url;
+        item.className =
+            "my-song";
+
+        item.dataset.url =
+            song.url;
 
         item.innerHTML = `
             <span class="my-song-number">
-                ${String(index + 1).padStart(2, "0")}
+                ${String(index + 1).padStart(2,"0")}
             </span>
 
-            <span class="my-song-icon">
-                🎵
-            </span>
+            <span class="my-song-icon">🎵</span>
 
             <div class="my-song-info">
                 <span class="my-song-name">
@@ -748,7 +1128,7 @@ function renderMyMusic() {
                 </span>
 
                 <span class="my-song-type">
-                    MP3 • Mi biblioteca
+                    MP3 · Mi biblioteca
                 </span>
             </div>
 
@@ -764,21 +1144,27 @@ function renderMyMusic() {
 
         myMusicList.appendChild(item);
     });
+
+    updateMyMusicActive();
 }
 
+$("librarySearch").addEventListener(
+    "input",
+    renderMyMusic
+);
 
-function playPersonalSong(song) {
+function playPersonalSong(song){
 
     const existing =
         playlist.findIndex(
             track => track.url === song.url
         );
 
-    if (existing !== -1) {
+    if(existing !== -1){
 
         loadTrack(existing);
 
-    } else {
+    }else{
 
         playlist.push({
             file:null,
@@ -794,12 +1180,9 @@ function playPersonalSong(song) {
             playlist.length - 1
         );
     }
-
-    updateMyMusicActive();
 }
 
-
-function updateMyMusicActive() {
+function updateMyMusicActive(){
 
     document
         .querySelectorAll(".my-song")
@@ -807,12 +1190,12 @@ function updateMyMusicActive() {
 
             item.classList.remove("active");
 
-            if (
+            if(
                 activeMedia &&
                 playlist[currentIndex] &&
                 playlist[currentIndex].url ===
                 item.dataset.url
-            ) {
+            ){
                 item.classList.add("active");
             }
         });
@@ -820,269 +1203,512 @@ function updateMyMusicActive() {
 
 
 /* =========================================
-   RADIO
+   HISTORIAL
 ========================================= */
 
-const radioAudio = $("radioAudio");
-const radioPlay = $("radioPlay");
-const radioName = $("radioName");
-const radioGenre = $("radioGenre");
-const radioStatus = $("radioStatus");
-const radioVolume = $("radioVolume");
-const radioVolumeValue = $("radioVolumeValue");
-const radioList = $("radioList");
+function addHistory(track){
 
-const radios = [
+    if(!track) return;
 
-    {
-        name:"LOS40 España",
-        country:"España",
-        genre:"Pop / Éxitos",
-        icon:"🇪🇸",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3",
-        web:"https://los40.com/"
-    },
+    const key = trackKey(track);
 
-    {
-        name:"LOS40 Classic",
-        country:"España",
-        genre:"Clásicos",
-        icon:"🎸",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3",
-        web:"https://los40.com/"
-    },
+    history =
+        history.filter(
+            item => item.key !== key
+        );
 
-    {
-        name:"LOS40 Urban",
-        country:"España",
-        genre:"Urbano / Reguetón",
-        icon:"🔥",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3",
-        web:"https://los40.com/"
-    },
+    history.unshift({
+        key,
+        name:track.name,
+        url:track.url,
+        type:track.type,
+        time:new Date().toLocaleString("es-ES")
+    });
 
-    {
-        name:"LOS40 Dance",
-        country:"Europa",
-        genre:"Dance / Electrónica",
-        icon:"💿",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3",
-        web:"https://los40.com/"
-    },
+    history =
+        history.slice(0,30);
 
-    {
-        name:"KISS FM",
-        country:"España",
-        genre:"80s / 90s / Pop",
-        icon:"💜",
-        url:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
-        web:"https://www.kissfm.es/"
-    },
+    saveData();
 
-    {
-        name:"Radio Nacional",
-        country:"España",
-        genre:"Actualidad / Música",
-        icon:"🇪🇸",
-        url:"https://dispatcher.rndfnk.com/crtve/rne1/main/mp3/high",
-        web:"https://www.rtve.es/play/radio/rne/"
-    },
+    updateCounters();
+}
 
-    {
-        name:"Radio 3",
-        country:"España",
-        genre:"Música alternativa",
-        icon:"🎧",
-        url:"https://radio3.rtveradio.cires21.com/radio3_hc.mp3",
-        web:"https://www.rtve.es/play/radio/radio-3/"
-    },
+function renderHistory(){
 
-    {
-        name:"Radio Clásica",
-        country:"España",
-        genre:"Clásica",
-        icon:"🎻",
-        url:"https://radioclasica.rtveradio.cires21.com/radioclasica_hc.mp3",
-        web:"https://www.rtve.es/play/radio/"
-    },
+    if(!history.length){
 
-    {
-        name:"Cadena Dial",
-        country:"España",
-        genre:"Pop en español",
-        icon:"🎤",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CADENADIAL.mp3",
-        web:"https://www.cadenadial.com/"
-    },
+        historyList.innerHTML = `
+            <div class="playlist-empty">
+                <span>🕘</span>
+                <p>Aún no hay historial</p>
+                <small>Las canciones reproducidas aparecerán aquí</small>
+            </div>
+        `;
 
-    {
-        name:"Radiolé",
-        country:"España",
-        genre:"Español / Latino",
-        icon:"💃",
-        url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3",
-        web:"https://www.radiole.com/"
+        return;
     }
-];
 
-let currentRadio = -1;
+    historyList.innerHTML = "";
+
+    history.forEach(item => {
+
+        const element =
+            document.createElement("div");
+
+        element.className =
+            "special-item";
+
+        element.innerHTML = `
+            <span class="my-song-icon">
+                ${
+                    item.type.startsWith("video/")
+                        ? "🎬"
+                        : "🎵"
+                }
+            </span>
+
+            <div class="special-info">
+                <span class="special-name">
+                    ${escapeHTML(item.name)}
+                </span>
+
+                <span class="special-meta">
+                    ${escapeHTML(item.time)}
+                </span>
+            </div>
+
+            <button class="special-play">
+                ▶
+            </button>
+        `;
+
+        element.addEventListener(
+            "click",
+            () => playHistoryItem(item)
+        );
+
+        historyList.appendChild(element);
+    });
+}
+
+function playHistoryItem(item){
+
+    const existing =
+        playlist.findIndex(
+            track =>
+                track.url === item.url &&
+                track.name === item.name
+        );
+
+    if(existing !== -1){
+
+        loadTrack(existing);
+
+    }else{
+
+        playlist.push({
+            file:null,
+            url:item.url,
+            name:item.name,
+            type:item.type,
+            personal:true
+        });
+
+        renderPlaylist();
+
+        loadTrack(
+            playlist.length - 1
+        );
+    }
+}
+
+$("clearHistory").addEventListener(
+    "click",
+    () => {
+
+        history = [];
+
+        saveData();
+
+        renderHistory();
+        updateCounters();
+
+        showToast("Historial eliminado");
+    }
+);
 
 
 /* =========================================
-   RADIOS
+   FAVORITOS LISTA
 ========================================= */
 
-function renderRadios(filter = "all") {
+function renderFavorites(){
 
-    radioList.innerHTML = "";
+    const favoriteTracks =
+        playlist.filter(track =>
+            isFavorite(track)
+        );
 
-    radios
-        .filter(r =>
-            filter === "all" ||
-            r.country === filter ||
-            r.genre.toLowerCase().includes(
-                filter.toLowerCase()
-            )
-        )
-        .forEach((radio, index) => {
+    $("favoriteSectionCount").textContent =
+        favoriteTracks.length;
 
-            const item =
-                document.createElement("div");
+    if(!favoriteTracks.length){
 
-            item.className =
-                `radio-item ${
-                    index === currentRadio
-                        ? "active"
-                        : ""
-                }`;
+        favoritesList.innerHTML = `
+            <div class="playlist-empty">
+                <span>❤️</span>
+                <p>No tienes favoritos todavía</p>
+                <small>Pulsa el corazón de una canción para guardarla</small>
+            </div>
+        `;
 
-            item.innerHTML = `
-                <span class="radio-item-icon">
-                    ${radio.icon}
+        return;
+    }
+
+    favoritesList.innerHTML = "";
+
+    favoriteTracks.forEach(track => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "special-item";
+
+        item.innerHTML = `
+            <span class="my-song-icon">
+                ${
+                    track.type.startsWith("video/")
+                        ? "🎬"
+                        : "🎵"
+                }
+            </span>
+
+            <div class="special-info">
+                <span class="special-name">
+                    ${escapeHTML(track.name)}
                 </span>
 
-                <div class="radio-item-info">
-                    <span class="radio-item-name">
-                        ${escapeHTML(radio.name)}
-                    </span>
-
-                    <span class="radio-item-genre">
-                        ${escapeHTML(radio.genre)}
-                    </span>
-                </div>
-
-                <span class="radio-item-play">
-                    ▶
+                <span class="special-meta">
+                    ${
+                        track.type.startsWith("video/")
+                            ? "Vídeo"
+                            : "Audio"
+                    }
                 </span>
-            `;
+            </div>
 
-            item.addEventListener(
-                "click",
-                () => playRadio(index)
-            );
+            <button class="special-play">
+                ▶
+            </button>
+        `;
 
-            radioList.appendChild(item);
-        });
+        item.addEventListener(
+            "click",
+            () => {
+
+                const index =
+                    playlist.indexOf(track);
+
+                if(index !== -1){
+                    loadTrack(index);
+                }
+            }
+        );
+
+        favoritesList.appendChild(item);
+    });
 }
 
 
-function playRadio(index) {
+/* =========================================
+   CONTADORES
+========================================= */
 
-    const radio = radios[index];
+function updateCounters(){
 
-    if (!radio) return;
+    $("favoriteCount").textContent =
+        `${favorites.length} canciones`;
+
+    $("historyCount").textContent =
+        `${history.length} reproducciones`;
+
+    $("favoriteSectionCount").textContent =
+        playlist.filter(
+            track => isFavorite(track)
+        ).length;
+}
+
+updateCounters();
+
+
+/* =========================================
+   VOLUMEN
+========================================= */
+
+volume.addEventListener(
+    "input",
+    () => {
+
+        const value =
+            Number(volume.value);
+
+        if(activeMedia){
+
+            activeMedia.volume =
+                value;
+
+            activeMedia.muted =
+                value === 0;
+        }
+
+        if(value > 0){
+            lastVolume = value;
+        }
+
+        volumeValue.textContent =
+            `${Math.round(value * 100)}%`;
+
+        updateMuteIcon();
+    }
+);
+
+muteBtn.addEventListener(
+    "click",
+    () => {
+
+        if(!activeMedia) return;
+
+        if(
+            activeMedia.muted ||
+            activeMedia.volume === 0
+        ){
+
+            activeMedia.muted = false;
+
+            const value =
+                lastVolume || 1;
+
+            activeMedia.volume =
+                value;
+
+            volume.value =
+                value;
+
+        }else{
+
+            lastVolume =
+                activeMedia.volume;
+
+            activeMedia.muted = true;
+
+            volume.value = 0;
+        }
+
+        volumeValue.textContent =
+            `${Math.round(
+                Number(volume.value) * 100
+            )}%`;
+
+        updateMuteIcon();
+    }
+);
+
+function updateMuteIcon(){
+
+    if(
+        !activeMedia ||
+        activeMedia.muted ||
+        Number(volume.value) === 0
+    ){
+        muteBtn.textContent = "🔇";
+    }else if(
+        Number(volume.value) < .5
+    ){
+        muteBtn.textContent = "🔉";
+    }else{
+        muteBtn.textContent = "🔊";
+    }
+}
+
+
+/* =========================================
+   PANTALLA COMPLETA
+========================================= */
+
+fullscreenBtn.addEventListener(
+    "click",
+    () => {
+
+        if(activeMedia !== videoPlayer)
+            return;
+
+        document.fullscreenElement
+            ? document.exitFullscreen()
+            : visualizerContainer.requestFullscreen?.();
+    }
+);
+
+
+/* =========================================
+   RADIO
+========================================= */
+
+function renderRadios(){
+
+    radioList.innerHTML = "";
+
+    const filtered =
+        radios.filter(radio => {
+
+            const query =
+                radioSearch.toLowerCase();
+
+            const matchesSearch =
+                !query ||
+                radio.name.toLowerCase().includes(query) ||
+                radio.genre.toLowerCase().includes(query) ||
+                radio.country.toLowerCase().includes(query);
+
+            const matchesFilter =
+                radioFilter === "all" ||
+                radio.country === radioFilter ||
+                radio.tags.includes(radioFilter);
+
+            return matchesSearch &&
+                   matchesFilter;
+        });
+
+    $("radioCount").textContent =
+        `${filtered.length} emisoras`;
+
+    filtered.forEach((radio,index) => {
+
+        const realIndex =
+            radios.indexOf(radio);
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            `radio-item ${
+                realIndex === currentRadio
+                    ? "active"
+                    : ""
+            }`;
+
+        item.innerHTML = `
+            <span class="radio-item-icon">
+                ${radio.icon}
+            </span>
+
+            <div class="radio-item-info">
+                <span class="radio-item-name">
+                    ${escapeHTML(radio.name)}
+                </span>
+
+                <span class="radio-item-genre">
+                    ${escapeHTML(radio.genre)} · ${escapeHTML(radio.country)}
+                </span>
+            </div>
+
+            <span class="radio-item-play">
+                ${
+                    favoriteRadios.includes(radio.name)
+                        ? "♥"
+                        : "▶"
+                }
+            </span>
+        `;
+
+        item.addEventListener(
+            "click",
+            () => playRadio(realIndex)
+        );
+
+        radioList.appendChild(item);
+    });
+}
+
+function playRadio(index){
+
+    const radio =
+        radios[index];
+
+    if(!radio) return;
 
     currentRadio = index;
 
-    radioAudio.src = radio.url;
+    radioAudio.src =
+        radio.url;
+
     radioAudio.volume =
         Number(radioVolume.value);
+
+    radioName.textContent =
+        radio.name;
+
+    radioGenre.textContent =
+        radio.genre;
+
+    updateRadioFavorite();
 
     radioAudio.play()
         .then(() => {
 
-            radioName.textContent =
-                radio.name;
-
-            radioGenre.textContent =
-                radio.genre;
-
             radioStatus.textContent =
                 "● EN DIRECT";
 
-            radioStatus.classList.add(
-                "live"
-            );
+            radioStatus.classList.add("live");
 
             radioPlay.textContent =
                 "⏸";
 
-            renderRadios(
-                document
-                    .querySelector(
-                        ".radio-filter.active"
-                    )
-                    ?.dataset.filter ||
-                "all"
+            renderRadios();
+
+            showToast(
+                `📻 Conectado: ${radio.name}`
             );
         })
         .catch(() => {
 
             radioStatus.textContent =
-                "NO DISPONIBLE";
+                "SEÑAL NO DISPONIBLE";
 
-            radioStatus.classList.remove(
-                "live"
-            );
+            radioStatus.classList.remove("live");
 
             radioPlay.textContent =
                 "▶";
 
-            if (
-                confirm(
-                    `${radio.name} no permite la reproducción directa en este navegador.\n\n¿Abrir su web oficial?`
-                )
-            ) {
-                window.open(
-                    radio.web,
-                    "_blank",
-                    "noopener"
-                );
-            }
+            showToast(
+                `${radio.name}: señal no disponible en este navegador`
+            );
         });
 }
-
 
 radioPlay.addEventListener(
     "click",
     () => {
 
-        if (!radioAudio.src) {
+        if(!radioAudio.src){
 
-            if (radios.length)
-                playRadio(0);
+            playRadio(0);
 
             return;
         }
 
-        if (radioAudio.paused) {
-
-            radioAudio.play()
-                .catch(() => {});
-
-        } else {
-
-            radioAudio.pause();
-        }
+        radioAudio.paused
+            ? radioAudio.play().catch(()=>{})
+            : radioAudio.pause();
     }
 );
-
 
 radioAudio.addEventListener(
     "play",
     () => {
 
-        radioPlay.textContent = "⏸";
+        radioPlay.textContent =
+            "⏸";
 
         radioStatus.textContent =
             "● EN DIRECT";
@@ -1093,12 +1719,12 @@ radioAudio.addEventListener(
     }
 );
 
-
 radioAudio.addEventListener(
     "pause",
     () => {
 
-        radioPlay.textContent = "▶";
+        radioPlay.textContent =
+            "▶";
 
         radioStatus.textContent =
             "PAUSADA";
@@ -1108,7 +1734,6 @@ radioAudio.addEventListener(
         );
     }
 );
-
 
 radioAudio.addEventListener(
     "error",
@@ -1123,11 +1748,6 @@ radioAudio.addEventListener(
     }
 );
 
-
-/* =========================================
-   VOLUMEN RADIO
-========================================= */
-
 radioVolume.addEventListener(
     "input",
     () => {
@@ -1135,17 +1755,78 @@ radioVolume.addEventListener(
         const value =
             Number(radioVolume.value);
 
-        radioAudio.volume = value;
+        radioAudio.volume =
+            value;
 
         radioVolumeValue.textContent =
             `${Math.round(value * 100)}%`;
     }
 );
 
+radioFavorite.addEventListener(
+    "click",
+    () => {
 
-/* =========================================
-   FILTROS
-========================================= */
+        if(currentRadio < 0) return;
+
+        const radio =
+            radios[currentRadio];
+
+        if(
+            favoriteRadios.includes(
+                radio.name
+            )
+        ){
+
+            favoriteRadios =
+                favoriteRadios.filter(
+                    name => name !== radio.name
+                );
+
+            showToast(
+                "Emisora eliminada de favoritos"
+            );
+
+        }else{
+
+            favoriteRadios.push(
+                radio.name
+            );
+
+            showToast(
+                "❤️ Emisora guardada en favoritos"
+            );
+        }
+
+        saveData();
+        updateRadioFavorite();
+        renderRadios();
+    }
+);
+
+function updateRadioFavorite(){
+
+    if(currentRadio < 0){
+
+        radioFavorite.textContent =
+            "♡";
+
+        return;
+    }
+
+    const active =
+        favoriteRadios.includes(
+            radios[currentRadio].name
+        );
+
+    radioFavorite.textContent =
+        active ? "♥" : "♡";
+
+    radioFavorite.classList.toggle(
+        "active",
+        active
+    );
+}
 
 document
     .querySelectorAll(".radio-filter")
@@ -1156,25 +1837,110 @@ document
             () => {
 
                 document
-                    .querySelectorAll(
-                        ".radio-filter"
-                    )
+                    .querySelectorAll(".radio-filter")
                     .forEach(b =>
-                        b.classList.remove(
-                            "active"
-                        )
+                        b.classList.remove("active")
                     );
 
-                button.classList.add(
-                    "active"
-                );
+                button.classList.add("active");
 
-                renderRadios(
-                    button.dataset.filter
+                radioFilter =
+                    button.dataset.filter;
+
+                renderRadios();
+            }
+        );
+    });
+
+$("radioSearch").addEventListener(
+    "input",
+    e => {
+
+        radioSearch =
+            e.target.value;
+
+        renderRadios();
+    }
+);
+
+
+/* =========================================
+   SLEEP TIMER
+========================================= */
+
+$("sleepBtn").addEventListener(
+    "click",
+    () => {
+
+        $("sleepPanel")
+            .classList.toggle("open");
+    }
+);
+
+document
+    .querySelectorAll(
+        ".sleep-panel button"
+    )
+    .forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const minutes =
+                    Number(
+                        button.dataset.minutes
+                    );
+
+                clearTimeout(sleepTimer);
+
+                sleepEnd =
+                    minutes
+                        ? Date.now() +
+                          minutes * 60000
+                        : null;
+
+                if(!minutes){
+
+                    $("sleepStatus").textContent =
+                        "Temporizador apagado";
+
+                    return;
+                }
+
+                $("sleepStatus").textContent =
+                    `Apagado en ${minutes} min`;
+
+                sleepTimer =
+                    setTimeout(
+                        sleepNow,
+                        minutes * 60000
+                    );
+
+                showToast(
+                    `🌙 Temporizador: ${minutes} minutos`
                 );
             }
         );
     });
+
+function sleepNow(){
+
+    if(activeMedia){
+        activeMedia.pause();
+    }
+
+    radioAudio.pause();
+
+    $("sleepStatus").textContent =
+        "Reproducción detenida";
+
+    sleepEnd = null;
+
+    showToast(
+        "🌙 Temporizador finalizado"
+    );
+}
 
 
 /* =========================================
@@ -1185,14 +1951,14 @@ document.addEventListener(
     "keydown",
     event => {
 
-        if (!activeMedia) return;
-
-        if (
+        if(
             event.target.tagName === "INPUT" ||
             event.target.tagName === "TEXTAREA"
         ) return;
 
-        switch (event.code) {
+        if(!activeMedia) return;
+
+        switch(event.code){
 
             case "Space":
                 event.preventDefault();
@@ -1253,18 +2019,335 @@ document.addEventListener(
                     )}%`;
 
                 break;
+
+            case "KeyM":
+                muteBtn.click();
+                break;
+
+            case "KeyF":
+                fullscreenBtn.click();
+                break;
+
+            case "KeyN":
+                playNext();
+                break;
         }
     }
 );
 
 
 /* =========================================
+   VISUALIZADOR NEON
+========================================= */
+
+let audioContext;
+let analyser;
+let sourceNode;
+let visualizerReady = false;
+
+function initVisualizer(){
+
+    if(visualizerReady) return;
+
+    try{
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+        analyser =
+            audioContext.createAnalyser();
+
+        analyser.fftSize = 256;
+
+        analyser.smoothingTimeConstant =
+            .82;
+
+        sourceNode =
+            audioContext.createMediaElementSource(
+                audioPlayer
+            );
+
+        sourceNode.connect(analyser);
+        analyser.connect(
+            audioContext.destination
+        );
+
+        visualizerReady = true;
+
+    }catch(error){
+
+        console.warn(
+            "Visualizer no disponible:",
+            error
+        );
+    }
+}
+
+audioPlayer.addEventListener(
+    "play",
+    () => {
+
+        initVisualizer();
+
+        if(
+            audioContext &&
+            audioContext.state === "suspended"
+        ){
+            audioContext.resume();
+        }
+    }
+);
+
+const ctx =
+    visualizer.getContext("2d");
+
+function resizeVisualizer(){
+
+    const rect =
+        visualizer.getBoundingClientRect();
+
+    const ratio =
+        window.devicePixelRatio || 1;
+
+    visualizer.width =
+        rect.width * ratio;
+
+    visualizer.height =
+        rect.height * ratio;
+
+    ctx.setTransform(
+        ratio,
+        0,
+        0,
+        ratio,
+        0,
+        0
+    );
+}
+
+window.addEventListener(
+    "resize",
+    resizeVisualizer
+);
+
+resizeVisualizer();
+
+function drawVisualizer(){
+
+    requestAnimationFrame(
+        drawVisualizer
+    );
+
+    const width =
+        visualizer.clientWidth;
+
+    const height =
+        visualizer.clientHeight;
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+    if(
+        !analyser ||
+        !activeMedia ||
+        activeMedia.paused
+    ){
+
+        drawIdleVisualizer(
+            width,
+            height
+        );
+
+        return;
+    }
+
+    const data =
+        new Uint8Array(
+            analyser.frequencyBinCount
+        );
+
+    analyser.getByteFrequencyData(data);
+
+    const bars = 64;
+
+    const gap = 3;
+
+    const barWidth =
+        Math.max(
+            2,
+            width / bars - gap
+        );
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            height,
+            0,
+            height * .15
+        );
+
+    gradient.addColorStop(
+        0,
+        getCSS("--purple")
+    );
+
+    gradient.addColorStop(
+        .5,
+        getCSS("--cyan")
+    );
+
+    gradient.addColorStop(
+        1,
+        getCSS("--pink")
+    );
+
+    ctx.shadowBlur = 12;
+    ctx.shadowColor =
+        getCSS("--purple");
+
+    ctx.fillStyle =
+        gradient;
+
+    for(let i=0;i<bars;i++){
+
+        const dataIndex =
+            Math.floor(
+                i *
+                data.length /
+                bars
+            );
+
+        const value =
+            data[dataIndex] / 255;
+
+        const barHeight =
+            Math.max(
+                3,
+                value * height * .7
+            );
+
+        const x =
+            i * (barWidth + gap);
+
+        const y =
+            height - barHeight;
+
+        ctx.fillRect(
+            x,
+            y,
+            barWidth,
+            barHeight
+        );
+    }
+
+    ctx.shadowBlur = 0;
+}
+
+function drawIdleVisualizer(
+    width,
+    height
+){
+
+    const time =
+        Date.now() / 1000;
+
+    ctx.strokeStyle =
+        getCSS("--purple");
+
+    ctx.globalAlpha = .12;
+
+    ctx.lineWidth = 1;
+
+    for(let i=0;i<5;i++){
+
+        ctx.beginPath();
+
+        for(
+            let x=0;
+            x<=width;
+            x+=8
+        ){
+
+            const y =
+                height / 2 +
+                Math.sin(
+                    x / 100 +
+                    time +
+                    i
+                ) *
+                (10 + i * 5);
+
+            if(x === 0)
+                ctx.moveTo(x,y);
+            else
+                ctx.lineTo(x,y);
+        }
+
+        ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
+}
+
+function getCSS(variable){
+
+    return getComputedStyle(
+        document.body
+    ).getPropertyValue(variable).trim();
+}
+
+drawVisualizer();
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+function showToast(message){
+
+    const container =
+        $("toastContainer");
+
+    const toast =
+        document.createElement("div");
+
+    toast.className =
+        "toast";
+
+    toast.textContent =
+        message;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+
+        toast.style.opacity = "0";
+        toast.style.transform =
+            "translateX(15px)";
+
+        setTimeout(
+            () => toast.remove(),
+            250
+        );
+
+    },2800);
+}
+
+
+/* =========================================
    UTILIDADES
 ========================================= */
 
-function formatTime(seconds) {
+function formatTime(seconds){
 
-    if (!Number.isFinite(seconds))
+    if(!Number.isFinite(seconds))
         return "00:00";
 
     seconds =
@@ -1280,13 +2363,13 @@ function formatTime(seconds) {
     ).padStart(2,"0")}`;
 }
 
-
-function escapeHTML(text) {
+function escapeHTML(text){
 
     const div =
         document.createElement("div");
 
-    div.textContent = text;
+    div.textContent =
+        text;
 
     return div.innerHTML;
 }
@@ -1296,9 +2379,13 @@ function escapeHTML(text) {
    INICIO
 ========================================= */
 
+volumeValue.textContent =
+    "100%";
+
+radioVolumeValue.textContent =
+    "100%";
+
 renderPlaylist();
 renderMyMusic();
 renderRadios();
-
-volumeValue.textContent = "100%";
-radioVolumeValue.textContent = "100%";
+renderFavorites()
