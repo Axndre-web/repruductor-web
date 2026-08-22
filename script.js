@@ -2388,4 +2388,6 @@ radioVolumeValue.textContent =
 renderPlaylist();
 renderMyMusic();
 renderRadios();
-renderFavorites()
+renderFavorites();
+renderHistory();
+updateCounters();

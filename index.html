@@ -202,3 +202,127 @@
 
     <div id="myMusicList" class="music-grid"></div>
 </section>
+
+</section>
+
+
+<section id="section-favorites" class="page-section">
+
+<section class="library-card">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">COLECCIÓN PERSONAL</span>
+            <h2>❤️ Favoritos</h2>
+        </div>
+        <span id="favoriteSectionCount" class="count">0</span>
+    </div>
+
+    <div id="favoritesList" class="special-grid"></div>
+</section>
+
+</section>
+
+
+<section id="section-history" class="page-section">
+
+<section class="library-card">
+    <div class="section-header">
+        <div>
+            <span class="eyebrow">ACTIVIDAD RECIENTE</span>
+            <h2>🕘 Historial</h2>
+        </div>
+
+        <button id="clearHistory" class="danger-small">Limpiar</button>
+    </div>
+
+    <div id="historyList" class="special-grid"></div>
+</section>
+
+</section>
+
+
+<section id="section-radio" class="page-section">
+
+<section class="radio-card">
+
+<div class="section-header">
+    <div>
+        <span class="eyebrow">EMISIÓN ONLINE</span>
+        <h2>📻 Neon Radio</h2>
+    </div>
+
+    <span id="radioStatus" class="radio-status">OFFLINE</span>
+</div>
+
+<div class="radio-player">
+
+    <div class="radio-info">
+        <div class="radio-icon">📻</div>
+
+        <div>
+            <span class="label">EMISORA ACTUAL</span>
+            <h3 id="radioName">Selecciona una emisora</h3>
+            <span id="radioGenre">Radio online</span>
+        </div>
+    </div>
+
+    <div class="radio-controls">
+        <button id="radioFavorite" class="radio-heart">♡</button>
+
+        <button id="radioPlay" class="radio-play">▶</button>
+
+        <input id="radioVolume" type="range" min="0" max="1" step=".01" value="1">
+
+        <span id="radioVolumeValue">100%</span>
+    </div>
+
+</div>
+
+<div class="radio-toolbar">
+
+    <div class="search-box">
+        🔍
+        <input id="radioSearch" type="search" placeholder="Buscar emisora, país o género...">
+    </div>
+
+    <div class="radio-filters">
+        <button class="radio-filter active" data-filter="all">Todas</button>
+        <button class="radio-filter" data-filter="España">🇪🇸 España</button>
+        <button class="radio-filter" data-filter="Europa">🇪🇺 Europa</button>
+        <button class="radio-filter" data-filter="Latinoamérica">🌎 Latinoamérica</button>
+        <button class="radio-filter" data-filter="Pop">🎤 Pop</button>
+        <button class="radio-filter" data-filter="Urbano">🔥 Urbano</button>
+        <button class="radio-filter" data-filter="Clásica">🎻 Clásica</button>
+    </div>
+
+</div>
+
+<div class="radio-heading">
+    <span>📡 EMISORAS DISPONIBLES</span>
+    <span id="radioCount">0 emisoras</span>
+</div>
+
+<div id="radioList" class="radio-grid"></div>
+
+</section>
+
+</section>
+
+</main>
+
+<footer>
+    <span>NEON PLAYER X</span>
+    <span>HTML · CSS · JAVASCRIPT</span>
+    <span>LOCAL MEDIA SYSTEM</span>
+</footer>
+
+</div>
+
+<audio id="radioAudio" preload="none"></audio>
+
+<div id="toastContainer" class="toast-container"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
