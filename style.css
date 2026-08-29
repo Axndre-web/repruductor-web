@@ -1286,3 +1286,165 @@ footer{
         transition-duration:.01ms!important;
     }
 }
+
+/* =========================================
+   CRECIMIENTO / PWA / ACTIVIDAD
+========================================= */
+
+.activity-badge{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    min-height:40px;
+    padding:7px 10px;
+
+    border:1px solid var(--border);
+    border-radius:8px;
+
+    background:rgba(255,255,255,.025);
+
+    color:var(--muted);
+
+    font-size:.58rem;
+    letter-spacing:1px;
+
+    white-space:nowrap;
+
+    transition:.25s;
+}
+
+.activity-badge:hover{
+    border-color:var(--cyan);
+
+    color:var(--text);
+
+    box-shadow:
+        0 0 15px
+        rgba(34,211,238,.12);
+}
+
+.activity-badge strong{
+    color:var(--cyan);
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:.72rem;
+}
+
+.activity-dot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:var(--purple);
+
+    box-shadow:
+        0 0 9px
+        var(--purple);
+
+    animation:
+        activityPulse 2s infinite;
+}
+
+@keyframes activityPulse{
+
+    50%{
+        opacity:.45;
+        transform:scale(.8);
+    }
+}
+
+.install-btn,
+.share-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.install-btn{
+    border-color:
+        rgba(73,255,154,.35);
+
+    color:var(--green);
+}
+
+.install-btn[hidden]{
+    display:none;
+}
+
+.install-btn.install-ready{
+    animation:
+        installGlow 2s infinite;
+}
+
+@keyframes installGlow{
+
+    50%{
+        box-shadow:
+            0 0 18px
+            rgba(73,255,154,.14);
+    }
+}
+
+.share-btn{
+    border-color:
+        rgba(34,211,238,.25);
+}
+
+body[data-activity-level="1"] .activity-dot{
+    background:var(--purple);
+    box-shadow:
+        0 0 10px var(--purple);
+}
+
+body[data-activity-level="2"] .activity-dot,
+body[data-activity-level="3"] .activity-dot{
+    background:var(--cyan);
+    box-shadow:
+        0 0 11px var(--cyan);
+}
+
+body[data-activity-level="4"] .activity-dot,
+body[data-activity-level="5"] .activity-dot{
+    background:var(--pink);
+    box-shadow:
+        0 0 12px var(--pink);
+}
+
+body[data-activity-level="6"] .activity-dot,
+body[data-activity-level="7"] .activity-dot{
+    background:var(--green);
+    box-shadow:
+        0 0 13px var(--green);
+}
+
+body[data-activity-level="8"] .activity-dot,
+body[data-activity-level="9"] .activity-dot,
+body[data-activity-level="10"] .activity-dot{
+    background:var(--yellow);
+    box-shadow:
+        0 0 15px var(--yellow);
+}
+
+@media(max-width:900px){
+
+    .top-actions{
+        flex-wrap:wrap;
+    }
+}
+
+@media(max-width:700px){
+
+    .activity-badge{
+        justify-content:center;
+        min-width:0;
+    }
+
+    .install-btn,
+    .share-btn{
+        min-width:0;
+    }
+}

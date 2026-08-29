@@ -4,9 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <meta name="theme-color" content="#05050a">
-<meta name="description" content="Neon Player - reproductor multimedia y radio online">
-<title>Neon Player X</title>
+<meta name="description" content="Neon Player X — reproductor multimedia, música local, vídeo y radio online.">
+<meta name="application-name" content="Neon Player X">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Neon Player X">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="stylesheet" href="style.css">
+<title>Neon Player X</title>
 </head>
 
 <body>
@@ -21,12 +29,50 @@
     </div>
 
     <div class="top-actions">
-        <button id="sleepBtn" class="glass-btn" title="Temporizador">🌙 <span>Sleep</span></button>
-        <button id="themeBtn" class="glass-btn" title="Cambiar tema">🎨 <span>Tema</span></button>
+
+        <div id="activityBadge"
+             class="activity-badge"
+             title="Actividad local de Neon Player X"
+             aria-live="polite">
+
+            <span class="activity-dot"></span>
+            <span id="activityLevel">NIVEL 1</span>
+            <strong id="activityScore">0</strong>
+
+        </div>
+
+        <button
+            id="installBtn"
+            class="glass-btn install-btn"
+            title="Instalar Neon Player X"
+            hidden>
+            ⬇ Instalar
+        </button>
+
+        <button
+            id="sleepBtn"
+            class="glass-btn"
+            title="Temporizador">
+            🌙 <span>Sleep</span>
+        </button>
+
+        <button
+            id="themeBtn"
+            class="glass-btn"
+            title="Cambiar tema">
+            🎨 <span>Tema</span>
+        </button>
+
         <label class="upload-btn">
             📁 Añadir
-            <input id="fileInput" type="file" accept="audio/*,video/*" multiple hidden>
+            <input
+                id="fileInput"
+                type="file"
+                accept="audio/*,video/*"
+                multiple
+                hidden>
         </label>
+
     </div>
 </header>
 
@@ -47,69 +93,206 @@
 <section class="player-card">
 
 <div class="visualizer-container" id="visualizerContainer">
+
     <canvas id="visualizer"></canvas>
 
     <div class="visualizer-overlay">
-        <span class="live-chip" id="visualizerStatus">● READY</span>
+        <span class="live-chip" id="visualizerStatus">
+            ● READY
+        </span>
     </div>
 
     <div class="empty-state" id="emptyState">
-        <div class="neon-logo">▶</div>
-        <h2>NEON PLAYER X</h2>
-        <p>Selecciona una canción, vídeo o emisora</p>
+
+        <div class="neon-logo">
+            ▶
+        </div>
+
+        <h2>
+            NEON PLAYER X
+        </h2>
+
+        <p>
+            Selecciona una canción, vídeo o emisora
+        </p>
+
     </div>
 
-    <video id="videoPlayer" playsinline></video>
-    <audio id="audioPlayer" preload="metadata"></audio>
+    <video
+        id="videoPlayer"
+        playsinline>
+    </video>
 
-    <button id="fullscreenBtn" class="fullscreen-btn">⛶</button>
+    <audio
+        id="audioPlayer"
+        preload="metadata">
+    </audio>
+
+    <button
+        id="fullscreenBtn"
+        class="fullscreen-btn"
+        title="Pantalla completa">
+        ⛶
+    </button>
+
 </div>
 
 <div class="media-info">
+
     <div class="now-playing">
-        <span class="label">REPRODUCIENDO AHORA</span>
-        <h2 id="currentTitle">Ningún archivo seleccionado</h2>
-        <span id="currentMeta">Neon Player X</span>
+
+        <span class="label">
+            REPRODUCIENDO AHORA
+        </span>
+
+        <h2 id="currentTitle">
+            Ningún archivo seleccionado
+        </h2>
+
+        <span id="currentMeta">
+            Neon Player X
+        </span>
+
     </div>
 
     <div class="media-actions">
-        <button id="favoriteBtn" class="icon-btn" title="Favorito">♡</button>
-        <span id="mediaType" class="type-badge">---</span>
+
+        <button
+            id="favoriteBtn"
+            class="icon-btn"
+            title="Favorito">
+            ♡
+        </button>
+
+        <span
+            id="mediaType"
+            class="type-badge">
+            ---
+        </span>
+
     </div>
+
 </div>
 
 <div class="progress-area">
-    <span id="currentTime">00:00</span>
-    <input id="progress" type="range" min="0" max="100" value="0">
-    <span id="duration">00:00</span>
+
+    <span id="currentTime">
+        00:00
+    </span>
+
+    <input
+        id="progress"
+        type="range"
+        min="0"
+        max="100"
+        value="0"
+        aria-label="Progreso">
+
+    <span id="duration">
+        00:00
+    </span>
+
 </div>
 
 <div class="controls">
-    <button id="shuffleBtn" class="control-btn" title="Aleatorio">🔀</button>
-    <button id="backBtn" class="control-btn" title="10 segundos atrás">⏪</button>
-    <button id="playBtn" class="play-btn">▶</button>
-    <button id="forwardBtn" class="control-btn" title="10 segundos adelante">⏩</button>
-    <button id="repeatBtn" class="control-btn" title="Repetir">🔁</button>
+
+    <button
+        id="shuffleBtn"
+        class="control-btn"
+        title="Aleatorio">
+        🔀
+    </button>
+
+    <button
+        id="backBtn"
+        class="control-btn"
+        title="10 segundos atrás">
+        ⏪
+    </button>
+
+    <button
+        id="playBtn"
+        class="play-btn"
+        aria-label="Reproducir">
+        ▶
+    </button>
+
+    <button
+        id="forwardBtn"
+        class="control-btn"
+        title="10 segundos adelante">
+        ⏩
+    </button>
+
+    <button
+        id="repeatBtn"
+        class="control-btn"
+        title="Repetir">
+        🔁
+    </button>
+
 </div>
 
 <div class="control-status">
-    <span id="shuffleStatus">ALEATORIO OFF</span>
-    <span id="repeatStatus">REPETIR OFF</span>
+    <span id="shuffleStatus">
+        ALEATORIO OFF
+    </span>
+
+    <span id="repeatStatus">
+        REPETIR OFF
+    </span>
 </div>
 
 <div class="volume-area">
-    <button id="muteBtn" class="small-btn">🔊</button>
-    <input id="volume" type="range" min="0" max="1" step=".01" value="1">
-    <span id="volumeValue">100%</span>
+
+    <button
+        id="muteBtn"
+        class="small-btn">
+        🔊
+    </button>
+
+    <input
+        id="volume"
+        type="range"
+        min="0"
+        max="1"
+        step=".01"
+        value="1">
+
+    <span id="volumeValue">
+        100%
+    </span>
+
 </div>
 
-<div class="sleep-panel" id="sleepPanel">
-    <button data-minutes="15">15 min</button>
-    <button data-minutes="30">30 min</button>
-    <button data-minutes="60">60 min</button>
-    <button data-minutes="120">120 min</button>
-    <button data-minutes="0">Cancelar</button>
-    <span id="sleepStatus">Temporizador apagado</span>
+<div
+    class="sleep-panel"
+    id="sleepPanel">
+
+    <button data-minutes="15">
+        15 min
+    </button>
+
+    <button data-minutes="30">
+        30 min
+    </button>
+
+    <button data-minutes="60">
+        60 min
+    </button>
+
+    <button data-minutes="120">
+        120 min
+    </button>
+
+    <button data-minutes="0">
+        Cancelar
+    </button>
+
+    <span id="sleepStatus">
+        Temporizador apagado
+    </span>
+
 </div>
 
 </section>
@@ -117,163 +300,389 @@
 <aside class="playlist-card">
 
 <div class="section-header">
+
     <div>
-        <span class="eyebrow">COLA DE REPRODUCCIÓN</span>
-        <h2>Mi Playlist</h2>
+
+        <span class="eyebrow">
+            COLA DE REPRODUCCIÓN
+        </span>
+
+        <h2>
+            Mi Playlist
+        </h2>
+
     </div>
-    <span id="trackCount" class="count">0</span>
+
+    <span
+        id="trackCount"
+        class="count">
+        0
+    </span>
+
 </div>
 
 <div class="search-box">
+
     🔍
-    <input id="playlistSearch" type="search" placeholder="Buscar canciones...">
+
+    <input
+        id="playlistSearch"
+        type="search"
+        placeholder="Buscar canciones...">
+
 </div>
 
 <div class="category-tabs">
-    <button class="category-btn active" data-category="all">Todas</button>
-    <button class="category-btn" data-category="audio">🎵 Audio</button>
-    <button class="category-btn" data-category="video">🎬 Vídeo</button>
-    <button class="category-btn" data-category="favorites">❤️</button>
+
+    <button
+        class="category-btn active"
+        data-category="all">
+        Todas
+    </button>
+
+    <button
+        class="category-btn"
+        data-category="audio">
+        🎵 Audio
+    </button>
+
+    <button
+        class="category-btn"
+        data-category="video">
+        🎬 Vídeo
+    </button>
+
+    <button
+        class="category-btn"
+        data-category="favorites">
+        ❤️
+    </button>
+
 </div>
 
-<div id="playlist" class="playlist"></div>
+<div
+    id="playlist"
+    class="playlist">
+</div>
 
-<button id="clearPlaylist" class="clear-btn">🗑 Vaciar playlist</button>
+<button
+    id="clearPlaylist"
+    class="clear-btn">
+    🗑 Vaciar playlist
+</button>
 
 </aside>
 
 </div>
 
 <section class="quick-section">
+
     <div class="section-header">
+
         <div>
-            <span class="eyebrow">ACCESO RÁPIDO</span>
-            <h2>Tu experiencia</h2>
+
+            <span class="eyebrow">
+                ACCESO RÁPIDO
+            </span>
+
+            <h2>
+                Tu experiencia
+            </h2>
+
         </div>
+
     </div>
 
     <div class="quick-grid">
-        <button class="quick-card" data-section="favorites">
-            <strong>❤️</strong>
-            <span>Favoritos</span>
-            <small id="favoriteCount">0 canciones</small>
+
+        <button
+            class="quick-card"
+            data-section="favorites">
+
+            <strong>
+                ❤️
+            </strong>
+
+            <span>
+                Favoritos
+            </span>
+
+            <small id="favoriteCount">
+                0 canciones
+            </small>
+
         </button>
 
-        <button class="quick-card" data-section="history">
-            <strong>🕘</strong>
-            <span>Historial</span>
-            <small id="historyCount">0 reproducciones</small>
+        <button
+            class="quick-card"
+            data-section="history">
+
+            <strong>
+                🕘
+            </strong>
+
+            <span>
+                Historial
+            </span>
+
+            <small id="historyCount">
+                0 reproducciones
+            </small>
+
         </button>
 
-        <button class="quick-card" data-section="library">
-            <strong>🎧</strong>
-            <span>Mi biblioteca</span>
-            <small>Tu música personal</small>
+        <button
+            class="quick-card"
+            data-section="library">
+
+            <strong>
+                🎧
+            </strong>
+
+            <span>
+                Mi biblioteca
+            </span>
+
+            <small>
+                Tu música personal
+            </small>
+
         </button>
 
-        <button class="quick-card" data-section="radio">
-            <strong>📻</strong>
-            <span>Neon Radio</span>
-            <small>Emisoras online</small>
+        <button
+            class="quick-card"
+            data-section="radio">
+
+            <strong>
+                📻
+            </strong>
+
+            <span>
+                Neon Radio
+            </span>
+
+            <small>
+                Emisoras online
+            </small>
+
         </button>
+
     </div>
-</section>
 
 </section>
 
+</section>
 
-<section id="section-library" class="page-section">
+
+<section
+    id="section-library"
+    class="page-section">
 
 <section class="library-card">
+
     <div class="section-header">
+
         <div>
-            <span class="eyebrow">BIBLIOTECA PERSONAL</span>
-            <h2>⭐ Mi Música</h2>
+
+            <span class="eyebrow">
+                BIBLIOTECA PERSONAL
+            </span>
+
+            <h2>
+                ⭐ Mi Música
+            </h2>
+
         </div>
-        <span class="count">25</span>
+
+        <span
+            id="libraryCount"
+            class="count">
+            25
+        </span>
+
     </div>
 
     <div class="library-toolbar">
+
         <div class="search-box">
+
             🔍
-            <input id="librarySearch" type="search" placeholder="Buscar en Mi Música...">
+
+            <input
+                id="librarySearch"
+                type="search"
+                placeholder="Buscar en Mi Música...">
+
         </div>
+
     </div>
 
-    <div id="myMusicList" class="music-grid"></div>
-</section>
+    <div
+        id="myMusicList"
+        class="music-grid">
+    </div>
 
 </section>
 
+</section>
 
-<section id="section-favorites" class="page-section">
+
+<section
+    id="section-favorites"
+    class="page-section">
 
 <section class="library-card">
+
     <div class="section-header">
+
         <div>
-            <span class="eyebrow">COLECCIÓN PERSONAL</span>
-            <h2>❤️ Favoritos</h2>
+
+            <span class="eyebrow">
+                COLECCIÓN PERSONAL
+            </span>
+
+            <h2>
+                ❤️ Favoritos
+            </h2>
+
         </div>
-        <span id="favoriteSectionCount" class="count">0</span>
+
+        <span
+            id="favoriteSectionCount"
+            class="count">
+            0
+        </span>
+
     </div>
 
-    <div id="favoritesList" class="special-grid"></div>
-</section>
+    <div
+        id="favoritesList"
+        class="special-grid">
+    </div>
 
 </section>
 
+</section>
 
-<section id="section-history" class="page-section">
+
+<section
+    id="section-history"
+    class="page-section">
 
 <section class="library-card">
+
     <div class="section-header">
+
         <div>
-            <span class="eyebrow">ACTIVIDAD RECIENTE</span>
-            <h2>🕘 Historial</h2>
+
+            <span class="eyebrow">
+                ACTIVIDAD RECIENTE
+            </span>
+
+            <h2>
+                🕘 Historial
+            </h2>
+
         </div>
 
-        <button id="clearHistory" class="danger-small">Limpiar</button>
+        <button
+            id="clearHistory"
+            class="danger-small">
+            Limpiar
+        </button>
+
     </div>
 
-    <div id="historyList" class="special-grid"></div>
-</section>
+    <div
+        id="historyList"
+        class="special-grid">
+    </div>
 
 </section>
 
+</section>
 
-<section id="section-radio" class="page-section">
+
+<section
+    id="section-radio"
+    class="page-section">
 
 <section class="radio-card">
 
 <div class="section-header">
+
     <div>
-        <span class="eyebrow">EMISIÓN ONLINE</span>
-        <h2>📻 Neon Radio</h2>
+
+        <span class="eyebrow">
+            EMISIÓN ONLINE
+        </span>
+
+        <h2>
+            📻 Neon Radio
+        </h2>
+
     </div>
 
-    <span id="radioStatus" class="radio-status">OFFLINE</span>
+    <span
+        id="radioStatus"
+        class="radio-status">
+        OFFLINE
+    </span>
+
 </div>
 
 <div class="radio-player">
 
     <div class="radio-info">
-        <div class="radio-icon">📻</div>
+
+        <div class="radio-icon">
+            📻
+        </div>
 
         <div>
-            <span class="label">EMISORA ACTUAL</span>
-            <h3 id="radioName">Selecciona una emisora</h3>
-            <span id="radioGenre">Radio online</span>
+
+            <span class="label">
+                EMISORA ACTUAL
+            </span>
+
+            <h3 id="radioName">
+                Selecciona una emisora
+            </h3>
+
+            <span id="radioGenre">
+                Radio online
+            </span>
+
         </div>
+
     </div>
 
     <div class="radio-controls">
-        <button id="radioFavorite" class="radio-heart">♡</button>
 
-        <button id="radioPlay" class="radio-play">▶</button>
+        <button
+            id="radioFavorite"
+            class="radio-heart">
+            ♡
+        </button>
 
-        <input id="radioVolume" type="range" min="0" max="1" step=".01" value="1">
+        <button
+            id="radioPlay"
+            class="radio-play">
+            ▶
+        </button>
 
-        <span id="radioVolumeValue">100%</span>
+        <input
+            id="radioVolume"
+            type="range"
+            min="0"
+            max="1"
+            step=".01"
+            value="1">
+
+        <span id="radioVolumeValue">
+            100%
+        </span>
+
     </div>
 
 </div>
@@ -281,28 +690,80 @@
 <div class="radio-toolbar">
 
     <div class="search-box">
+
         🔍
-        <input id="radioSearch" type="search" placeholder="Buscar emisora, país o género...">
+
+        <input
+            id="radioSearch"
+            type="search"
+            placeholder="Buscar emisora, país o género...">
+
     </div>
 
     <div class="radio-filters">
-        <button class="radio-filter active" data-filter="all">Todas</button>
-        <button class="radio-filter" data-filter="España">🇪🇸 España</button>
-        <button class="radio-filter" data-filter="Europa">🇪🇺 Europa</button>
-        <button class="radio-filter" data-filter="Latinoamérica">🌎 Latinoamérica</button>
-        <button class="radio-filter" data-filter="Pop">🎤 Pop</button>
-        <button class="radio-filter" data-filter="Urbano">🔥 Urbano</button>
-        <button class="radio-filter" data-filter="Clásica">🎻 Clásica</button>
+
+        <button
+            class="radio-filter active"
+            data-filter="all">
+            Todas
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="España">
+            🇪🇸 España
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="Europa">
+            🇪🇺 Europa
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="Latinoamérica">
+            🌎 Latinoamérica
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="Pop">
+            🎤 Pop
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="Urbano">
+            🔥 Urbano
+        </button>
+
+        <button
+            class="radio-filter"
+            data-filter="Clásica">
+            🎻 Clásica
+        </button>
+
     </div>
 
 </div>
 
 <div class="radio-heading">
-    <span>📡 EMISORAS DISPONIBLES</span>
-    <span id="radioCount">0 emisoras</span>
+
+    <span>
+        📡 EMISORAS DISPONIBLES
+    </span>
+
+    <span id="radioCount">
+        0 emisoras
+    </span>
+
 </div>
 
-<div id="radioList" class="radio-grid"></div>
+<div
+    id="radioList"
+    class="radio-grid">
+</div>
 
 </section>
 
@@ -311,16 +772,32 @@
 </main>
 
 <footer>
-    <span>NEON PLAYER X</span>
-    <span>HTML · CSS · JAVASCRIPT</span>
-    <span>LOCAL MEDIA SYSTEM</span>
+
+    <span>
+        NEON PLAYER X
+    </span>
+
+    <span>
+        HTML · CSS · JAVASCRIPT · PWA
+    </span>
+
+    <span id="footerActivity">
+        NIVEL 1 · 0 ACTIVIDAD
+    </span>
+
 </footer>
 
 </div>
 
-<audio id="radioAudio" preload="none"></audio>
+<audio
+    id="radioAudio"
+    preload="none">
+</audio>
 
-<div id="toastContainer" class="toast-container"></div>
+<div
+    id="toastContainer"
+    class="toast-container">
+</div>
 
 <script src="script.js"></script>
 

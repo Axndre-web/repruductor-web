@@ -431,6 +431,11 @@ function loadTrack(index,autoplay=true){
     addHistory(track);
 
     if(autoplay){
+        registerPlayActivity({
+            type: track.type.startsWith("video/") ? "video" : "audio",
+            name: track.name
+        });
+
         activeMedia.play().catch(()=>{});
     }
 
@@ -1637,7 +1642,13 @@ function playRadio(index){
 
     if(!radio) return;
 
+    const previousRadio = currentRadio;
+
     currentRadio = index;
+
+    if(previousRadio !== index){
+        registerRadioPlayActivity(radio);
+    }
 
     radioAudio.src =
         radio.url;
@@ -2391,3 +2402,706 @@ renderRadios();
 renderFavorites();
 renderHistory();
 updateCounters();
+
+/* =========================================
+   NEON PLAYER X — CRECIMIENTO / SUPERVIVENCIA
+========================================= */
+
+const NEON_CONFIG = {
+    /*
+     * Pega aquí tu ID de Google Analytics 4 cuando lo tengas:
+     * "G-XXXXXXXXXX"
+     *
+     * Déjalo vacío para que la app funcione sin GA4.
+     */
+    analyticsId: "",
+
+    /*
+     * Identificador interno de versión.
+     */
+    appVersion: "3.0.0"
+};
+
+const NEON_ACTIVITY_KEY = "neonActivity";
+const NEON_SESSION_KEY = "neonSessionId";
+const NEON_INSTALL_KEY = "neonInstallRegistered";
+const NEON_INSTALL_DISMISSED_KEY = "neonInstallDismissed";
+
+const NEON_ACTIVITY_DEFAULTS = {
+    visits: 0,
+    sessions: 0,
+    plays: 0,
+    radioPlays: 0,
+    installs: 0,
+    shares: 0,
+    firstVisit: null,
+    lastVisit: null,
+    lastPlay: null,
+    lastInstall: null
+};
+
+function loadNeonActivity(){
+
+    try{
+
+        return {
+            ...NEON_ACTIVITY_DEFAULTS,
+            ...JSON.parse(
+                localStorage.getItem(
+                    NEON_ACTIVITY_KEY
+                ) || "{}"
+            )
+        };
+
+    }catch(error){
+
+        console.warn(
+            "Actividad no disponible:",
+            error
+        );
+
+        return {
+            ...NEON_ACTIVITY_DEFAULTS
+        };
+    }
+}
+
+let neonActivity =
+    loadNeonActivity();
+
+function saveNeonActivity(){
+
+    localStorage.setItem(
+        NEON_ACTIVITY_KEY,
+        JSON.stringify(
+            neonActivity
+        )
+    );
+}
+
+function getNeonActivityTotal(){
+
+    return (
+        Number(neonActivity.visits || 0) +
+        Number(neonActivity.plays || 0) +
+        Number(neonActivity.installs || 0) +
+        Number(neonActivity.shares || 0)
+    );
+}
+
+function getNeonLevel(
+    total = getNeonActivityTotal()
+){
+
+    if(total >= 1000) return 10;
+    if(total >= 500) return 9;
+    if(total >= 250) return 8;
+    if(total >= 150) return 7;
+    if(total >= 100) return 6;
+    if(total >= 60) return 5;
+    if(total >= 30) return 4;
+    if(total >= 15) return 3;
+    if(total >= 5) return 2;
+
+    return 1;
+}
+
+function updateNeonActivityUI(){
+
+    const total =
+        getNeonActivityTotal();
+
+    const level =
+        getNeonLevel(total);
+
+    const badge =
+        $("activityBadge");
+
+    const levelElement =
+        $("activityLevel");
+
+    const scoreElement =
+        $("activityScore");
+
+    const footerElement =
+        $("footerActivity");
+
+    if(levelElement){
+        levelElement.textContent =
+            `NIVEL ${level}`;
+    }
+
+    if(scoreElement){
+        scoreElement.textContent =
+            total;
+    }
+
+    if(footerElement){
+
+        footerElement.textContent =
+            `NIVEL ${level} · ${total} ACTIVIDAD`;
+    }
+
+    if(badge){
+
+        badge.dataset.level =
+            String(level);
+
+        badge.title =
+            `Nivel ${level} · ${total} actividad local`;
+    }
+
+    document.body.dataset.activityLevel =
+        String(level);
+}
+
+function getNeonSessionId(){
+
+    let id =
+        sessionStorage.getItem(
+            NEON_SESSION_KEY
+        );
+
+    if(!id){
+
+        id =
+            `${Date.now()}-${Math.random()
+                .toString(36)
+                .slice(2)}`;
+
+        sessionStorage.setItem(
+            NEON_SESSION_KEY,
+            id
+        );
+    }
+
+    return id;
+}
+
+
+/* =========================================
+   GOOGLE ANALYTICS 4 — OPCIONAL
+========================================= */
+
+function initNeonAnalytics(){
+
+    const id =
+        NEON_CONFIG.analyticsId;
+
+    if(!id){
+        return;
+    }
+
+    if(
+        document.querySelector(
+            'script[data-neon-ga4="1"]'
+        )
+    ){
+        return;
+    }
+
+    window.dataLayer =
+        window.dataLayer || [];
+
+    window.gtag =
+        function(){
+
+            window.dataLayer.push(
+                arguments
+            );
+        };
+
+    const script =
+        document.createElement("script");
+
+    script.async = true;
+
+    script.src =
+        `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+
+    script.dataset.neonGa4 =
+        "1";
+
+    document.head.appendChild(
+        script
+    );
+
+    window.gtag(
+        "js",
+        new Date()
+    );
+
+    window.gtag(
+        "config",
+        id,
+        {
+            app_name:"Neon Player X",
+            app_version:
+                NEON_CONFIG.appVersion,
+            session_id:
+                getNeonSessionId()
+        }
+    );
+}
+
+function neonAnalyticsEvent(
+    eventName,
+    parameters = {}
+){
+
+    if(
+        typeof window.gtag !==
+        "function"
+    ){
+        return;
+    }
+
+    window.gtag(
+        "event",
+        eventName,
+        {
+            app_version:
+                NEON_CONFIG.appVersion,
+            ...parameters
+        }
+    );
+}
+
+
+/* =========================================
+   ACTIVIDAD
+========================================= */
+
+function registerNeonVisit(){
+
+    const now =
+        new Date().toISOString();
+
+    if(!neonActivity.firstVisit){
+
+        neonActivity.firstVisit =
+            now;
+    }
+
+    neonActivity.visits =
+        Number(
+            neonActivity.visits || 0
+        ) + 1;
+
+    neonActivity.sessions =
+        Number(
+            neonActivity.sessions || 0
+        ) + 1;
+
+    neonActivity.lastVisit =
+        now;
+
+    saveNeonActivity();
+    updateNeonActivityUI();
+
+    neonAnalyticsEvent(
+        "neon_visit",
+        {
+            visits:
+                neonActivity.visits,
+            sessions:
+                neonActivity.sessions
+        }
+    );
+}
+
+function registerPlayActivity(
+    media = {}
+){
+
+    neonActivity.plays =
+        Number(
+            neonActivity.plays || 0
+        ) + 1;
+
+    neonActivity.lastPlay =
+        new Date().toISOString();
+
+    saveNeonActivity();
+    updateNeonActivityUI();
+
+    neonAnalyticsEvent(
+        "neon_play",
+        {
+            media_type:
+                media.type || "unknown"
+        }
+    );
+}
+
+function registerRadioPlayActivity(
+    radio
+){
+
+    if(!radio){
+        return;
+    }
+
+    neonActivity.plays =
+        Number(
+            neonActivity.plays || 0
+        ) + 1;
+
+    neonActivity.radioPlays =
+        Number(
+            neonActivity.radioPlays || 0
+        ) + 1;
+
+    neonActivity.lastPlay =
+        new Date().toISOString();
+
+    saveNeonActivity();
+    updateNeonActivityUI();
+
+    neonAnalyticsEvent(
+        "neon_radio_play",
+        {
+            radio:
+                radio.name
+        }
+    );
+}
+
+function registerInstallActivity(){
+
+    if(
+        localStorage.getItem(
+            NEON_INSTALL_KEY
+        ) === "1"
+    ){
+        return;
+    }
+
+    localStorage.setItem(
+        NEON_INSTALL_KEY,
+        "1"
+    );
+
+    neonActivity.installs =
+        Number(
+            neonActivity.installs || 0
+        ) + 1;
+
+    neonActivity.lastInstall =
+        new Date().toISOString();
+
+    saveNeonActivity();
+    updateNeonActivityUI();
+
+    neonAnalyticsEvent(
+        "neon_install"
+    );
+
+    showToast(
+        "⚡ Neon Player X instalado"
+    );
+}
+
+
+/* =========================================
+   COMPARTIR — CRECIMIENTO ORGÁNICO
+========================================= */
+
+async function shareNeonPlayer(){
+
+    const shareData = {
+        title:"Neon Player X",
+        text:"Prueba Neon Player X — música, vídeo y radio online.",
+        url:window.location.href
+    };
+
+    try{
+
+        if(
+            navigator.share &&
+            typeof navigator.share ===
+            "function"
+        ){
+
+            await navigator.share(
+                shareData
+            );
+
+            neonActivity.shares =
+                Number(
+                    neonActivity.shares || 0
+                ) + 1;
+
+            saveNeonActivity();
+            updateNeonActivityUI();
+
+            neonAnalyticsEvent(
+                "neon_share",
+                {
+                    method:
+                        "native"
+                }
+            );
+
+            return;
+        }
+
+        await navigator.clipboard.writeText(
+            window.location.href
+        );
+
+        neonActivity.shares =
+            Number(
+                neonActivity.shares || 0
+            ) + 1;
+
+        saveNeonActivity();
+        updateNeonActivityUI();
+
+        neonAnalyticsEvent(
+            "neon_share",
+            {
+                method:
+                    "clipboard"
+            }
+        );
+
+        showToast(
+            "🔗 Enlace copiado"
+        );
+
+    }catch(error){
+
+        if(error &&
+            error.name ===
+            "AbortError"
+        ){
+            return;
+        }
+
+        showToast(
+            "No se pudo compartir el enlace"
+        );
+    }
+}
+
+function createShareButton(){
+
+    const topActions =
+        document.querySelector(
+            ".top-actions"
+        );
+
+    if(!topActions){
+        return;
+    }
+
+    if(
+        document.getElementById(
+            "shareBtn"
+        )
+    ){
+        return;
+    }
+
+    const button =
+        document.createElement(
+            "button"
+        );
+
+    button.id =
+        "shareBtn";
+
+    button.className =
+        "glass-btn share-btn";
+
+    button.title =
+        "Compartir Neon Player X";
+
+    button.textContent =
+        "↗ Compartir";
+
+    button.addEventListener(
+        "click",
+        shareNeonPlayer
+    );
+
+    const install =
+        $("installBtn");
+
+    if(install){
+
+        topActions.insertBefore(
+            button,
+            install
+        );
+
+    }else{
+
+        topActions.prepend(
+            button
+        );
+    }
+}
+
+
+/* =========================================
+   INSTALACIÓN PWA
+========================================= */
+
+function setupNeonInstall(){
+
+    const installBtn =
+        $("installBtn");
+
+    if(!installBtn){
+        return;
+    }
+
+    let deferredPrompt =
+        null;
+
+    window.addEventListener(
+        "beforeinstallprompt",
+        event => {
+
+            event.preventDefault();
+
+            deferredPrompt =
+                event;
+
+            if(
+                localStorage.getItem(
+                    NEON_INSTALL_DISMISSED_KEY
+                ) !== "1"
+            ){
+
+                installBtn.hidden =
+                    false;
+
+                installBtn.classList.add(
+                    "install-ready"
+                );
+            }
+        }
+    );
+
+    installBtn.addEventListener(
+        "click",
+        async () => {
+
+            if(!deferredPrompt){
+                return;
+            }
+
+            try{
+
+                await deferredPrompt.prompt();
+
+                const choice =
+                    await deferredPrompt.userChoice;
+
+                if(
+                    choice &&
+                    choice.outcome !==
+                    "accepted"
+                ){
+
+                    localStorage.setItem(
+                        NEON_INSTALL_DISMISSED_KEY,
+                        "1"
+                    );
+                }
+
+            }catch(error){
+
+                console.warn(
+                    "Instalación PWA:",
+                    error
+                );
+
+            }finally{
+
+                deferredPrompt =
+                    null;
+
+                installBtn.hidden =
+                    true;
+            }
+        }
+    );
+
+    window.addEventListener(
+        "appinstalled",
+        registerInstallActivity
+    );
+
+    if(
+        window.matchMedia &&
+        window.matchMedia(
+            "(display-mode: standalone)"
+        ).matches
+    ){
+
+        installBtn.hidden =
+            true;
+    }
+}
+
+
+/* =========================================
+   SERVICE WORKER
+========================================= */
+
+function registerNeonServiceWorker(){
+
+    if(
+        !("serviceWorker" in navigator)
+    ){
+        return;
+    }
+
+    window.addEventListener(
+        "load",
+        async () => {
+
+            try{
+
+                const registration =
+                    await navigator.serviceWorker
+                        .register(
+                            "./sw.js"
+                        );
+
+                console.log(
+                    "Neon Player X PWA:",
+                    registration.scope
+                );
+
+            }catch(error){
+
+                console.warn(
+                    "Service Worker:",
+                    error
+                );
+            }
+        }
+    );
+}
+
+
+/* =========================================
+   INICIALIZACIÓN
+========================================= */
+
+initNeonAnalytics();
+
+registerNeonVisit();
+
+updateNeonActivityUI();
+
+createShareButton();
+
+setupNeonInstall();
+
+registerNeonServiceWorker();
