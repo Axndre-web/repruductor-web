@@ -1,44 +1,30 @@
-const CACHE_NAME = "neon-player-x-v3";
+const CACHE_NAME="neon-player-x-global-v5";
 
-const APP_SHELL = [
+const APP_SHELL=[
     "./",
     "./index.html",
     "./style.css",
     "./script.js",
+    "./config.js",
     "./manifest.webmanifest",
     "./icons/icon-192.png",
     "./icons/icon-512.png"
 ];
 
-
-/* =========================================
-   INSTALL
-========================================= */
-
 self.addEventListener(
     "install",
-    event => {
-
+    event=>{
         event.waitUntil(
-
             caches
                 .open(CACHE_NAME)
                 .then(
-                    async cache => {
-
+                    async cache=>{
                         await Promise.all(
-
                             APP_SHELL.map(
-                                async asset => {
-
+                                async asset=>{
                                     try{
-
-                                        await cache.add(
-                                            asset
-                                        );
-
+                                        await cache.add(asset);
                                     }catch(error){
-
                                         console.warn(
                                             "No se pudo cachear:",
                                             asset
@@ -50,87 +36,61 @@ self.addEventListener(
                     }
                 )
                 .then(
-                    () =>
-                        self.skipWaiting()
+                    ()=>self.skipWaiting()
                 )
         );
     }
 );
-
-
-/* =========================================
-   ACTIVATE
-========================================= */
 
 self.addEventListener(
     "activate",
-    event => {
-
+    event=>{
         event.waitUntil(
-
             caches
                 .keys()
                 .then(
-                    keys =>
+                    keys=>
                         Promise.all(
-
                             keys
-
                                 .filter(
-                                    key =>
-                                        key !==
-                                        CACHE_NAME
+                                    key=>
+                                        key!==CACHE_NAME
                                 )
-
                                 .map(
-                                    key =>
-                                        caches.delete(
-                                            key
-                                        )
+                                    key=>
+                                        caches.delete(key)
                                 )
                         )
                 )
-
                 .then(
-                    () =>
-                        self.clients.claim()
+                    ()=>self.clients.claim()
                 )
         );
     }
 );
 
-
-/* =========================================
-   FETCH
-========================================= */
-
 self.addEventListener(
     "fetch",
-    event => {
+    event=>{
 
         const request =
             event.request;
 
-        if(
-            request.method !==
-            "GET"
-        ){
+        if(request.method!=="GET"){
             return;
         }
 
         const url =
-            new URL(
-                request.url
-            );
+            new URL(request.url);
 
         /*
-         * Solo recursos de la propia app.
-         * Los streams de radio externos
-         * NO pasan por el Service Worker.
+         * Solo interceptamos recursos propios.
+         * Los streams externos de radio no pasan
+         * por el Service Worker.
          */
 
         if(
-            url.origin !==
+            url.origin!==
             self.location.origin
         ){
             return;
@@ -141,7 +101,7 @@ self.addEventListener(
             caches
                 .match(request)
                 .then(
-                    cached => {
+                    cached=>{
 
                         if(cached){
                             return cached;
@@ -151,12 +111,12 @@ self.addEventListener(
                             request
                         )
                         .then(
-                            response => {
+                            response=>{
 
                                 if(
                                     !response ||
-                                    response.status !== 200 ||
-                                    response.type !== "basic"
+                                    response.status!==200 ||
+                                    response.type!=="basic"
                                 ){
                                     return response;
                                 }
@@ -169,14 +129,14 @@ self.addEventListener(
                                         CACHE_NAME
                                     )
                                     .then(
-                                        cache =>
+                                        cache=>
                                             cache
                                                 .put(
                                                     request,
                                                     copy
                                                 )
                                                 .catch(
-                                                    () => {}
+                                                    ()=>{}
                                                 )
                                     );
 
@@ -184,10 +144,9 @@ self.addEventListener(
                             }
                         )
                         .catch(
-                            () =>
-                                caches.match(
-                                    "./index.html"
-                                )
+                            ()=>caches.match(
+                                "./index.html"
+                            )
                         );
                     }
                 )

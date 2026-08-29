@@ -431,11 +431,10 @@ function loadTrack(index,autoplay=true){
     addHistory(track);
 
     if(autoplay){
-        registerPlayActivity({
-            type: track.type.startsWith("video/") ? "video" : "audio",
-            name: track.name
+        registerGlobalPlay({
+            type:track.type.startsWith("video/") ? "video" : "audio",
+            name:track.name
         });
-
         activeMedia.play().catch(()=>{});
     }
 
@@ -1642,12 +1641,11 @@ function playRadio(index){
 
     if(!radio) return;
 
-    const previousRadio = currentRadio;
-
+    const previousGlobalRadio = currentRadio;
     currentRadio = index;
 
-    if(previousRadio !== index){
-        registerRadioPlayActivity(radio);
+    if(previousGlobalRadio !== index){
+        registerGlobalRadioPlay(radio);
     }
 
     radioAudio.src =
@@ -2404,155 +2402,107 @@ renderHistory();
 updateCounters();
 
 /* =========================================
-   NEON PLAYER X — CRECIMIENTO / SUPERVIVENCIA
+   NEON PLAYER X — CAPA GLOBAL
 ========================================= */
 
 const NEON_CONFIG = {
-    /*
-     * Pega aquí tu ID de Google Analytics 4 cuando lo tengas:
-     * "G-XXXXXXXXXX"
-     *
-     * Déjalo vacío para que la app funcione sin GA4.
-     */
+    projectUrl: "",
+    publishableKey: "",
     analyticsId: "",
-
-    /*
-     * Identificador interno de versión.
-     */
-    appVersion: "3.0.0"
+    appVersion: "4.0.0"
 };
 
-const NEON_ACTIVITY_KEY = "neonActivity";
-const NEON_SESSION_KEY = "neonSessionId";
-const NEON_INSTALL_KEY = "neonInstallRegistered";
-const NEON_INSTALL_DISMISSED_KEY = "neonInstallDismissed";
+if(window.NEON_BACKEND_CONFIG){
+    NEON_CONFIG.projectUrl =
+        window.NEON_BACKEND_CONFIG.projectUrl || "";
+    NEON_CONFIG.publishableKey =
+        window.NEON_BACKEND_CONFIG.publishableKey || "";
+}
 
-const NEON_ACTIVITY_DEFAULTS = {
-    visits: 0,
-    sessions: 0,
-    plays: 0,
-    radioPlays: 0,
-    installs: 0,
-    shares: 0,
-    firstVisit: null,
-    lastVisit: null,
-    lastPlay: null,
-    lastInstall: null
+if(window.NEON_ANALYTICS_ID){
+    NEON_CONFIG.analyticsId =
+        window.NEON_ANALYTICS_ID;
+}
+
+const NEON_VISITOR_KEY = "neonVisitorIdV1";
+const NEON_SESSION_KEY = "neonSessionIdV1";
+const NEON_LOCAL_KEY = "neonLocalStatsV1";
+const NEON_INSTALL_KEY = "neonInstallRegisteredV1";
+const NEON_INSTALL_DISMISSED_KEY = "neonInstallDismissedV1";
+
+const NEON_DEFAULTS = {
+    visits:0,
+    sessions:0,
+    plays:0,
+    radioPlays:0,
+    installs:0,
+    shares:0
 };
 
-function loadNeonActivity(){
+let neonLocalStats =
+    loadNeonLocalStats();
 
+let neonGlobalStats = {
+    totalVisits:0,
+    uniqueVisitors:0,
+    totalSessions:0,
+    totalPlays:0,
+    totalRadioPlays:0,
+    totalInstalls:0,
+    totalShares:0
+};
+
+function loadNeonLocalStats(){
     try{
-
         return {
-            ...NEON_ACTIVITY_DEFAULTS,
+            ...NEON_DEFAULTS,
             ...JSON.parse(
                 localStorage.getItem(
-                    NEON_ACTIVITY_KEY
+                    NEON_LOCAL_KEY
                 ) || "{}"
             )
         };
+    }catch{
+        return {...NEON_DEFAULTS};
+    }
+}
 
-    }catch(error){
+function saveNeonLocalStats(){
+    localStorage.setItem(
+        NEON_LOCAL_KEY,
+        JSON.stringify(neonLocalStats)
+    );
+}
 
-        console.warn(
-            "Actividad no disponible:",
-            error
+function makeRandomId(){
+    if(
+        window.crypto &&
+        typeof window.crypto.randomUUID === "function"
+    ){
+        return window.crypto.randomUUID();
+    }
+
+    return `${Date.now()}-${Math.random()
+        .toString(36)
+        .slice(2)}`;
+}
+
+function getNeonVisitorId(){
+
+    let id =
+        localStorage.getItem(
+            NEON_VISITOR_KEY
         );
 
-        return {
-            ...NEON_ACTIVITY_DEFAULTS
-        };
-    }
-}
-
-let neonActivity =
-    loadNeonActivity();
-
-function saveNeonActivity(){
-
-    localStorage.setItem(
-        NEON_ACTIVITY_KEY,
-        JSON.stringify(
-            neonActivity
-        )
-    );
-}
-
-function getNeonActivityTotal(){
-
-    return (
-        Number(neonActivity.visits || 0) +
-        Number(neonActivity.plays || 0) +
-        Number(neonActivity.installs || 0) +
-        Number(neonActivity.shares || 0)
-    );
-}
-
-function getNeonLevel(
-    total = getNeonActivityTotal()
-){
-
-    if(total >= 1000) return 10;
-    if(total >= 500) return 9;
-    if(total >= 250) return 8;
-    if(total >= 150) return 7;
-    if(total >= 100) return 6;
-    if(total >= 60) return 5;
-    if(total >= 30) return 4;
-    if(total >= 15) return 3;
-    if(total >= 5) return 2;
-
-    return 1;
-}
-
-function updateNeonActivityUI(){
-
-    const total =
-        getNeonActivityTotal();
-
-    const level =
-        getNeonLevel(total);
-
-    const badge =
-        $("activityBadge");
-
-    const levelElement =
-        $("activityLevel");
-
-    const scoreElement =
-        $("activityScore");
-
-    const footerElement =
-        $("footerActivity");
-
-    if(levelElement){
-        levelElement.textContent =
-            `NIVEL ${level}`;
+    if(!id){
+        id = makeRandomId();
+        localStorage.setItem(
+            NEON_VISITOR_KEY,
+            id
+        );
     }
 
-    if(scoreElement){
-        scoreElement.textContent =
-            total;
-    }
-
-    if(footerElement){
-
-        footerElement.textContent =
-            `NIVEL ${level} · ${total} ACTIVIDAD`;
-    }
-
-    if(badge){
-
-        badge.dataset.level =
-            String(level);
-
-        badge.title =
-            `Nivel ${level} · ${total} actividad local`;
-    }
-
-    document.body.dataset.activityLevel =
-        String(level);
+    return id;
 }
 
 function getNeonSessionId(){
@@ -2563,12 +2513,7 @@ function getNeonSessionId(){
         );
 
     if(!id){
-
-        id =
-            `${Date.now()}-${Math.random()
-                .toString(36)
-                .slice(2)}`;
-
+        id = makeRandomId();
         sessionStorage.setItem(
             NEON_SESSION_KEY,
             id
@@ -2578,155 +2523,251 @@ function getNeonSessionId(){
     return id;
 }
 
+const neonVisitorId =
+    getNeonVisitorId();
 
-/* =========================================
-   GOOGLE ANALYTICS 4 — OPCIONAL
-========================================= */
+const neonSessionId =
+    getNeonSessionId();
 
-function initNeonAnalytics(){
+function globalBackendReady(){
+    return Boolean(
+        NEON_CONFIG.projectUrl &&
+        NEON_CONFIG.publishableKey
+    );
+}
 
-    const id =
-        NEON_CONFIG.analyticsId;
+async function neonRPC(
+    name,
+    body={}
+){
 
-    if(!id){
-        return;
+    if(!globalBackendReady()){
+        return null;
     }
+
+    const endpoint =
+        NEON_CONFIG.projectUrl.replace(/\/$/,"") +
+        `/rest/v1/rpc/${name}`;
+
+    try{
+
+        const response =
+            await fetch(
+                endpoint,
+                {
+                    method:"POST",
+                    headers:{
+                        "Content-Type":
+                            "application/json",
+                        "apikey":
+                            NEON_CONFIG.publishableKey,
+                        "Authorization":
+                            `Bearer ${NEON_CONFIG.publishableKey}`
+                    },
+                    body:
+                        JSON.stringify(body)
+                }
+            );
+
+        if(!response.ok){
+            console.warn(
+                "Backend global:",
+                response.status
+            );
+            return null;
+        }
+
+        return await response.json();
+
+    }catch(error){
+
+        console.warn(
+            "Backend global no disponible:",
+            error
+        );
+
+        return null;
+    }
+}
+
+function updateLocalStatsUI(){
+
+    const score =
+        Number(neonLocalStats.visits || 0) +
+        Number(neonLocalStats.plays || 0) +
+        Number(neonLocalStats.installs || 0) +
+        Number(neonLocalStats.shares || 0);
+
+    const level =
+        score >= 1000 ? 10 :
+        score >= 500 ? 9 :
+        score >= 250 ? 8 :
+        score >= 150 ? 7 :
+        score >= 100 ? 6 :
+        score >= 60 ? 5 :
+        score >= 30 ? 4 :
+        score >= 15 ? 3 :
+        score >= 5 ? 2 : 1;
+
+    const levelElement =
+        $("activityLevel");
+
+    const scoreElement =
+        $("activityScore");
+
+    const badge =
+        $("activityBadge");
+
+    const footer =
+        $("footerActivity");
+
+    if(levelElement)
+        levelElement.textContent =
+            `NIVEL ${level}`;
+
+    if(scoreElement)
+        scoreElement.textContent =
+            score;
+
+    if(badge){
+        badge.dataset.level =
+            String(level);
+
+        badge.title =
+            `Nivel ${level} · actividad local`;
+    }
+
+    if(footer)
+        footer.textContent =
+            `NIVEL ${level} · ${score} ACTIVIDAD`;
+
+    document.body.dataset.activityLevel =
+        String(level);
+}
+
+function updateGlobalStatsUI(){
+
+    const visits =
+        Number(
+            neonGlobalStats.totalVisits || 0
+        );
+
+    const unique =
+        Number(
+            neonGlobalStats.uniqueVisitors || 0
+        );
+
+    if($("globalVisits")){
+        $("globalVisits").textContent =
+            formatGlobalNumber(visits);
+    }
+
+    if($("globalUniqueVisitors")){
+        $("globalUniqueVisitors").textContent =
+            formatGlobalNumber(unique);
+    }
+
+    document.body.dataset.globalReady =
+        globalBackendReady()
+            ? "1"
+            : "0";
+}
+
+function formatGlobalNumber(value){
+
+    const n = Number(value || 0);
+
+    if(n < 1000)
+        return String(n);
+
+    if(n < 1000000)
+        return `${(n/1000).toFixed(
+            n >= 10000 ? 0 : 1
+        )} K`;
+
+    return `${(n/1000000).toFixed(1)} M`;
+}
+
+async function refreshGlobalStats(){
+
+    const result =
+        await neonRPC(
+            "neon_get_stats"
+        );
 
     if(
-        document.querySelector(
-            'script[data-neon-ga4="1"]'
-        )
+        result &&
+        typeof result === "object"
     ){
-        return;
+
+        neonGlobalStats = {
+            ...neonGlobalStats,
+            ...result
+        };
     }
 
-    window.dataLayer =
-        window.dataLayer || [];
+    updateGlobalStatsUI();
+}
 
-    window.gtag =
-        function(){
+async function registerGlobalEvent(
+    eventType,
+    metadata={}
+){
 
-            window.dataLayer.push(
-                arguments
-            );
+    const result =
+        await neonRPC(
+            "neon_register_event",
+            {
+                p_event_type:eventType,
+                p_visitor_id:neonVisitorId,
+                p_session_id:neonSessionId,
+                p_metadata:metadata
+            }
+        );
+
+    if(
+        result &&
+        typeof result === "object"
+    ){
+
+        neonGlobalStats = {
+            ...neonGlobalStats,
+            ...result
         };
 
-    const script =
-        document.createElement("script");
-
-    script.async = true;
-
-    script.src =
-        `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
-
-    script.dataset.neonGa4 =
-        "1";
-
-    document.head.appendChild(
-        script
-    );
-
-    window.gtag(
-        "js",
-        new Date()
-    );
-
-    window.gtag(
-        "config",
-        id,
-        {
-            app_name:"Neon Player X",
-            app_version:
-                NEON_CONFIG.appVersion,
-            session_id:
-                getNeonSessionId()
-        }
-    );
-}
-
-function neonAnalyticsEvent(
-    eventName,
-    parameters = {}
-){
-
-    if(
-        typeof window.gtag !==
-        "function"
-    ){
-        return;
+        updateGlobalStatsUI();
     }
 
-    window.gtag(
-        "event",
-        eventName,
-        {
-            app_version:
-                NEON_CONFIG.appVersion,
-            ...parameters
-        }
-    );
+    return result;
 }
 
+async function registerGlobalVisit(){
 
-/* =========================================
-   ACTIVIDAD
-========================================= */
+    neonLocalStats.visits++;
+    neonLocalStats.sessions++;
 
-function registerNeonVisit(){
+    saveNeonLocalStats();
+    updateLocalStatsUI();
 
-    const now =
-        new Date().toISOString();
-
-    if(!neonActivity.firstVisit){
-
-        neonActivity.firstVisit =
-            now;
-    }
-
-    neonActivity.visits =
-        Number(
-            neonActivity.visits || 0
-        ) + 1;
-
-    neonActivity.sessions =
-        Number(
-            neonActivity.sessions || 0
-        ) + 1;
-
-    neonActivity.lastVisit =
-        now;
-
-    saveNeonActivity();
-    updateNeonActivityUI();
-
-    neonAnalyticsEvent(
-        "neon_visit",
+    await registerGlobalEvent(
+        "visit",
         {
-            visits:
-                neonActivity.visits,
-            sessions:
-                neonActivity.sessions
+            version:NEON_CONFIG.appVersion
         }
     );
+
+    await refreshGlobalStats();
 }
 
-function registerPlayActivity(
-    media = {}
-){
+async function registerGlobalPlay(media={}){
 
-    neonActivity.plays =
-        Number(
-            neonActivity.plays || 0
-        ) + 1;
+    neonLocalStats.plays++;
 
-    neonActivity.lastPlay =
-        new Date().toISOString();
+    saveNeonLocalStats();
+    updateLocalStatsUI();
 
-    saveNeonActivity();
-    updateNeonActivityUI();
-
-    neonAnalyticsEvent(
-        "neon_play",
+    await registerGlobalEvent(
+        "play",
         {
             media_type:
                 media.type || "unknown"
@@ -2734,40 +2775,26 @@ function registerPlayActivity(
     );
 }
 
-function registerRadioPlayActivity(
-    radio
-){
+async function registerGlobalRadioPlay(radio){
 
-    if(!radio){
-        return;
-    }
+    if(!radio) return;
 
-    neonActivity.plays =
-        Number(
-            neonActivity.plays || 0
-        ) + 1;
+    neonLocalStats.plays++;
+    neonLocalStats.radioPlays++;
 
-    neonActivity.radioPlays =
-        Number(
-            neonActivity.radioPlays || 0
-        ) + 1;
+    saveNeonLocalStats();
+    updateLocalStatsUI();
 
-    neonActivity.lastPlay =
-        new Date().toISOString();
-
-    saveNeonActivity();
-    updateNeonActivityUI();
-
-    neonAnalyticsEvent(
-        "neon_radio_play",
+    await registerGlobalEvent(
+        "radio_play",
         {
             radio:
-                radio.name
+                radio.name || "unknown"
         }
     );
 }
 
-function registerInstallActivity(){
+function registerGlobalInstall(){
 
     if(
         localStorage.getItem(
@@ -2782,135 +2809,117 @@ function registerInstallActivity(){
         "1"
     );
 
-    neonActivity.installs =
-        Number(
-            neonActivity.installs || 0
-        ) + 1;
+    neonLocalStats.installs++;
 
-    neonActivity.lastInstall =
-        new Date().toISOString();
+    saveNeonLocalStats();
+    updateLocalStatsUI();
 
-    saveNeonActivity();
-    updateNeonActivityUI();
-
-    neonAnalyticsEvent(
-        "neon_install"
-    );
-
-    showToast(
-        "⚡ Neon Player X instalado"
+    registerGlobalEvent(
+        "install"
     );
 }
-
-
-/* =========================================
-   COMPARTIR — CRECIMIENTO ORGÁNICO
-========================================= */
 
 async function shareNeonPlayer(){
 
     const shareData = {
         title:"Neon Player X",
-        text:"Prueba Neon Player X — música, vídeo y radio online.",
+        text:
+            "Prueba Neon Player X: música, vídeo y radio online.",
         url:window.location.href
     };
 
     try{
 
-        if(
-            navigator.share &&
-            typeof navigator.share ===
-            "function"
-        ){
+        if(navigator.share){
 
             await navigator.share(
                 shareData
             );
 
-            neonActivity.shares =
-                Number(
-                    neonActivity.shares || 0
-                ) + 1;
+            neonLocalStats.shares++;
 
-            saveNeonActivity();
-            updateNeonActivityUI();
+            saveNeonLocalStats();
+            updateLocalStatsUI();
 
-            neonAnalyticsEvent(
-                "neon_share",
+            await registerGlobalEvent(
+                "share",
                 {
-                    method:
-                        "native"
+                    method:"native"
                 }
+            );
+
+            showToast(
+                "🔗 Compartido"
             );
 
             return;
         }
 
-        await navigator.clipboard.writeText(
-            window.location.href
-        );
+        if(
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ){
 
-        neonActivity.shares =
-            Number(
-                neonActivity.shares || 0
-            ) + 1;
+            await navigator.clipboard.writeText(
+                window.location.href
+            );
 
-        saveNeonActivity();
-        updateNeonActivityUI();
+            neonLocalStats.shares++;
 
-        neonAnalyticsEvent(
-            "neon_share",
-            {
-                method:
-                    "clipboard"
-            }
-        );
+            saveNeonLocalStats();
+            updateLocalStatsUI();
+
+            await registerGlobalEvent(
+                "share",
+                {
+                    method:"clipboard"
+                }
+            );
+
+            showToast(
+                "🔗 Enlace copiado"
+            );
+
+            return;
+        }
 
         showToast(
-            "🔗 Enlace copiado"
+            "No se puede compartir desde este navegador"
         );
 
     }catch(error){
 
-        if(error &&
-            error.name ===
-            "AbortError"
+        if(
+            error &&
+            error.name === "AbortError"
         ){
             return;
         }
 
         showToast(
-            "No se pudo compartir el enlace"
+            "No se pudo compartir"
         );
     }
 }
 
-function createShareButton(){
+function setupGrowthButton(){
 
-    const topActions =
+    const actions =
         document.querySelector(
             ".top-actions"
         );
 
-    if(!topActions){
-        return;
-    }
-
     if(
-        document.getElementById(
-            "shareBtn"
-        )
+        !actions ||
+        $("shareBtn")
     ){
         return;
     }
 
     const button =
-        document.createElement(
-            "button"
-        );
+        document.createElement("button");
 
-    button.id =
-        "shareBtn";
+    button.id = "shareBtn";
 
     button.className =
         "glass-btn share-btn";
@@ -2929,37 +2938,25 @@ function createShareButton(){
     const install =
         $("installBtn");
 
-    if(install){
-
-        topActions.insertBefore(
+    if(install)
+        actions.insertBefore(
             button,
             install
         );
-
-    }else{
-
-        topActions.prepend(
-            button
-        );
-    }
+    else
+        actions.appendChild(button);
 }
-
-
-/* =========================================
-   INSTALACIÓN PWA
-========================================= */
 
 function setupNeonInstall(){
 
-    const installBtn =
+    const install =
         $("installBtn");
 
-    if(!installBtn){
+    if(!install){
         return;
     }
 
-    let deferredPrompt =
-        null;
+    let deferredPrompt = null;
 
     window.addEventListener(
         "beforeinstallprompt",
@@ -2976,23 +2973,22 @@ function setupNeonInstall(){
                 ) !== "1"
             ){
 
-                installBtn.hidden =
+                install.hidden =
                     false;
 
-                installBtn.classList.add(
+                install.classList.add(
                     "install-ready"
                 );
             }
         }
     );
 
-    installBtn.addEventListener(
+    install.addEventListener(
         "click",
         async () => {
 
-            if(!deferredPrompt){
+            if(!deferredPrompt)
                 return;
-            }
 
             try{
 
@@ -3022,18 +3018,24 @@ function setupNeonInstall(){
 
             }finally{
 
-                deferredPrompt =
-                    null;
-
-                installBtn.hidden =
-                    true;
+                deferredPrompt = null;
+                install.hidden = true;
             }
         }
     );
 
     window.addEventListener(
         "appinstalled",
-        registerInstallActivity
+        () => {
+
+            registerGlobalInstall();
+
+            install.hidden =
+                true;
+
+            deferredPrompt =
+                null;
+        }
     );
 
     if(
@@ -3043,65 +3045,69 @@ function setupNeonInstall(){
         ).matches
     ){
 
-        installBtn.hidden =
-            true;
+        install.hidden = true;
     }
 }
 
+function setupNeonAnalytics(){
 
-/* =========================================
-   SERVICE WORKER
-========================================= */
+    const id =
+        NEON_CONFIG.analyticsId;
 
-function registerNeonServiceWorker(){
+    if(!id)
+        return;
 
     if(
-        !("serviceWorker" in navigator)
-    ){
+        document.querySelector(
+            'script[data-neon-ga="1"]'
+        )
+    )
         return;
-    }
 
-    window.addEventListener(
-        "load",
-        async () => {
+    window.dataLayer =
+        window.dataLayer || [];
 
-            try{
+    window.gtag =
+        window.gtag ||
+        function(){
+            window.dataLayer.push(
+                arguments
+            );
+        };
 
-                const registration =
-                    await navigator.serviceWorker
-                        .register(
-                            "./sw.js"
-                        );
+    const script =
+        document.createElement("script");
 
-                console.log(
-                    "Neon Player X PWA:",
-                    registration.scope
-                );
+    script.async = true;
 
-            }catch(error){
+    script.dataset.neonGa =
+        "1";
 
-                console.warn(
-                    "Service Worker:",
-                    error
-                );
-            }
+    script.src =
+        `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`;
+
+    document.head.appendChild(script);
+
+    window.gtag(
+        "js",
+        new Date()
+    );
+
+    window.gtag(
+        "config",
+        id,
+        {
+            app_name:
+                "Neon Player X",
+            app_version:
+                NEON_CONFIG.appVersion
         }
     );
 }
 
-
-/* =========================================
-   INICIALIZACIÓN
-========================================= */
-
-initNeonAnalytics();
-
-registerNeonVisit();
-
-updateNeonActivityUI();
-
-createShareButton();
-
+updateLocalStatsUI();
+updateGlobalStatsUI();
+setupGrowthButton();
 setupNeonInstall();
-
-registerNeonServiceWorker();
+setupNeonAnalytics();
+registerGlobalVisit();
