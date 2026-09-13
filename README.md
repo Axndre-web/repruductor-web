@@ -1,1 +1,1 @@
-NEON PLAYER X V5 — motor visual con 12 temas. El icono oficial se conserva desde app-icon.jpg y sus derivados. Tema principal: NEON DARK (negro profundo + morado neon).
+NEON PLAYER X V5.3 — Radio playback fix + all previous V5.2 functionality preserved. Official app icon unchanged. 12 themes preserved. Radio now uses direct MP3 streams where available, with WEB OFICIAL fallback and stream error/loading states.

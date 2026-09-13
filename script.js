@@ -3,7 +3,20 @@ const stations=[
  ['LOS40','40','Éxitos · Pop','#ff315d','https://play.los40.com/'],['LOS40 Classic','40C','Clásicos','#ff5b35','https://play.los40.com/'],['LOS40 Dance','40D','Dance · Electrónica','#b74cff','https://play.los40.com/'],['LOS40 Urban','40U','Urban · Hits','#ff3ba7','https://play.los40.com/'],['Europa FM','EF','Pop · Rock','#7b5cff','https://www.europafm.com/'],['KISS FM','KISS','Pop · Rock','#ff4d8d','https://www.kissfm.es/'],['Radiolé','RL','Española','#ff9d28','https://www.radiole.com/'],['Rock FM','RF','Rock · Clásicos','#e33b4e','https://www.rockfm.fm/'],['Radio MARCA','RM','Deporte · Directo','#e52435','https://www.marca.com/radio.html'],['COPE Deportes','COPE','Deportes · Directo','#50a7ff','https://www.cope.es/'],['RAC1','R1','Actualidad · Deporte','#ffcc31','https://www.rac1.cat/'],['RNE','RNE','Radio Nacional','#49d7ff','https://www.rtve.es/radio/']
 ];
 const themes=[['neon-dark','NEON DARK','Negro + morado'],['cyber-blue','CYBER BLUE','Tecnología futurista'],['fire-red','FIRE RED','Pasión y poder'],['toxic-green','TOXIC GREEN','Energía extrema'],['gold-elite','GOLD ELITE','Premium oscuro'],['ice-white','ICE WHITE','Pureza digital'],['ocean-teal','OCEAN TEAL','Fluidez total'],['violet-nebula','VIOLET NEBULA','Espacio infinito'],['matte-black','MATTE BLACK','Elegancia total'],['neon-orange','NEON ORANGE','Vibra al máximo'],['rainbow-tech','RAINBOW TECH','Sin límites'],['midnight-crimson','MIDNIGHT CRIMSON','Noche intensa']];
-const streams={};
+const streams={
+  0:'https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3',
+  1:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3',
+  2:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3',
+  3:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3',
+  4:'https://one.cloudstreaming.eu/proxy/europa/stream',
+  5:'https://kissfm.kissfmradio.cires21.com/kissfm.mp3',
+  6:'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3',
+  7:'https://rockfm-cope-rrcast.flumotion.com/cope/rockfm-low.mp3',
+  8:'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONAL.mp3',
+  9:'https://flucast09-h-cloud.flumotion.com/cope/net1.mp3',
+  10:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
+  11:'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
+};
 const audio=$('#radioAudio');let active=0,cart=[];
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)}
@@ -13,7 +26,38 @@ function updateThemeButton(){const b=$('#themeCycle');if(!b)return;const i=Math.
 function cycleTheme(){const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));applyTheme(themes[(i+1)%themes.length][0])}
 function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small></div><span class="listen">▶</span></article>`).join('');$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
 function makeWave(){const w=$('#wave');w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
-function playStation(i){active=i;const r=stations[i];$$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));$('#radioName').textContent=r[0];$('#radioGenre').textContent=r[2]+' · reproducción integrada';$('#stageLogo').textContent=r[1];$('#stageLogo').style.color=r[3];$('#radioWeb').href=r[4];$('#radioStatus').textContent='● CONECTANDO';audio.pause();audio.src=streams[i]||'';if(streams[i])audio.play().catch(()=>toast('El proveedor ha bloqueado el stream en este navegador. Usa WEB OFICIAL.'));else toast('Stream directo pendiente de proveedor. WEB OFICIAL disponible.');$('#radioStatus').textContent='● EN DIRECTO';toast(r[0]+' · seleccionado');}
+function playStation(i){
+  active=i;
+  const r=stations[i],url=streams[i];
+  $$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
+  $('#radioName').textContent=r[0];
+  $('#radioGenre').textContent=r[2]+' · reproducción integrada';
+  $('#stageLogo').textContent=r[1];
+  $('#stageLogo').style.color=r[3];
+  $('#radioWeb').href=r[4];
+  $('#radioStatus').textContent='● CONECTANDO';
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+  if(!url){
+    $('#radioStatus').textContent='● WEB OFICIAL';
+    toast(r[0]+' · sin stream directo disponible');
+    return;
+  }
+  audio.src=url;
+  audio.load();
+  audio.play().then(()=>{
+    $('#radioStatus').textContent='● EN DIRECTO';
+    toast(r[0]+' · reproduciendo');
+  }).catch(()=>{
+    $('#radioStatus').textContent='● REQUIERE WEB';
+    toast(r[0]+' · el navegador no pudo iniciar el stream. Pulsa ▶ o WEB OFICIAL.');
+  });
+}
+
+audio.addEventListener('playing',()=>{ $('#radioStatus').textContent='● EN DIRECTO'; });
+audio.addEventListener('waiting',()=>{ $('#radioStatus').textContent='● CARGANDO'; });
+audio.addEventListener('error',()=>{ if(streams[active]){ $('#radioStatus').textContent='● ERROR DE STREAM'; toast(stations[active][0]+' · stream no disponible ahora. Prueba WEB OFICIAL.'); }});
 function renderCart(){const count=cart.reduce((a,x)=>a+x.qty,0),total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=total.toFixed(2).replace('.',',')+' €';$('#cartItems').innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><span>${esc(x.name)} × ${x.qty}</span><b>${(x.qty*x.price).toFixed(2).replace('.',',')} €</b></div>`).join(''):'<p>Tu carrito está vacío.</p>'}
 $$('.add').forEach(b=>b.onclick=()=>{const n=b.dataset.product,p=+b.dataset.price;const x=cart.find(x=>x.name===n);x?x.qty++:cart.push({name:n,price:p,qty:1});renderCart();toast('Producto añadido al carrito')});
 $('#whatsapp').onclick=()=>{if(!cart.length)return toast('Añade un producto antes de enviar el pedido');const name=$('#customerName').value||'Cliente';const phone=$('#customerPhone').value||'No indicado';const addr=$('#customerAddress').value||'Recogida Renfe Azuqueca';const date=$('#deliveryDate').value||'A confirmar';const total=cart.reduce((a,x)=>a+x.qty*x.price,0).toFixed(2);const text=`¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.%0A%0A👤 *Nombre:* ${encodeURIComponent(name)}%0A🥟 *Cantidad:* ${cart.reduce((a,x)=>a+x.qty,0)}%0A💶 *Total:* ${total} €%0A📦 *Entrega:* ${encodeURIComponent(addr)}%0A📅 *Fecha:* ${encodeURIComponent(date)}%0A📱 *Teléfono:* ${encodeURIComponent(phone)}`;window.open('https://wa.me/34602487576?text='+text,'_blank')};
