@@ -1,20 +1,8 @@
-/*
- * NEON PLAYER X — CONFIG
- *
- * Después de crear tu proyecto Supabase:
- * 1. Copia Project URL.
- * 2. Copia la publishable key.
- *
- * No pongas nunca una service_role/secret key aquí.
- */
-
-window.NEON_BACKEND_CONFIG = {
-    projectUrl:"",
-    publishableKey:""
+window.NPX_CONFIG={
+  whatsapp:"34602487576",
+  paypalClientId:"BAAE-_0bpY5bp5POKN2LqiDTn-tTh6E7JiCQ_pAPSeU4hOum0sHF1sMJzQ0APl7YKnxk-QTxE_2VN90Dy4",
+  currency:"EUR",
+  deliveryFee:3,
+  pickupPoint:"Estación Renfe de Azuqueca de Henares",
+  analyticsEndpoint:""
 };
-
-/*
- * Google Analytics 4 opcional.
- * Ejemplo: "G-XXXXXXXXXX"
- */
-window.NEON_ANALYTICS_ID = "";
