@@ -1,813 +1,151 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05050a">
-<meta name="description" content="Neon Player X — reproductor multimedia, música local, vídeo y radio online.">
+<meta name="description" content="NEON PLAYER X — reproductor multimedia, radio, pedidos y tienda neon.">
 <meta name="application-name" content="Neon Player X">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="stylesheet" href="style.css">
-<title>Neon Player X</title>
+<title>NEON PLAYER X</title>
 </head>
 <body>
+<div class="page-neon-frame"></div>
+<div class="scanlines"></div>
 
 <div class="app-shell">
-
 <header class="topbar">
-
-<div class="brand">
-<span class="eyebrow">NEXT GENERATION MULTIMEDIA</span>
-<h1>NEON<span>PLAYER</span><b>X</b></h1>
-<p>Music · Video · Radio · Visualizer</p>
-</div>
-
-<div class="top-actions">
-
-<div id="activityBadge"
-     class="activity-badge"
-     aria-live="polite"
-     title="Actividad local">
-
-<span class="activity-dot"></span>
-<span id="activityLevel">NIVEL 1</span>
-<strong id="activityScore">0</strong>
-
-</div>
-
-<button
-    id="installBtn"
-    class="glass-btn install-btn"
-    title="Instalar Neon Player X"
-    hidden>
-    ⬇ Instalar
-</button>
-
-<button
-    id="sleepBtn"
-    class="glass-btn"
-    title="Temporizador">
-    🌙 <span>Sleep</span>
-</button>
-
-<button
-    id="themeBtn"
-    class="glass-btn"
-    title="Cambiar tema">
-    🎨 <span>Tema</span>
-</button>
-
-<label class="upload-btn">
-📁 Añadir
-<input
-    id="fileInput"
-    type="file"
-    accept="audio/*,video/*"
-    multiple
-    hidden>
-</label>
-
-</div>
+  <div class="brand">
+    <span class="eyebrow">NEXT GENERATION MULTIMEDIA</span>
+    <h1>NEON<span>PLAYER</span><b>X</b></h1>
+    <p>Music · Video · Radio · Visualizer · Store</p>
+  </div>
+  <div class="top-actions">
+    <div class="activity-badge"><span class="activity-dot"></span><span id="activityLevel">NIVEL 1</span><strong id="activityScore">0</strong></div>
+    <div class="live-clock"><span class="clock-dot"></span><span id="liveDate">--/--/----</span><span id="liveTime">--:--:--</span></div>
+    <button id="installBtn" class="glass-btn" hidden>⬇ Instalar</button>
+    <button id="shareBtn" class="glass-btn">↗ Compartir</button>
+    <button id="sleepBtn" class="glass-btn">🌙 <span>Sleep</span></button>
+    <button id="themeBtn" class="glass-btn">🎨 <span>Tema</span></button>
+    <label class="upload-btn">📁 Añadir<input id="fileInput" type="file" accept="audio/*,video/*" multiple hidden></label>
+  </div>
 </header>
 
 <nav class="main-nav">
-
-<button class="nav-btn active"
-        data-section="player">
-▶ Reproductor
-</button>
-
-<button class="nav-btn"
-        data-section="library">
-🎵 Mi música
-</button>
-
-<button class="nav-btn"
-        data-section="favorites">
-❤️ Favoritos
-</button>
-
-<button class="nav-btn"
-        data-section="history">
-🕘 Historial
-</button>
-
-<button class="nav-btn"
-        data-section="radio">
-📻 Radio
-</button>
-
+  <button class="nav-btn active" data-section="player">▶ Reproductor</button>
+  <button class="nav-btn" data-section="library">🎵 Mi música</button>
+  <button class="nav-btn" data-section="favorites">❤️ Favoritos</button>
+  <button class="nav-btn" data-section="history">🕘 Historial</button>
+  <button class="nav-btn" data-section="radio">📻 Radio</button>
+  <button class="nav-btn store-nav" data-section="store">🛒 Tienda <span id="navCartCount">0</span></button>
+  <button class="nav-btn" data-section="order">📦 Pedido</button>
 </nav>
 
 <main>
+<section id="section-player" class="page-section active">
+  <div class="main-grid">
+    <section class="player-card">
+      <div class="visualizer-container" id="visualizerContainer">
+        <canvas id="visualizer"></canvas>
+        <div class="visualizer-overlay"><span class="live-chip" id="visualizerStatus">● READY</span></div>
+        <div class="empty-state" id="emptyState"><div class="neon-logo">▶</div><h2>NEON PLAYER X</h2><p>Selecciona una canción, vídeo o emisora</p></div>
+        <video id="videoPlayer" playsinline></video>
+        <audio id="audioPlayer" preload="metadata"></audio>
+        <button id="fullscreenBtn" class="fullscreen-btn">⛶</button>
+      </div>
+      <div class="media-info"><div class="now-playing"><span class="label">REPRODUCIENDO AHORA</span><h2 id="currentTitle">Ningún archivo seleccionado</h2><span id="currentMeta">Neon Player X</span></div><div class="media-actions"><button id="favoriteBtn" class="icon-btn">♡</button><span id="mediaType" class="type-badge">---</span></div></div>
+      <div class="progress-area"><span id="currentTime">00:00</span><input id="progress" type="range" min="0" max="100" value="0"><span id="duration">00:00</span></div>
+      <div class="controls"><button id="shuffleBtn" class="control-btn">🔀</button><button id="backBtn" class="control-btn">⏪</button><button id="playBtn" class="play-btn">▶</button><button id="forwardBtn" class="control-btn">⏩</button><button id="repeatBtn" class="control-btn">🔁</button></div>
+      <div class="control-status"><span id="shuffleStatus">ALEATORIO OFF</span><span id="repeatStatus">REPETIR OFF</span></div>
+      <div class="volume-area"><button id="muteBtn" class="small-btn">🔊</button><input id="volume" type="range" min="0" max="1" step=".01" value="1"><span id="volumeValue">100%</span></div>
+      <div class="sleep-panel" id="sleepPanel"><button data-minutes="15">15 min</button><button data-minutes="30">30 min</button><button data-minutes="60">60 min</button><button data-minutes="120">120 min</button><button data-minutes="0">Cancelar</button><span id="sleepStatus">Temporizador apagado</span></div>
+    </section>
 
-<section
-    id="section-player"
-    class="page-section active">
+    <aside class="playlist-card">
+      <div class="section-header"><div><span class="eyebrow">COLA DE REPRODUCCIÓN</span><h2>Mi Playlist</h2></div><span id="trackCount" class="count">0</span></div>
+      <div class="search-box">🔍<input id="playlistSearch" type="search" placeholder="Buscar canciones..."></div>
+      <div class="category-tabs"><button class="category-btn active" data-category="all">Todas</button><button class="category-btn" data-category="audio">🎵 Audio</button><button class="category-btn" data-category="video">🎬 Vídeo</button><button class="category-btn" data-category="favorites">❤️</button></div>
+      <div id="playlist" class="playlist"></div>
+      <button id="clearPlaylist" class="clear-btn">🗑 Vaciar playlist</button>
+    </aside>
+  </div>
 
-<div class="main-grid">
-
-<section class="player-card">
-
-<div
-    class="visualizer-container"
-    id="visualizerContainer">
-
-<canvas id="visualizer"></canvas>
-
-<div class="visualizer-overlay">
-<span
-    class="live-chip"
-    id="visualizerStatus">
-● READY
-</span>
-</div>
-
-<div
-    class="empty-state"
-    id="emptyState">
-
-<div class="neon-logo">
-▶
-</div>
-
-<h2>
-NEON PLAYER X
-</h2>
-
-<p>
-Selecciona una canción, vídeo o emisora
-</p>
-
-</div>
-
-<video
-    id="videoPlayer"
-    playsinline>
-</video>
-
-<audio
-    id="audioPlayer"
-    preload="metadata">
-</audio>
-
-<button
-    id="fullscreenBtn"
-    class="fullscreen-btn"
-    title="Pantalla completa">
-⛶
-</button>
-
-</div>
-
-<div class="media-info">
-
-<div class="now-playing">
-
-<span class="label">
-REPRODUCIENDO AHORA
-</span>
-
-<h2 id="currentTitle">
-Ningún archivo seleccionado
-</h2>
-
-<span id="currentMeta">
-Neon Player X
-</span>
-
-</div>
-
-<div class="media-actions">
-
-<button
-    id="favoriteBtn"
-    class="icon-btn"
-    title="Favorito">
-♡
-</button>
-
-<span
-    id="mediaType"
-    class="type-badge">
----
-</span>
-
-</div>
-</div>
-
-<div class="progress-area">
-
-<span id="currentTime">
-00:00
-</span>
-
-<input
-    id="progress"
-    type="range"
-    min="0"
-    max="100"
-    value="0">
-
-<span id="duration">
-00:00
-</span>
-
-</div>
-
-<div class="controls">
-
-<button
-    id="shuffleBtn"
-    class="control-btn"
-    title="Aleatorio">
-🔀
-</button>
-
-<button
-    id="backBtn"
-    class="control-btn"
-    title="10 segundos atrás">
-⏪
-</button>
-
-<button
-    id="playBtn"
-    class="play-btn">
-▶
-</button>
-
-<button
-    id="forwardBtn"
-    class="control-btn"
-    title="10 segundos adelante">
-⏩
-</button>
-
-<button
-    id="repeatBtn"
-    class="control-btn"
-    title="Repetir">
-🔁
-</button>
-
-</div>
-
-<div class="control-status">
-<span id="shuffleStatus">
-ALEATORIO OFF
-</span>
-<span id="repeatStatus">
-REPETIR OFF
-</span>
-</div>
-
-<div class="volume-area">
-
-<button
-    id="muteBtn"
-    class="small-btn">
-🔊
-</button>
-
-<input
-    id="volume"
-    type="range"
-    min="0"
-    max="1"
-    step=".01"
-    value="1">
-
-<span id="volumeValue">
-100%
-</span>
-
-</div>
-
-<div
-    class="sleep-panel"
-    id="sleepPanel">
-
-<button data-minutes="15">
-15 min
-</button>
-
-<button data-minutes="30">
-30 min
-</button>
-
-<button data-minutes="60">
-60 min
-</button>
-
-<button data-minutes="120">
-120 min
-</button>
-
-<button data-minutes="0">
-Cancelar
-</button>
-
-<span id="sleepStatus">
-Temporizador apagado
-</span>
-
-</div>
-
+  <section class="quick-section">
+    <div class="section-header"><div><span class="eyebrow">ACCESO RÁPIDO</span><h2>Tu experiencia</h2></div></div>
+    <div class="quick-grid">
+      <button class="quick-card" data-section="favorites"><strong>❤️</strong><span>Favoritos</span><small id="favoriteCount">0 canciones</small></button>
+      <button class="quick-card" data-section="history"><strong>🕘</strong><span>Historial</span><small id="historyCount">0 reproducciones</small></button>
+      <button class="quick-card" data-section="library"><strong>🎧</strong><span>Mi biblioteca</span><small>Tu música personal</small></button>
+      <button class="quick-card" data-section="radio"><strong>📻</strong><span>Neon Radio</span><small>Emisoras online</small></button>
+    </div>
+  </section>
 </section>
 
-<aside class="playlist-card">
+<section id="section-library" class="page-section"><section class="library-card"><div class="section-header"><div><span class="eyebrow">BIBLIOTECA PERSONAL</span><h2>⭐ Mi Música</h2></div></div><div class="library-toolbar"><div class="search-box">🔍<input id="librarySearch" type="search" placeholder="Buscar en Mi Música..."></div></div><div id="myMusicList" class="music-grid"></div></section></section>
 
-<div class="section-header">
+<section id="section-favorites" class="page-section"><section class="library-card"><div class="section-header"><div><span class="eyebrow">COLECCIÓN PERSONAL</span><h2>❤️ Favoritos</h2></div><span id="favoriteSectionCount" class="count">0</span></div><div id="favoritesList" class="special-grid"></div></section></section>
 
-<div>
+<section id="section-history" class="page-section"><section class="library-card"><div class="section-header"><div><span class="eyebrow">ACTIVIDAD RECIENTE</span><h2>🕘 Historial</h2></div><button id="clearHistory" class="danger-small">Limpiar</button></div><div id="historyList" class="special-grid"></div></section></section>
 
-<span class="eyebrow">
-COLA DE REPRODUCCIÓN
-</span>
+<section id="section-radio" class="page-section"><section class="radio-card"><div class="section-header"><div><span class="eyebrow">EMISIÓN ONLINE</span><h2>📻 Neon Radio</h2></div><span id="radioStatus" class="radio-status">OFFLINE</span></div><div class="radio-player"><div class="radio-info"><div class="radio-icon">📻</div><div><span class="label">EMISORA ACTUAL</span><h3 id="radioName">Selecciona una emisora</h3><span id="radioGenre">Radio online</span></div></div><div class="radio-controls"><button id="radioFavorite" class="radio-heart">♡</button><button id="radioPlay" class="radio-play">▶</button><input id="radioVolume" type="range" min="0" max="1" step=".01" value="1"><span id="radioVolumeValue">100%</span></div></div><div class="radio-toolbar"><div class="search-box">🔍<input id="radioSearch" type="search" placeholder="Buscar emisora, país o género..."></div><div class="radio-filters"><button class="radio-filter active" data-filter="all">Todas</button><button class="radio-filter" data-filter="España">🇪🇸 España</button><button class="radio-filter" data-filter="Europa">🇪🇺 Europa</button><button class="radio-filter" data-filter="Pop">🎤 Pop</button><button class="radio-filter" data-filter="Urbano">🔥 Urbano</button><button class="radio-filter" data-filter="Clásica">🎻 Clásica</button></div></div><div class="radio-heading"><span>📡 EMISORAS DISPONIBLES</span><span id="radioCount">0 emisoras</span></div><div id="radioList" class="radio-grid"></div></section></section>
 
-<h2>
-Mi Playlist
-</h2>
-
-</div>
-
-<span
-    id="trackCount"
-    class="count">
-0
-</span>
-
-</div>
-
-<div class="search-box">
-
-🔍
-
-<input
-    id="playlistSearch"
-    type="search"
-    placeholder="Buscar canciones...">
-
-</div>
-
-<div class="category-tabs">
-
-<button
-    class="category-btn active"
-    data-category="all">
-Todas
-</button>
-
-<button
-    class="category-btn"
-    data-category="audio">
-🎵 Audio
-</button>
-
-<button
-    class="category-btn"
-    data-category="video">
-🎬 Vídeo
-</button>
-
-<button
-    class="category-btn"
-    data-category="favorites">
-❤️
-</button>
-
-</div>
-
-<div
-    id="playlist"
-    class="playlist">
-</div>
-
-<button
-    id="clearPlaylist"
-    class="clear-btn">
-🗑 Vaciar playlist
-</button>
-
-</aside>
-
-</div>
-
-<section class="quick-section">
-
-<div class="section-header">
-
-<div>
-<span class="eyebrow">
-ACCESO RÁPIDO
-</span>
-
-<h2>
-Tu experiencia
-</h2>
-</div>
-
-</div>
-
-<div class="quick-grid">
-
-<button
-    class="quick-card"
-    data-section="favorites">
-<strong>❤️</strong>
-<span>Favoritos</span>
-<small id="favoriteCount">
-0 canciones
-</small>
-</button>
-
-<button
-    class="quick-card"
-    data-section="history">
-<strong>🕘</strong>
-<span>Historial</span>
-<small id="historyCount">
-0 reproducciones
-</small>
-</button>
-
-<button
-    class="quick-card"
-    data-section="library">
-<strong>🎧</strong>
-<span>Mi biblioteca</span>
-<small>
-Tu música personal
-</small>
-</button>
-
-<button
-    class="quick-card"
-    data-section="radio">
-<strong>📻</strong>
-<span>Neon Radio</span>
-<small>
-Emisoras online
-</small>
-</button>
-
-</div>
-
-<div
-    class="global-stats"
-    aria-live="polite">
-
-<span class="global-stat">
-👁
-<strong id="globalVisits">0</strong>
-visitas
-</span>
-
-<span class="global-stat-separator">
-·
-</span>
-
-<span class="global-stat">
-👤
-<strong id="globalUniqueVisitors">0</strong>
-visitantes
-</span>
-
-</div>
-
+<section id="section-store" class="page-section">
+  <div class="store-hero"><div><span class="eyebrow">NEON PLAYER X STORE</span><h2>PRODUCTOS & <span>PROMOCIONES</span></h2><p>Selecciona tus productos. El carrito calcula automáticamente el pedido y el envío.</p></div><button class="neon-cta" data-section="order">IR AL PEDIDO →</button></div>
+  <div class="product-grid">
+    <article class="product-card"><div class="product-art">🥟</div><div class="product-code">FOOD · 001</div><h3>Empanada de Pollo</h3><p>Empanada de pollo preparada para disfrutar.</p><div class="product-price">1,50 €</div><div class="product-actions"><div class="qty"><button data-store-minus="empanada">−</button><span id="storeQty-empanada">1</span><button data-store-plus="empanada">+</button></div><button class="add-product" data-add-product="empanada">AÑADIR</button></div></article>
+    <article class="product-card featured-product"><div class="featured-tag">DESTACADO</div><div class="product-art player-art">▶</div><div class="product-code">DIGITAL · 099</div><h3>Multimedia Neon Player X</h3><p>Unidad digital NEON PLAYER X.</p><div class="product-price">0,99 €</div><div class="product-actions"><div class="qty"><button data-store-minus="player">−</button><span id="storeQty-player">1</span><button data-store-plus="player">+</button></div><button class="add-product" data-add-product="player">AÑADIR</button></div></article>
+  </div>
+  <div class="packs-title"><span class="eyebrow">PACKS</span><h2>🔥 Promociones</h2></div>
+  <div class="packs-grid">
+    <article class="pack-card"><span>01</span><div><b>Pack 5 Empanadas</b><small>5 unidades de pollo</small></div><strong>7,00 €</strong><button data-add-product="pack5">AÑADIR</button></article>
+    <article class="pack-card"><span>02</span><div><b>Pack 3 Neon Player X</b><small>3 unidades digitales</small></div><strong>2,97 €</strong><button data-add-product="pack3">AÑADIR</button></article>
+    <article class="pack-card promo"><span>03</span><div><b>Combo Neon</b><small>10 empanadas + 1 Neon Player X</small></div><strong>15,00 €</strong><button data-add-product="combo">AÑADIR</button></article>
+  </div>
 </section>
 
+<section id="section-order" class="page-section">
+  <div class="order-head"><span class="eyebrow">CHECKOUT NEON</span><h2>PREPARA TU <span>PEDIDO</span></h2><p>El cliente puede escoger recogida gratuita o entrega a domicilio.</p></div>
+  <div class="checkout-grid">
+    <form id="orderForm" class="order-form">
+      <div class="form-title">👤 Datos del cliente</div>
+      <label>Nombre *<input id="customerName" required></label>
+      <label>Teléfono *<input id="customerPhone" type="tel" required></label>
+      <div class="form-title">📦 Entrega</div>
+      <div class="delivery-options"><label class="option-card"><input type="radio" name="delivery" value="pickup" checked><span>🚉</span><b>Recogida GRATIS</b><small>Renfe Azuqueca de Henares</small></label><label class="option-card"><input type="radio" name="delivery" value="home"><span>🏠</span><b>A domicilio</b><small>3,00 € de envío</small></label></div>
+      <label id="addressWrap" class="address-wrap">Dirección de entrega<input id="customerAddress" placeholder="Calle, número, piso..."></label>
+      <div class="two-fields"><label>Fecha *<input id="orderDate" type="date" required></label><label>Hora *<input id="orderTime" type="time" required></label></div>
+      <label>Notas<textarea id="orderNotes" rows="3" placeholder="Indicaciones o información adicional..."></textarea></label>
+      <div class="form-title">💳 Método de pago</div>
+      <div class="payment-options"><label class="option-card"><input type="radio" name="payment" value="whatsapp" checked><span>💬</span><b>Confirmar por WhatsApp</b><small>Recibirás las instrucciones</small></label><label class="option-card"><input type="radio" name="payment" value="cash"><span>💶</span><b>Efectivo</b><small>Pago al recibir / recoger</small></label><label class="option-card"><input type="radio" name="payment" value="paypal"><span>🅿️</span><b>PayPal</b><small>Pago online seguro</small></label></div>
+      <button type="submit" class="neon-cta full">GENERAR PEDIDO</button>
+    </form>
+    <aside class="order-summary">
+      <div class="summary-head"><span>// RESUMEN</span><button id="clearCart">Vaciar</button></div>
+      <div id="cartList"></div>
+      <div class="summary-line"><span>Subtotal</span><b id="cartSubtotal">0,00 €</b></div>
+      <div class="summary-line"><span>Envío</span><b id="cartShipping">0,00 €</b></div>
+      <div class="summary-total"><span>TOTAL</span><strong id="cartTotal">0,00 €</strong></div>
+      <div id="paypalBox" class="paypal-box hidden"><div class="paypal-title">🅿️ Pago PayPal</div><div id="paypal-button-container"></div></div>
+      <button id="sendWhatsApp" class="whatsapp-btn">💬 ENVIAR PEDIDO POR WHATSAPP</button>
+      <p class="secure-note">🔒 El importe de PayPal se calcula automáticamente con el total actual del carrito.</p>
+    </aside>
+  </div>
+  <div class="order-preview"><span class="eyebrow">FORMATO DEL PEDIDO</span><pre id="orderPreview">👤 Nombre: ...</pre></div>
 </section>
-
-
-<section
-    id="section-library"
-    class="page-section">
-
-<section class="library-card">
-
-<div class="section-header">
-
-<div>
-
-<span class="eyebrow">
-BIBLIOTECA PERSONAL
-</span>
-
-<h2>
-⭐ Mi Música
-</h2>
-
-</div>
-
-<span class="count">
-25
-</span>
-
-</div>
-
-<div class="library-toolbar">
-
-<div class="search-box">
-
-🔍
-
-<input
-    id="librarySearch"
-    type="search"
-    placeholder="Buscar en Mi Música...">
-
-</div>
-
-</div>
-
-<div
-    id="myMusicList"
-    class="music-grid">
-</div>
-
-</section>
-
-</section>
-
-
-<section
-    id="section-favorites"
-    class="page-section">
-
-<section class="library-card">
-
-<div class="section-header">
-
-<div>
-
-<span class="eyebrow">
-COLECCIÓN PERSONAL
-</span>
-
-<h2>
-❤️ Favoritos
-</h2>
-
-</div>
-
-<span
-    id="favoriteSectionCount"
-    class="count">
-0
-</span>
-
-</div>
-
-<div
-    id="favoritesList"
-    class="special-grid">
-</div>
-
-</section>
-
-</section>
-
-
-<section
-    id="section-history"
-    class="page-section">
-
-<section class="library-card">
-
-<div class="section-header">
-
-<div>
-
-<span class="eyebrow">
-ACTIVIDAD RECIENTE
-</span>
-
-<h2>
-🕘 Historial
-</h2>
-
-</div>
-
-<button
-    id="clearHistory"
-    class="danger-small">
-Limpiar
-</button>
-
-</div>
-
-<div
-    id="historyList"
-    class="special-grid">
-</div>
-
-</section>
-
-</section>
-
-
-<section
-    id="section-radio"
-    class="page-section">
-
-<section class="radio-card">
-
-<div class="section-header">
-
-<div>
-
-<span class="eyebrow">
-EMISIÓN ONLINE
-</span>
-
-<h2>
-📻 Neon Radio
-</h2>
-
-</div>
-
-<span
-    id="radioStatus"
-    class="radio-status">
-OFFLINE
-</span>
-
-</div>
-
-<div class="radio-player">
-
-<div class="radio-info">
-
-<div class="radio-icon">
-📻
-</div>
-
-<div>
-
-<span class="label">
-EMISORA ACTUAL
-</span>
-
-<h3 id="radioName">
-Selecciona una emisora
-</h3>
-
-<span id="radioGenre">
-Radio online
-</span>
-
-</div>
-
-</div>
-
-<div class="radio-controls">
-
-<button
-    id="radioFavorite"
-    class="radio-heart">
-♡
-</button>
-
-<button
-    id="radioPlay"
-    class="radio-play">
-▶
-</button>
-
-<input
-    id="radioVolume"
-    type="range"
-    min="0"
-    max="1"
-    step=".01"
-    value="1">
-
-<span id="radioVolumeValue">
-100%
-</span>
-
-</div>
-
-</div>
-
-<div class="radio-toolbar">
-
-<div class="search-box">
-
-🔍
-
-<input
-    id="radioSearch"
-    type="search"
-    placeholder="Buscar emisora, país o género...">
-
-</div>
-
-<div class="radio-filters">
-
-<button
-    class="radio-filter active"
-    data-filter="all">
-Todas
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="España">
-🇪🇸 España
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="Europa">
-🇪🇺 Europa
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="Latinoamérica">
-🌎 Latinoamérica
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="Pop">
-🎤 Pop
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="Urbano">
-🔥 Urbano
-</button>
-
-<button
-    class="radio-filter"
-    data-filter="Clásica">
-🎻 Clásica
-</button>
-
-</div>
-
-</div>
-
-<div class="radio-heading">
-
-<span>
-📡 EMISORAS DISPONIBLES
-</span>
-
-<span id="radioCount">
-0 emisoras
-</span>
-
-</div>
-
-<div
-    id="radioList"
-    class="radio-grid">
-</div>
-
-</section>
-
-</section>
-
 </main>
 
-<footer>
+<section class="global-tools">
+  <form id="googleSearch" class="google-box"><span>G</span><input id="googleInput" placeholder="Buscar en Google..." type="search"><button>BUSCAR</button></form>
+  <div class="social-links"><a href="https://www.youtube.com/" target="_blank" rel="noopener">YouTube</a><a href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok</a><a href="https://www.facebook.com/" target="_blank" rel="noopener">Facebook</a><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></div>
+</section>
 
-<span>
-NEON PLAYER X
-</span>
-
-<span>
-HTML · CSS · JAVASCRIPT · PWA
-</span>
-
-<span id="footerActivity">
-NIVEL 1 · 0 ACTIVIDAD
-</span>
-
-</footer>
-
+<footer><div><strong>NEON PLAYER X</strong><span>Music · Video · Radio · Store</span></div><div><span id="footerActivity">NIVEL 1 · 0 ACTIVIDAD</span><span>© <span id="year"></span></span></div></footer>
 </div>
 
-<audio
-    id="radioAudio"
-    preload="none">
-</audio>
-
-<div
-    id="toastContainer"
-    class="toast-container">
-</div>
-
-<script src="config.js"></script>
+<div id="toastContainer" class="toast-container"></div>
+<audio id="radioAudio" preload="none"></audio>
 <script src="script.js"></script>
-
 </body>
 </html>
