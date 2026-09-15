@@ -34,3 +34,5 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 .orb-mind-card small{margin-top:5px}
 @keyframes orbMindPulse{0%,100%{transform:scale(.8);opacity:.45}50%{transform:scale(1.15);opacity:1}}
 @media(max-width:700px){.orb-mind-card{grid-column:1/-1}}
+.orb-mind-card small:nth-last-child(-n+2){display:block;margin-top:5px;opacity:.78}.orb-mind-card small:nth-last-child(2){color:var(--accent)}
+@media(max-width:700px){.orb-mind-card small{font-size:8px}.orb-mind-card b{font-size:11px}}
