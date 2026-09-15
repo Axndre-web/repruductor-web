@@ -7,7 +7,7 @@
 <meta name="description" content="NEON PLAYER X — reproductor, radio y tienda digital.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon-32.png" type="image/png">
-<link rel="apple-touch-icon" href="app-icon-180.png">
+<link rel="apple-touch-icon" href="icon-180.png">
 <title>NEON PLAYER X</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,19 +29,12 @@
   <a href="#radio" class="nav-link">◉ <span>Radio</span></a>
   <a href="#player" class="nav-link">♫ <span>Player</span></a>
   <a href="#tienda" class="nav-link">▣ <span>Tienda</span></a>
-  <a href="#temas" class="nav-link">✦ <span>Temas</span></a>
-  <a href="#rewards" class="nav-link">⚡ <span>Puntos</span></a>
-  <a href="#web3" class="nav-link">◈ <span>Web3</span></a>
-  <a href="#evolution" class="nav-link">⚙ <span>Control</span></a>
+  <a href="#control" class="nav-link">◈ <span>Control</span></a><a href="#temas" class="nav-link">✦ <span>Temas</span></a>
 </nav>
 <main>
 <section id="inicio" class="hero section">
-  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V5.6</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
+  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V7.1</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
   <div class="hero-core reveal"><div class="orb"><img src="icon-192.png" alt=""> </div><span>NEON CORE</span><small>INTERFACE ONLINE</small></div>
-</section>
-<section id="ads" class="section ads-section reveal" aria-label="Promociones NEON PLAYER X">
-  <div class="section-head"><div><span class="eyebrow">NEON ADS NETWORK</span><h2>SEÑALES <em>ACTIVAS</em></h2><p class="section-note">Promociones y accesos configurados desde ads.json.</p></div><span class="live-chip">● LIVE ADS</span></div>
-  <div class="ads-grid" id="adsGrid"><article class="ad-card ad-loading"><span class="ad-kicker">CARGANDO</span><strong>SEÑALES NEON</strong><small>Preparando promociones…</small></article></div>
 </section>
 <section class="workspace section">
   <div class="workspace-main"><section class="dashboard">
@@ -49,7 +42,6 @@
   <article class="metric"><span>ESTADO</span><b><i class="dot"></i> ONLINE</b><i>16:46 · ESPAÑA</i></article>
   <article class="metric"><span>PRODUCTO</span><b>0,99 €</b><i>NEON PLAYER X</i></article>
   <article class="metric"><span>CARRITO</span><b id="cartCount">0</b><i>ARTÍCULOS</i></article>
-  <article class="metric reward-metric"><span>PUNTOS NEON</span><b id="neonPoints">0</b><i id="neonLevel">NOVATO · 0%</i></article>
 </section></div>
   <aside class="drop-panel" id="dropPanel">
     <div class="drop-head"><div><span class="eyebrow">MEDIA DOCK</span><h3>TUS ARCHIVOS</h3></div><button id="clearFiles" class="dock-icon" type="button" title="Limpiar">×</button></div>
@@ -59,38 +51,10 @@
     <div class="file-queue" id="fileQueue"></div>
   </aside>
 </section>
-<section id="rewards" class="section panel reveal reward-panel">
-  <div class="section-head"><div><span class="eyebrow">LIVE REWARD ENGINE</span><h2>ESCUCHA <em>Y ACUMULA</em></h2><p class="section-note">Gana puntos mientras escuchas la radio o pruebas tus archivos locales. El progreso se guarda en este dispositivo.</p></div><span class="live-chip reward-live">● PUNTOS EN TIEMPO REAL</span></div>
-  <div class="reward-grid">
-    <article class="reward-card reward-main"><div class="reward-icon">⚡</div><div><span>PERFIL NEON</span><h3 id="rewardLevel">NOVATO</h3><p><b id="rewardPointsBig">0</b> puntos · <span id="rewardNext">100</span> para el siguiente nivel</p></div><div class="progress"><i id="rewardProgress"></i></div><small id="rewardActivity">Activa la radio o el Media Player para comenzar.</small></article>
-    <article class="reward-card"><span>NIVEL ACTUAL</span><strong id="rewardLevelBadge">01</strong><b id="rewardLevelName">NOVATO</b><small>Progreso continuo</small></article>
-    <article class="reward-card"><span>ACTIVIDAD</span><strong id="rewardMinutes">0</strong><b>MINUTOS</b><small>Escucha/reproducción contabilizada</small></article>
-  </div>
-  <div class="reward-rules"><span>+1 punto / minuto de reproducción</span><span>Radio + Media Player</span><span>Guardado local</span></div>
-</section>
-<section id="web3" class="section panel reveal web3-panel">
-  <div class="section-head"><div><span class="eyebrow">NEON WEB3 HUB</span><h2>ECOSISTEMA <em>SOLANA</em></h2><p class="section-note">Conexión opcional con Phantom para futuras funciones Web3. NEON PLAYER X nunca solicita ni guarda claves privadas o frases semilla.</p></div><span class="live-chip">◈ OPCIONAL</span></div>
-  <div class="web3-grid">
-    <article class="web3-card"><div class="web3-symbol">◎</div><div><span>WALLET</span><h3 id="walletStatus">PHANTOM NO CONECTADA</h3><p id="walletAddress">Puedes conectar tu wallet desde este dispositivo.</p></div><button id="connectPhantom" class="btn primary" type="button">CONECTAR PHANTOM</button></article>
-    <article class="web3-card"><span>RED</span><strong>SOLANA</strong><small>Infraestructura Web3 preparada · sin transacciones automáticas.</small></article>
-    <article class="web3-card"><span>SEGURIDAD</span><strong>NON-CUSTODIAL</strong><small>La aplicación no pide semilla, contraseña ni clave privada.</small></article>
-  </div>
-</section>
-<section id="evolution" class="section panel reveal evolution-panel">
-  <div class="section-head"><div><span class="eyebrow">V5.6 EVOLUTION CORE</span><h2>CONTROL <em>CENTER</em></h2><p class="section-note">Estado general de NEON PLAYER X: actividad, recompensas, compras y conectividad.</p></div><span class="live-chip">● SISTEMA ACTIVO</span></div>
-  <div class="evolution-grid">
-    <article class="evo-card"><span>REPRODUCCIÓN</span><strong id="evoPlayback">EN ESPERA</strong><small id="evoPlaybackMeta">Radio / Media Player</small></article>
-    <article class="evo-card"><span>RECOMPENSAS</span><strong id="evoRewardLevel">NOVATO</strong><small id="evoRewardMeta">0 puntos · 0 min</small></article>
-    <article class="evo-card"><span>ÚLTIMO PEDIDO</span><strong id="evoLastOrder">NINGUNO</strong><small id="evoLastOrderMeta">Aún no hay compras confirmadas</small></article>
-    <article class="evo-card"><span>PAYPAL</span><strong id="evoPayState">LISTO</strong><small id="evoPayMeta">Checkout dinámico EUR</small></article>
-  </div>
-  <div class="evolution-actions"><button class="btn mini" id="showOrders" type="button">HISTORIAL DE PEDIDOS</button><button class="btn mini" id="paymentDiagnostics" type="button">DIAGNÓSTICO PAYPAL</button></div>
-  <div class="order-history" id="orderHistory" hidden></div>
-</section>
 <section id="radio" class="section panel reveal">
   <div class="section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2></div><span class="pill"><i></i> DIRECTO</span></div>
   <div class="radio-layout">
-    <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
+    <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><div class="neon-eq" id="radioEQ"><div class="eq-head"><span>RADIO EQUALIZER</span><b id="radioEqState">ANALIZANDO</b></div><canvas id="radioEqCanvas" aria-label="Ecualizador visual de radio"></canvas><div class="eq-spectrum" id="radioSpectrum"></div><div class="eq-sliders"><label>60<input data-band="0" type="range" min="-12" max="12" value="0"></label><label>230<input data-band="1" type="range" min="-12" max="12" value="0"></label><label>910<input data-band="2" type="range" min="-12" max="12" value="0"></label><label>3.6K<input data-band="3" type="range" min="-12" max="12" value="0"></label><label>14K<input data-band="4" type="range" min="-12" max="12" value="0"></label></div></div><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
     <div class="radio-grid" id="radioGrid"></div>
   </div>
 </section>
@@ -106,29 +70,38 @@
     <audio id="mainAudio" preload="metadata"></audio><video id="mainVideo" preload="metadata" playsinline></video>
   </div>
 </div>
+<div class="media-studio" id="mediaStudio"><div class="studio-head"><div><span class="eyebrow">MEDIA STUDIO X</span><h3>ESTUDIO <em>PRO</em></h3></div><span id="studioState" class="studio-state">ESPERA</span></div><canvas id="studioCanvas" aria-label="Analizador del Media Player"></canvas><div class="studio-controls"><label>PREAMP <input id="studioPreamp" type="range" min="0.5" max="2" value="1" step="0.01"></label><label>GRAVES <input data-studio-band="0" type="range" min="-12" max="12" value="0"></label><label>MEDIOS <input data-studio-band="1" type="range" min="-12" max="12" value="0"></label><label>AGUDOS <input data-studio-band="2" type="range" min="-12" max="12" value="0"></label><label>LUZ <input id="studioGlow" type="range" min="0.3" max="2" value="1" step="0.05"></label></div><div class="studio-presets"><button type="button" data-preset="flat">FLAT</button><button type="button" data-preset="bass">BASS</button><button type="button" data-preset="voice">VOICE</button><button type="button" data-preset="club">CLUB</button></div></div>
 <div class="player-upload-grid">
   <div class="player-dropzone" id="mainDropzone"><input id="mainFilePicker" type="file" hidden multiple accept="audio/*,video/*"><div class="upload-icon">＋</div><strong>ARRASTRA TU MÚSICA O VÍDEO AQUÍ</strong><small>Prueba el reproductor con tus propios archivos · solo permanecen en tu dispositivo</small><button id="mainPickFiles" class="btn primary" type="button">SELECCIONAR ARCHIVOS</button></div>
   <div class="player-queue"><div class="queue-head"><span>LISTA DE PRUEBA</span><b id="mainQueueCount">0</b><button id="mainClearQueue" type="button">LIMPIAR</button></div><div id="mainQueue" class="main-queue"><p>Aún no has añadido archivos.</p></div></div>
 </div>
 </section>
-<section id="tienda" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">DIGITAL SHOP</span><h2>TIENDA <em>NEON</em></h2></div></div><div class="shop-grid"><article class="product"><div class="product-art"><span>NEON</span><b>PLAYER X</b></div><div><h3>Multimedia Neon Player X</h3><p>Acceso digital · unidad</p><strong>0,99 €</strong></div><button class="btn primary add" data-product="Multimedia Neon Player X" data-price="0.99">AÑADIR AL CARRITO</button></article><aside class="cart"><div class="cart-head"><h3>🛒 TU PEDIDO</h3><b id="cartTotal">0,00 €</b></div><div id="cartItems" class="cart-items"><p>Tu carrito está vacío.</p></div><div class="delivery"><label><input type="radio" name="delivery" value="recogida" checked> Recogida · Renfe Azuqueca <b>0 €</b></label><label><input type="radio" name="delivery" value="domicilio"> A domicilio <b>Confirmar coste</b></label></div><input id="customerName" placeholder="Nombre completo"><input id="customerPhone" placeholder="Teléfono de contacto"><input id="customerAddress" placeholder="Dirección de entrega (si aplica)"><input id="deliveryDate" type="date"><div class="checkout"><button id="whatsapp" class="btn whatsapp">WHATSAPP PEDIDO</button><button id="paypal" class="btn paypal" type="button">PAYPAL · PAGAR</button></div></aside></div></section>
+<section id="tienda" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">DIGITAL SHOP</span><h2>TIENDA <em>NEON</em></h2></div></div><div class="shop-grid"><article class="product"><div class="product-art"><span>NEON</span><b>PLAYER X</b></div><div><h3>Multimedia Neon Player X</h3><p>Acceso digital · unidad</p><strong>0,99 €</strong></div><button class="btn primary add" data-product="Multimedia Neon Player X" data-price="0.99">AÑADIR AL CARRITO</button></article><aside class="cart"><div class="cart-head"><h3>🛒 TU PEDIDO</h3><b id="cartTotal">0,00 €</b></div><div id="cartItems" class="cart-items"><p>Tu carrito está vacío.</p></div><div class="delivery"><label><input type="radio" name="delivery" value="recogida" checked> Recogida · Renfe Azuqueca <b>0 €</b></label><label><input type="radio" name="delivery" value="domicilio"> A domicilio <b>Confirmar coste</b></label></div><input id="customerName" placeholder="Nombre completo"><input id="customerPhone" placeholder="Teléfono de contacto"><input id="customerAddress" placeholder="Dirección de entrega (si aplica)"><input id="deliveryDate" type="date"><div class="checkout"><button id="whatsapp" class="btn whatsapp">WHATSAPP PEDIDO</button><button id="paypal" class="btn paypal">PAYPAL</button></div></aside></div></section>
+<section id="control" class="section panel reveal">
+  <div class="section-head"><div><span class="eyebrow">CONTROL CENTER · V5.6 → V7.1</span><h2>NEON <em>CONTROL</em></h2></div><span class="pill"><i></i> CUMULATIVE</span></div>
+  <div class="control-grid">
+    <article class="control-card"><span>RADIO</span><b id="evoPlayback">EN ESPERA</b><small id="evoPlaybackMeta">Selecciona una emisora.</small></article>
+    <article class="control-card"><span>EVOLUCIÓN</span><b id="evoRewardLevel">NIVEL 1</b><small id="evoRewardMeta">0 interacciones registradas.</small></article>
+    <article class="control-card"><span>ÚLTIMO PEDIDO</span><b id="evoLastOrder">SIN PEDIDOS</b><small id="evoLastOrderMeta">El historial se guarda en este dispositivo.</small></article>
+    <article class="control-card"><span>PAYPAL</span><b id="evoPayState">DIAGNÓSTICO</b><small id="evoPayMeta">Checkout dinámico listo para comprobar.</small></article>
+  </div>
+  <div class="control-actions"><button class="btn mini" id="showOrders" type="button">HISTORIAL</button><button class="btn mini" id="paymentDiagnostics" type="button">DIAGNÓSTICO PAYPAL</button></div>
+  <div id="orderHistory" class="order-history" hidden></div>
+</section>
 <section id="temas" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">VISUAL ENGINE</span><h2>ELIGE TU <em>ESTILO</em></h2></div><span class="pill">12 THEMES</span></div><div class="theme-grid" id="themeGrid"></div></section>
 </main>
-<div class="pay-modal" id="payModal" aria-hidden="true">
-  <div class="pay-modal-backdrop" data-close-pay></div>
-  <section class="pay-modal-card" role="dialog" aria-modal="true" aria-labelledby="payTitle">
-    <button class="pay-close" id="payClose" type="button" aria-label="Cerrar">×</button>
-    <span class="eyebrow">NEON CHECKOUT</span>
-    <h2 id="payTitle">PAGO <em>SEGURO</em></h2>
-    <div class="pay-summary" id="paySummary">
-      <span>Pedido</span><b id="paySummaryProduct">—</b><span>Total</span><strong id="paySummaryTotal">0,00 €</strong>
-    </div>
-    <div class="pay-status" id="payStatus">Preparando PayPal…</div>
-    <div id="paypal-container-NPCYVHY6AHTGL" class="paypal-hosted"></div>
-    <small class="pay-note">El pago se procesa en PayPal. NEON PLAYER X no solicita ni almacena datos bancarios. Tu carrito se conserva si cancelas o si PayPal informa de un error.</small>
-  </section>
+<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V7.1 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
+<div id="payModal" class="pay-modal" aria-hidden="true">
+  <div class="pay-backdrop" data-close-pay></div>
+  <div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payTitle">
+    <button id="payClose" class="pay-close" type="button" aria-label="Cerrar">×</button>
+    <span class="eyebrow">SECURE CHECKOUT</span><h2 id="payTitle">PAYPAL <em>NEON</em></h2>
+    <div class="pay-summary"><span id="paySummaryProduct">Producto</span><b id="paySummaryTotal">0,00 €</b></div>
+    <p id="payStatus" class="pay-status">Comprobando PayPal…</p>
+    <div id="paypal-container-NPCYVHY6AHTGL" class="paypal-box"></div>
+    <small class="pay-note">El carrito solo se vacía cuando PayPal confirma el pago como COMPLETED.</small>
+  </div>
 </div>
-<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V5.6 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
-<div id="toast" class="toast"></div>
+<canvas id="neonMascot" class="neon-mascot" aria-label="Mascota NEON PLAYER X"></canvas><div id="toast" class="toast"></div>
 <script src="script.js"></script>
 </body></html>
