@@ -9,3 +9,12 @@ V5.x base + V7 Radio Equalizer + Media Studio + autonomous neon mascot + Control
 - Las ganancias se almacenan en un bolsillo privado no renderizado en la interfaz.
 - Memorias, deseos, pensamientos y evolución se conservan localmente.
 - La economía es ficticia/sintética: NXC, CREDITS y BITS no representan dinero real ni criptomonedas reales.
+
+
+## V8.3 — NEON ORB 2.0
+Extensión acumulativa sobre la versión anterior:
+- evolución visual ligada a generación/EXP;
+- estados visuales para portal, exploración y descanso;
+- órbitas y partículas adicionales al subir de nivel;
+- HUD compacto de estado y experiencia;
+- conserva radio, reproductor, memoria, economía, canal IA y funciones existentes.

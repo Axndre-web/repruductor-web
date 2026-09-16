@@ -554,3 +554,14 @@ bindMainEvents();renderMainQueue();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
   window.addEventListener('resize',update,{passive:true});
 })();
+
+// === NEON ORB 2.0 — HUD de evolución (acumulativo) ===
+(function(){
+  function updateOrbHud(){
+    const st=window.__neonOrbAutonomousState;if(!st)return;
+    const state=document.getElementById('neonOrbHudState'), evo=document.getElementById('neonOrbHudEvolution');
+    if(state)state.textContent='NEON ORB · '+String(st.state||'HOME').replaceAll('_',' ');
+    if(evo){const e=st.evolution||{};evo.textContent=(e.name||'SEMILLA')+' · NIVEL '+(st.life?.generation||1)+' · EXP '+Math.floor(st.life?.xp||0)+'%';}
+  }
+  addEventListener('neonOrbEvolution',updateOrbHud);setInterval(updateOrbHud,500);updateOrbHud();
+})();

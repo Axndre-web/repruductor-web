@@ -59,3 +59,10 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 .radio-scroll-up{top:9px}.radio-scroll-down{bottom:-1px}
 .radio-stations .radio-grid:focus-visible{outline:1px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:3px;border-radius:13px}
 @media(max-width:650px){.radio-stations{padding-right:21px}.radio-stations .radio-grid{padding-right:2px}}
+
+/* NEON ORB 2.0 — evolución visual y estado vivo */
+.neon-orb-hud{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(4,3,10,.78);backdrop-filter:blur(12px);box-shadow:0 0 22px rgba(120,70,255,.08);font:700 .48rem Orbitron;letter-spacing:.08em;color:#8d8997;pointer-events:none}
+.neon-orb-hud b{color:#d8d4df;font-weight:700}.neon-orb-hud i{font-style:normal;color:var(--accent);opacity:.9}
+.neon-orb-hud-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);animation:orbHudPulse 1.6s ease-in-out infinite}
+@keyframes orbHudPulse{50%{opacity:.35;transform:scale(.7)}}
+@media(max-width:650px){.neon-orb-hud{right:10px;bottom:10px;max-width:calc(100vw - 20px);font-size:.42rem}.neon-orb-hud i{display:none}}
