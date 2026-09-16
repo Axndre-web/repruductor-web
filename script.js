@@ -4,20 +4,20 @@ const stations=[
 ];
 const themes=[['neon-dark','NEON DARK','Negro + morado'],['cyber-blue','CYBER BLUE','Tecnología futurista'],['fire-red','FIRE RED','Pasión y poder'],['toxic-green','TOXIC GREEN','Energía extrema'],['gold-elite','GOLD ELITE','Premium oscuro'],['ice-white','ICE WHITE','Pureza digital'],['ocean-teal','OCEAN TEAL','Fluidez total'],['violet-nebula','VIOLET NEBULA','Espacio infinito'],['matte-black','MATTE BLACK','Elegancia total'],['neon-orange','NEON ORANGE','Vibra al máximo'],['rainbow-tech','RAINBOW TECH','Sin límites'],['midnight-crimson','MIDNIGHT CRIMSON','Noche intensa']];
 const streams={
-  0:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40AAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3'],
-  1:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSICAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3'],
-  2:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCEAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3'],
-  3:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBANAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3'],
-  4:['https://radio-atres-live.ondacero.es/api/livestream-redirect/EFMAAC.aac'],
-  5:['https://kissfm.kissfmradio.cires21.com/kissfm.mp3'],
-  6:['https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLEAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3'],
-  7:['https://rockfm-cope.flumotion.com/playlist.m3u8'],
-  8:['https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONALAAC.aac','https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONAL.mp3'],
-  9:['https://flucast09-h-cloud.flumotion.com/cope/net1.aac','https://flucast09-h-cloud.flumotion.com/cope/net1.mp3','https://flucast31-h-cloud.flumotion.com/cope/net2.mp3'],
-  10:['https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3','https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_MES_1.mp3'],
-  11:['https://rtvelivestream.rtve.es/rtvesec/rne/rne_r1_main.m3u8']
+  0:'https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3',
+  1:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3',
+  2:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3',
+  3:'https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3',
+  4:'https://one.cloudstreaming.eu/proxy/europa/stream',
+  5:'https://kissfm.kissfmradio.cires21.com/kissfm.mp3',
+  6:'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3',
+  7:'https://rockfm-cope-rrcast.flumotion.com/cope/rockfm-low.mp3',
+  8:'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONAL.mp3',
+  9:'https://flucast09-h-cloud.flumotion.com/cope/net1.mp3',
+  10:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
+  11:'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
 };
-const audio=$('#radioAudio');audio.crossOrigin='anonymous';let active=0,cart=[],radioOfflineMode=false,radioLocalUrl=null;
+const audio=$('#radioAudio');let active=0,cart=[];
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)}
 function renderThemes(){const g=$('#themeGrid');g.innerHTML=themes.map((t,i)=>`<article class="theme-card ${t[0]===localStorage.neonTheme?'selected':''}" data-theme="${t[0]}" data-index="${i}" style="--tc:var(--accent)"><div class="theme-orb"></div><h3>${t[1]}</h3><p>${t[2]}</p></article>`).join('');$$('.theme-card').forEach(c=>c.onclick=()=>applyTheme(c.dataset.theme));updateThemeButton()}
@@ -26,78 +26,46 @@ function updateThemeButton(){const b=$('#themeCycle');if(!b)return;const i=Math.
 function cycleTheme(){const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));applyTheme(themes[(i+1)%themes.length][0])}
 function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small></div><span class="listen">▶</span></article>`).join('');$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
 function makeWave(){const w=$('#wave');w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
-let radioHls=null,radioAttempt=0,radioCatalogSynced=false;
-function destroyRadioHls(){if(radioHls){try{radioHls.destroy()}catch(e){}radioHls=null}}
-function loadHls(url){
-  if(window.Hls&&Hls.isSupported()){
-    destroyRadioHls();radioHls=new Hls({enableWorker:true,lowLatencyMode:true});
-    radioHls.on(Hls.Events.MANIFEST_PARSED,()=>startRadioPlayback());
-    radioHls.on(Hls.Events.ERROR,(ev,data)=>{if(data.fatal){destroyRadioHls();radioTryNext()}});
-    radioHls.loadSource(url);radioHls.attachMedia(audio);return true;
-  }
-  if(audio.canPlayType('application/vnd.apple.mpegurl')){audio.src=url;audio.load();startRadioPlayback();return true}
-  return false;
-}
-function startRadioPlayback(){
-  audio.play().then(()=>{$('#radioStatus').textContent='● EN DIRECTO';$('#radioEqState')?.replaceChildren(document.createTextNode('EN DIRECTO'));toast(stations[active][0]+' · reproduciendo')}).catch(()=>{$('#radioStatus').textContent='● ESPERANDO PLAY';});
-}
-function radioTryNext(){
-  const list=streams[active]||[];radioAttempt++;
-  if(radioAttempt>=list.length){$('#radioStatus').textContent='● STREAM NO DISPONIBLE';$('#radioEqState')?.replaceChildren(document.createTextNode('SIN DATOS'));toast(stations[active][0]+' · stream no disponible. Usa WEB OFICIAL.');return}
-  const url=list[radioAttempt];$('#radioStatus').textContent='● CONECTANDO';
-  destroyRadioHls();audio.pause();audio.removeAttribute('src');audio.load();
-  if(/\.m3u8(?:$|\?)/i.test(url)){if(!loadHls(url))radioTryNext();return}
-  audio.src=url;audio.load();startRadioPlayback();
-}
 function playStation(i){
-  radioOfflineMode=false;$('#radioOffline')?.classList.remove('active');
-  if(radioLocalUrl){URL.revokeObjectURL(radioLocalUrl);radioLocalUrl=null;}
-  audio.removeAttribute('crossorigin');
-  active=i;radioAttempt=-1;const r=stations[i];
+  active=i;
+  const r=stations[i],url=streams[i];
   $$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
-  $('#radioName').textContent=r[0];$('#radioGenre').textContent=r[2]+' · reproducción integrada';
-  $('#stageLogo').textContent=r[1];$('#stageLogo').style.color=r[3];$('#radioWeb').href=r[4];
-  $('#radioStatus').textContent='● CONECTANDO';$('#radioEqState')?.replaceChildren(document.createTextNode('CONECTANDO'));
-  radioTryNext();
+  $('#radioName').textContent=r[0];
+  $('#radioGenre').textContent=r[2]+' · reproducción integrada';
+  $('#stageLogo').textContent=r[1];
+  $('#stageLogo').style.color=r[3];
+  $('#radioWeb').href=r[4];
+  $('#radioStatus').textContent='● CONECTANDO';
+  audio.pause();
+  audio.removeAttribute('src');
+  audio.load();
+  if(!url){
+    $('#radioStatus').textContent='● WEB OFICIAL';
+    toast(r[0]+' · sin stream directo disponible');
+    return;
+  }
+  audio.src=url;
+  audio.load();
+  audio.play().then(()=>{
+    $('#radioStatus').textContent='● EN DIRECTO';
+    toast(r[0]+' · reproduciendo');
+  }).catch(()=>{
+    $('#radioStatus').textContent='● REQUIERE WEB';
+    toast(r[0]+' · el navegador no pudo iniciar el stream. Pulsa ▶ o WEB OFICIAL.');
+  });
 }
-// Sincroniza en segundo plano con la lista oficial actualizada de TDTChannels.
-// Si el catálogo no responde o el navegador bloquea la petición, se conservan los streams locales.
-async function syncRadioCatalog(){
-  try{
-    const r=await fetch('https://www.tdtchannels.com/lists/radio.json',{cache:'no-store'});if(!r.ok)throw Error('catalog');
-    const data=await r.json();const found=[];
-    const walk=x=>{if(!x||typeof x!=='object')return;if(Array.isArray(x)){x.forEach(walk);return}if(typeof x.name==='string'&&Array.isArray(x.options))found.push(x);Object.values(x).forEach(v=>{if(v&&typeof v==='object')walk(v)})};walk(data);
-    stations.forEach((st,i)=>{const n=st[0].toLowerCase();const hit=found.find(x=>x.name.toLowerCase()===n||((n==='radio marca'||n==='radio marca')&&x.name.toLowerCase()==='radio marca')||((n==='rne')&&x.name.toLowerCase()==='radio nacional'));if(hit){const urls=hit.options.filter(o=>o&&o.url&&/^(mp3|aac|m3u8|stream)$/i.test(o.format||'')).map(o=>o.url);if(urls.length)streams[i]=[...new Set(urls)]}});
-    radioCatalogSynced=true;
-  }catch(e){radioCatalogSynced=false}
-}
-function radioNetworkState(){
-  const online=navigator.onLine!==false;
-  if(!online && !radioOfflineMode){$('#radioStatus').textContent='● SIN INTERNET';$('#radioEqState')?.replaceChildren(document.createTextNode('OFFLINE'));}
-}
-window.addEventListener('online',()=>{if(!radioOfflineMode){$('#radioStatus').textContent='● CONECTANDO';}});
-window.addEventListener('offline',radioNetworkState);
-$('#radioOffline')?.addEventListener('click',()=>$('#radioOfflinePicker')?.click());
-$('#radioOfflinePicker')?.addEventListener('change',e=>{
-  const f=e.target.files?.[0];if(!f)return;
-  if(radioLocalUrl)URL.revokeObjectURL(radioLocalUrl);
-  radioLocalUrl=URL.createObjectURL(f);radioOfflineMode=true;
-  destroyRadioHls();audio.src=radioLocalUrl;audio.load();
-  $('#radioName').textContent='OFFLINE · '+f.name;$('#radioGenre').textContent='Archivo local · sin conexión a Internet';
-  $('#radioStatus').textContent='● ARCHIVO LOCAL';$('#radioEqState')?.replaceChildren(document.createTextNode('OFFLINE'));
-  $('#radioOffline')?.classList.add('active');audio.play().catch(()=>$('#radioStatus').textContent='● PULSA PLAY');
-});
-audio.addEventListener('playing',()=>{$('#radioStatus').textContent='● EN DIRECTO';$('#radioEqState')?.replaceChildren(document.createTextNode('EN DIRECTO'));window.__neonOrbLife?.event?.('play')});
-audio.addEventListener('waiting',()=>$('#radioStatus').textContent='● CARGANDO');
-audio.addEventListener('error',()=>{if(radioOfflineMode){$('#radioStatus').textContent='● ARCHIVO NO COMPATIBLE';return}if((streams[active]||[]).length)radioTryNext()});
 
+audio.addEventListener('playing',()=>{ $('#radioStatus').textContent='● EN DIRECTO'; });
+audio.addEventListener('playing',()=>window.__neonOrbLife?.event?.('play'));
+audio.addEventListener('waiting',()=>{ $('#radioStatus').textContent='● CARGANDO'; });
+audio.addEventListener('error',()=>{ if(streams[active]){ $('#radioStatus').textContent='● ERROR DE STREAM'; toast(stations[active][0]+' · stream no disponible ahora. Prueba WEB OFICIAL.'); }});
 function renderCart(){const count=cart.reduce((a,x)=>a+x.qty,0),total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=total.toFixed(2).replace('.',',')+' €';$('#cartItems').innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><span>${esc(x.name)} × ${x.qty}</span><b>${(x.qty*x.price).toFixed(2).replace('.',',')} €</b></div>`).join(''):'<p>Tu carrito está vacío.</p>'}
 $$('.add').forEach(b=>b.onclick=()=>{const n=b.dataset.product,p=+b.dataset.price;const x=cart.find(x=>x.name===n);x?x.qty++:cart.push({name:n,price:p,qty:1});renderCart();toast('Producto añadido al carrito')});
 $('#whatsapp').onclick=()=>{if(!cart.length)return toast('Añade un producto antes de enviar el pedido');const name=$('#customerName').value||'Cliente';const phone=$('#customerPhone').value||'No indicado';const addr=$('#customerAddress').value||'Recogida Renfe Azuqueca';const date=$('#deliveryDate').value||'A confirmar';const total=cart.reduce((a,x)=>a+x.qty*x.price,0).toFixed(2);const text=`¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.%0A%0A👤 *Nombre:* ${encodeURIComponent(name)}%0A🥟 *Cantidad:* ${cart.reduce((a,x)=>a+x.qty,0)}%0A💶 *Total:* ${total} €%0A📦 *Entrega:* ${encodeURIComponent(addr)}%0A📅 *Fecha:* ${encodeURIComponent(date)}%0A📱 *Teléfono:* ${encodeURIComponent(phone)}`;window.open('https://wa.me/34602487576?text='+text,'_blank')};
-$('#radioPlay').onclick=()=>{if(radioOfflineMode){audio.paused?audio.play():audio.pause();return}if(!audio.src||audio.src.endsWith('/'))return playStation(active);audio.paused?audio.play():audio.pause()};$('#radioVolume').oninput=e=>audio.volume=e.target.value;
+$('#radioPlay').onclick=()=>{if(!audio.src||audio.src.endsWith('/'))return playStation(active);audio.paused?audio.play():audio.pause()};$('#radioVolume').oninput=e=>audio.volume=e.target.value;
 function clock(){const d=new Date();$('#clock').textContent=d.toLocaleTimeString('es-ES');$('#date').textContent=d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}setInterval(clock,1000);clock();
 let v=+(localStorage.neonVisits||0)+1;localStorage.neonVisits=v;$('#visits').textContent=String(v).padStart(6,'0');
-const saved=localStorage.neonTheme||'neon-dark';document.body.dataset.theme=saved;renderThemes();renderStations();makeWave();audio.volume=.8;syncRadioCatalog();
+const saved=localStorage.neonTheme||'neon-dark';document.body.dataset.theme=saved;renderThemes();renderStations();makeWave();audio.volume=.8;
 const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting&&e.target.classList.add('visible')),{threshold:.08});$$('.reveal').forEach(e=>io.observe(e));
 $('#menuToggle').onclick=()=>$('#nav').classList.toggle('open');$$('.nav-link').forEach(a=>a.onclick=()=>$('#nav').classList.remove('open'));
 $$('.nav-link').forEach(a=>a.addEventListener('click',()=>$$('.nav-link').forEach(x=>x.classList.toggle('active',x===a))));
@@ -139,7 +107,7 @@ bindMainEvents();renderMainQueue();
  let rAC=null,rAnalyser=null,rSource=null,sAC=null,sAnalyser=null,sSource=null;
  let studioBands=[0,0,0], studioPreamp=1, studioGlow=1, eqBands=[0,0,0,0,0];
  function fit(c,ctx){if(!c||!ctx)return;const d=Math.max(1,devicePixelRatio||1),w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;ctx.setTransform(d,0,0,d,0,0);return [w,h]}
- function analyserFor(el,type){if(!el)return null;if(type==='radio')return null;try{let ac=type==='radio'?rAC:sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();if(type==='radio')rAC=ac;else sAC=ac}let an=type==='radio'?rAnalyser:sAnalyser;let source=type==='radio'?rSource:sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=type==='radio'?[60,230,910,3600,14000]:[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);if(type==='radio'){rAnalyser=an;rSource=source;window.__neonRadioFilters=filters}else{sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}}if(ac.state==='suspended')ac.resume();return an}catch(e){if(type==='radio')window.__neonRadioAudioBlocked=true;return null}}
+ function analyserFor(el,type){if(!el)return null;try{let ac=type==='radio'?rAC:sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();if(type==='radio')rAC=ac;else sAC=ac}let an=type==='radio'?rAnalyser:sAnalyser;let source=type==='radio'?rSource:sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=type==='radio'?[60,230,910,3600,14000]:[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);if(type==='radio'){rAnalyser=an;rSource=source;window.__neonRadioFilters=filters}else{sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}}if(ac.state==='suspended')ac.resume();return an}catch(e){if(type==='radio')window.__neonRadioAudioBlocked=true;return null}}
  function activeMain(){return mainA&&!mainA.paused&&!mainA.ended?mainA:mainV&&!mainV.paused&&!mainV.ended?mainV:null}
  function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=analyserFor(radio,'radio');rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
  function drawStudio(){if(!sCtx)return;const [w,h]=fit(sCanvas,sCtx)||[500,190],m=activeMain(),an=m?analyserFor(m,'studio'):null;sCtx.clearRect(0,0,w,h);sCtx.fillStyle='rgba(2,1,7,.5)';sCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.fftSize:128);if(an)an.getByteTimeDomainData(data);sCtx.lineWidth=2;sCtx.beginPath();for(let x=0;x<w;x++){let idx=Math.floor(x/w*data.length),v=an?(data[idx]-128)/128:(.03*Math.sin(x/18+performance.now()/330));let y=h/2+v*h*.85*(studioPreamp);x? sCtx.lineTo(x,y):sCtx.moveTo(x,y)}sCtx.strokeStyle='#9f48ff';sCtx.shadowBlur=18;sCtx.shadowColor='#9f48ff';sCtx.stroke();sCtx.shadowBlur=0;for(let i=0;i<24;i++){let x=i*w/24,y=h-15-(Math.abs(Math.sin(i*.8+performance.now()/500))*(20+studioBands[i%3]*2));sCtx.fillStyle=i%3===0?'#65ffb0':'#b64cff';sCtx.globalAlpha=.18; sCtx.fillRect(x,y,3,8)}sCtx.globalAlpha=1;$('#studioState')?.replaceChildren(document.createTextNode(m?'ANALIZANDO':'ESPERA'));requestAnimationFrame(drawStudio)}
@@ -372,7 +340,7 @@ bindMainEvents();renderMainQueue();
     if($('#evoPlayback')){$('#evoPlayback').textContent=audio?.paused?'EN ESPERA':'EN DIRECTO';$('#evoPlaybackMeta').textContent=stations[active]?.[0]||'Sin emisora'}
     if($('#evoRewardLevel')){
       const agent=window.__neonOrbAutonomous, life=agent?.life||{};
-      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);
+      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0)+(Number(window.__neonOrbAutonomousState?.life?.explored||0));
       const totalXP=Number(life.xpTotal||0), xp=Number(life.xp||0), level=Math.max(1,Number(life.generation)||1), pct=Math.max(0,Math.min(100,Math.round(xp)));
       $('#evoRewardLevel').textContent='NIVEL '+level;
       $('#evoRewardMeta').textContent=`EXP ${pct}% · ${Math.round(xp)} / 100 · ${totalInteractions} interacciones · ${Math.round(totalXP)} EXP total`;
@@ -445,6 +413,45 @@ bindMainEvents();renderMainQueue();
 
 // ================================================================
 // V8.0 — NEON ORB / PRIVATE AI CHANNEL
+// ================================================================
+// V8.7 — NEON WORLD / ACTIVIDAD VIVA
+// Capa acumulativa: observa eventos reales de la app y genera ciclos
+// locales de actividad. No inventa acceso a servicios externos ni
+// modifica el bolsillo privado del Orb.
+// ================================================================
+(function(){
+  const KEY='neonOrbWorldV87';
+  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}};
+  const data=Object.assign({events:[],cycles:0,lastCycle:0,preferences:{quiet:false}},load());
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+  const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const feed=document.getElementById('orbActivityFeed');
+  function add(type,message){data.events=[...(data.events||[]),{type,message,at:Date.now()}].slice(-18);save();render();}
+  function render(){
+    if(!feed)return;
+    feed.innerHTML=(data.events||[]).slice(-4).reverse().map(x=>`<div class="orb-activity-item"><i></i><div><b>${esc(x.type)}</b>${esc(x.message)}</div></div>`).join('');
+    text('orbWorldActivity',data.cycles?'ACTIVA · CICLO '+data.cycles:'DESPIERTA');
+    const next=Math.max(0,Math.round(((data.lastCycle+26000)-Date.now())/1000));
+    text('orbWorldNext',next?'PRÓXIMO CICLO · '+next+'s':'PRÓXIMO CICLO · AHORA');
+  }
+  function state(){return window.__neonOrbAutonomousState||{};}
+  function cycle(reason){
+    const s=state(), intent=s.intent||'WANDER', energy=Math.round(s.energy??0), curiosity=Math.round(s.curiosity??0);
+    data.cycles=(data.cycles||0)+1;data.lastCycle=Date.now();
+    const messages={WANDER:'Orb recorre su espacio y observa cambios.',EXPLORE:'Orb explora una zona de NEON PLAYER X.',FOLLOW_USER:'Orb sigue de lejos la actividad del usuario.',SEARCH_WORK:'Orb revisa oportunidades para sostener sus próximos viajes.',REST:'Orb baja el ritmo y recupera energía.',SEEK_PORTAL:'Orb contempla una nueva ruta hacia la singularidad.',TRAVEL:'Orb está fuera de pantalla explorando la red.'};
+    add('CICLO '+data.cycles,messages[intent]||'Orb toma una decisión autónoma.');
+    text('orbWorldMeta','INTENCIÓN · '+intent+' · ENERGÍA '+energy+'% · CURIOSIDAD '+curiosity+'%');
+  }
+  window.__neonWorldActivity={event:(type,detail)=>{const map={play:'La radio comenzó a reproducirse.',interaction:'Orb registró una interacción.',aiContact:'Orb consultó el canal privado de IA.',aiAdviceAccepted:'Orb aceptó una sugerencia.',aiAdviceRejected:'Orb rechazó una sugerencia.',aiAdvicePostponed:'Orb dejó una decisión para después.',travel:'Orb inició una exploración.',memory:'Orb guardó un nuevo recuerdo.'};if(map[type])add(type.toUpperCase(),detail||map[type])},cycle};
+  setInterval(()=>{const s=state();if(s.state==='EXPLORING_NET')add('EXPLORACIÓN','Orb continúa su viaje fuera de pantalla.');else cycle('timer');render()},26000);
+  ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>window.__neonWorldActivity?.event('interaction'),{passive:true}));
+  const oldEvent=window.__neonOrbLife?.event;
+  // Se engancha sin reemplazar la API existente.
+  const life=window.__neonOrbLife||{};const original=life.event;
+  life.event=(type)=>{try{original?.(type)}finally{window.__neonWorldActivity?.event(type)}};window.__neonOrbLife=life;
+  render();
+})();
+
 // Canal aislado Orb <-> IA. GitHub Pages no guarda claves secretas.
 // El navegador solo expone contexto público mínimo; el bolsillo privado
 // permanece fuera del canal. El endpoint real debe vivir en un backend.
@@ -561,39 +568,4 @@ bindMainEvents();renderMainQueue();
 
   channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
   text('orbAIState',channelState.status);
-})();
-
-// RADIO GRID — control de desplazamiento suave
-(function(){
-  function update(){
-    const g=document.getElementById('radioGrid'),t=document.getElementById('radioScrollThumb'),c=document.getElementById('radioStationCount');
-    if(!g||!t)return;
-    if(c)c.textContent=g.querySelectorAll('.radio-card').length;
-    const max=Math.max(0,g.scrollHeight-g.clientHeight), track=g.clientHeight;
-    const h=max?Math.max(30,Math.min(track,Math.round(track*track/g.scrollHeight))):track;
-    t.style.height=h+'px'; t.style.top=(max?Math.round(g.scrollTop/max*(track-h)):0)+'px';
-  }
-  function init(){
-    const g=document.getElementById('radioGrid'); if(!g||g.dataset.radioSmooth)return; g.dataset.radioSmooth='1';
-    document.getElementById('radioScrollUp')?.addEventListener('click',()=>g.scrollBy({top:-Math.max(140,g.clientHeight*.65),behavior:'smooth'}));
-    document.getElementById('radioScrollDown')?.addEventListener('click',()=>g.scrollBy({top:Math.max(140,g.clientHeight*.65),behavior:'smooth'}));
-    g.addEventListener('scroll',update,{passive:true});
-    g.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();g.scrollBy({top:90,behavior:'smooth'})}else if(e.key==='ArrowUp'){e.preventDefault();g.scrollBy({top:-90,behavior:'smooth'})}else if(e.key==='PageDown'){e.preventDefault();g.scrollBy({top:g.clientHeight*.8,behavior:'smooth'})}else if(e.key==='PageUp'){e.preventDefault();g.scrollBy({top:-g.clientHeight*.8,behavior:'smooth'})}});
-    if(window.ResizeObserver)new ResizeObserver(update).observe(g);
-    if(window.MutationObserver)new MutationObserver(()=>requestAnimationFrame(update)).observe(g,{childList:true,subtree:true});
-    requestAnimationFrame(update);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-  window.addEventListener('resize',update,{passive:true});
-})();
-
-// === NEON ORB 2.0 — HUD de evolución (acumulativo) ===
-(function(){
-  function updateOrbHud(){
-    const st=window.__neonOrbAutonomousState;if(!st)return;
-    const state=document.getElementById('neonOrbHudState'), evo=document.getElementById('neonOrbHudEvolution');
-    if(state)state.textContent='NEON ORB · '+String(st.state||'HOME').replaceAll('_',' ');
-    if(evo){const e=st.evolution||{};evo.textContent=(e.name||'SEMILLA')+' · NIVEL '+(st.life?.generation||1)+' · EXP '+Math.floor(st.life?.xp||0)+'%';}
-  }
-  addEventListener('neonOrbEvolution',updateOrbHud);setInterval(updateOrbHud,500);updateOrbHud();
 })();

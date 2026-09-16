@@ -44,30 +44,8 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 
 .evo-progress{height:5px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.evo-progress i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),#65ffb0);box-shadow:0 0 10px var(--accent);transition:width .35s ease}
 
-/* RADIO STATION GRID — navegación V8.2 */
-.radio-stations{position:relative;min-width:0;padding-right:25px}
-.radio-stations-head{height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 3px 7px}
-.radio-stations-head span{font:700 .5rem Orbitron;letter-spacing:.14em;color:#67636f}
-.radio-stations-head b{font:700 .48rem Orbitron;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:99px;padding:4px 7px;background:rgba(255,255,255,.025)}
-.radio-stations .radio-grid{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:smooth;overscroll-behavior:contain;scroll-snap-type:y proximity;padding-right:4px}
-.radio-stations .radio-grid::-webkit-scrollbar{display:none}
-.radio-stations .radio-card{scroll-snap-align:start}
-.radio-scrollbar{position:absolute;right:7px;top:34px;bottom:3px;width:4px;border-radius:99px;background:rgba(255,255,255,.055);pointer-events:none}
-.radio-scrollbar i{position:absolute;left:0;top:0;width:100%;min-height:30px;height:34%;border-radius:99px;background:linear-gradient(180deg,var(--accent),var(--accent2));box-shadow:0 0 10px color-mix(in srgb,var(--accent) 42%,transparent);transition:top .16s ease,height .16s ease}
-.radio-scroll-btn{position:absolute;right:-1px;width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,.08);border-radius:50%;background:rgba(3,3,6,.94);color:#77737f;display:grid;place-items:center;font-size:.68rem;line-height:1;cursor:pointer;z-index:4;opacity:.72;transition:.2s}
-.radio-scroll-btn:hover{opacity:1;color:#fff;border-color:color-mix(in srgb,var(--accent) 48%,transparent);box-shadow:0 0 13px color-mix(in srgb,var(--accent) 18%,transparent)}
-.radio-scroll-up{top:9px}.radio-scroll-down{bottom:-1px}
-.radio-stations .radio-grid:focus-visible{outline:1px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:3px;border-radius:13px}
-@media(max-width:650px){.radio-stations{padding-right:21px}.radio-stations .radio-grid{padding-right:2px}}
 
-/* NEON ORB 2.0 — evolución visual y estado vivo */
-.neon-orb-hud{position:fixed;right:18px;bottom:18px;z-index:30;display:flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid rgba(255,255,255,.09);border-radius:999px;background:rgba(4,3,10,.78);backdrop-filter:blur(12px);box-shadow:0 0 22px rgba(120,70,255,.08);font:700 .48rem Orbitron;letter-spacing:.08em;color:#8d8997;pointer-events:none}
-.neon-orb-hud b{color:#d8d4df;font-weight:700}.neon-orb-hud i{font-style:normal;color:var(--accent);opacity:.9}
-.neon-orb-hud-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 9px var(--accent);animation:orbHudPulse 1.6s ease-in-out infinite}
-@keyframes orbHudPulse{50%{opacity:.35;transform:scale(.7)}}
-@media(max-width:650px){.neon-orb-hud{right:10px;bottom:10px;max-width:calc(100vw - 20px);font-size:.42rem}.neon-orb-hud i{display:none}}
-
-/* RADIO V8.5 — robustez y modo offline local */
-#radioOffline{white-space:nowrap}
-#radioOffline.active{border-color:var(--accent);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 25%,transparent);color:#fff}
-.radio-offline-note{font:600 .48rem Orbitron;letter-spacing:.08em;color:#77737f;margin-top:5px}
+/* V8.7 — NEON WORLD / LIVING ACTIVITY */
+.orb-world-card{background:radial-gradient(circle at 85% 15%,rgba(101,255,176,.07),transparent 36%),linear-gradient(145deg,#080b0c,#020304);border-color:rgba(101,255,176,.16)}
+.orb-world-card #orbWorldActivity{color:#8dffb6}.orb-world-card #orbWorldNext{color:#756f7d;margin-top:7px}.orb-activity-feed{display:grid;gap:5px;margin-top:10px;max-height:96px;overflow:auto;padding-right:3px}.orb-activity-item{display:grid;grid-template-columns:7px 1fr;gap:7px;align-items:start;padding:6px 7px;border-radius:8px;background:rgba(255,255,255,.025);font-size:.53rem;color:#85818d;line-height:1.45}.orb-activity-item i{width:5px;height:5px;border-radius:50%;margin-top:4px;background:#63ffb0;box-shadow:0 0 8px #63ffb0}.orb-activity-item b{color:#d5d1da;font-size:.5rem;display:block;letter-spacing:.05em}.orb-world-card{min-width:0}
+@media(max-width:520px){.orb-activity-feed{max-height:82px}.orb-activity-item{font-size:.5rem}}

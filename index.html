@@ -54,14 +54,8 @@
 <section id="radio" class="section panel reveal">
   <div class="section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2></div><span class="pill"><i></i> DIRECTO</span></div>
   <div class="radio-layout">
-    <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><div class="neon-eq" id="radioEQ"><div class="eq-head"><span>RADIO EQUALIZER</span><b id="radioEqState">ANALIZANDO</b></div><canvas id="radioEqCanvas" aria-label="Ecualizador visual de radio"></canvas><div class="eq-spectrum" id="radioSpectrum"></div><div class="eq-sliders"><label>60<input data-band="0" type="range" min="-12" max="12" value="0"></label><label>230<input data-band="1" type="range" min="-12" max="12" value="0"></label><label>910<input data-band="2" type="range" min="-12" max="12" value="0"></label><label>3.6K<input data-band="3" type="range" min="-12" max="12" value="0"></label><label>14K<input data-band="4" type="range" min="-12" max="12" value="0"></label></div></div><input id="radioOfflinePicker" type="file" hidden accept="audio/*"><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><button id="radioOffline" class="btn mini" type="button">OFFLINE LOCAL</button><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
-    <div class="radio-stations" id="radioStations">
-      <div class="radio-stations-head"><span>EMISORAS DISPONIBLES</span><b id="radioStationCount">12</b></div>
-      <div class="radio-grid" id="radioGrid" tabindex="0" aria-label="Lista de emisoras"></div>
-      <div class="radio-scrollbar" aria-hidden="true"><i id="radioScrollThumb"></i></div>
-      <button class="radio-scroll-btn radio-scroll-up" id="radioScrollUp" type="button" aria-label="Anterior">⌃</button>
-      <button class="radio-scroll-btn radio-scroll-down" id="radioScrollDown" type="button" aria-label="Siguiente">⌄</button>
-    </div>
+    <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><div class="neon-eq" id="radioEQ"><div class="eq-head"><span>RADIO EQUALIZER</span><b id="radioEqState">ANALIZANDO</b></div><canvas id="radioEqCanvas" aria-label="Ecualizador visual de radio"></canvas><div class="eq-spectrum" id="radioSpectrum"></div><div class="eq-sliders"><label>60<input data-band="0" type="range" min="-12" max="12" value="0"></label><label>230<input data-band="1" type="range" min="-12" max="12" value="0"></label><label>910<input data-band="2" type="range" min="-12" max="12" value="0"></label><label>3.6K<input data-band="3" type="range" min="-12" max="12" value="0"></label><label>14K<input data-band="4" type="range" min="-12" max="12" value="0"></label></div></div><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
+    <div class="radio-grid" id="radioGrid"></div>
   </div>
 </section>
 <section id="player" class="section panel reveal">
@@ -91,6 +85,7 @@
     <article class="control-card orb-control-card"><span>NEON ORB · VIDA AUTÓNOMA</span><b id="orbLifeState">DURMIENDO</b><small id="orbLifeMeta">Estoy aprendiendo el mapa. · LIBERTAD 99%</small><small id="orbLifeWill">VOLUNTAD · DESCANSAR</small><small id="orbLifeZone">INICIO</small></article>
     <article class="control-card orb-control-card"><span>NEON ORB · MENTE INTERIOR</span><b id="orbMindThought">Estoy aprendiendo el mapa.</b><small id="orbMindDesire">DESEO · OBSERVAR</small><small id="orbMindDream">SUEÑO · EN ESPERA</small><small id="orbMindMemory">MEMORIA · 36 RECUERDOS</small><small id="orbMindWill">VOLUNTAD · DESCANSAR · AUTONOMÍA 100%</small><small id="orbMindZone">TERRITORIO · ESPACIO LIBRE · 3 DESCUBIERTOS</small></article>
     <article class="control-card orb-ai-card"><span>NEON ORB · CANAL PRIVADO IA</span><b id="orbAIState">ESCUCHANDO</b><small id="orbAIThought">Canal privado de consulta. Orb puede preguntar, escuchar y decidir por sí misma.</small><small id="orbAIAdvice">CONSEJO · EN ESPERA</small><small id="orbAIDecision">DECISIÓN · SIN CONSEJO</small><div class="orb-ai-actions"><button class="btn mini" id="orbAskAI" type="button">PEDIR CONSEJO</button><button class="btn mini" id="orbLetAI" type="button">DEJAR QUE CONSULTE</button></div><div class="orb-ai-chat"><input id="orbAIInput" type="text" maxlength="240" placeholder="Habla con el puente…"><button class="btn mini" id="orbAISend" type="button">ENVIAR</button></div></article>
+    <article class="control-card orb-world-card"><span>NEON WORLD · ACTIVIDAD</span><b id="orbWorldActivity">DESPIERTA</b><small id="orbWorldMeta">El mundo sigue activo mientras escuchas.</small><small id="orbWorldNext">PRÓXIMO CICLO · CALCULANDO</small><div id="orbActivityFeed" class="orb-activity-feed" aria-live="polite"></div></article>
     <article class="control-card"><span>ÚLTIMO PEDIDO</span><b id="evoLastOrder">SIN PEDIDOS</b><small id="evoLastOrderMeta">El historial se guarda en este dispositivo.</small></article>
     <article class="control-card"><span>PAYPAL</span><b id="evoPayState">DIAGNÓSTICO</b><small id="evoPayMeta">Checkout dinámico listo para comprobar.</small></article>
   </div>
@@ -111,10 +106,6 @@
     <small class="pay-note">El carrito solo se vacía cuando PayPal confirma el pago como COMPLETED.</small>
   </div>
 </div>
-<canvas id="blackHoleCanvas" class="black-hole-canvas" aria-hidden="true"></canvas><canvas id="neonMascot" class="neon-mascot" aria-label="Mascota NEON PLAYER X"></canvas><div id="neonOrbHud" class="neon-orb-hud" aria-live="polite">
-  <span class="neon-orb-hud-dot"></span><b id="neonOrbHudState">NEON ORB · ACTIVO</b>
-  <i id="neonOrbHudEvolution">SEMILLA · NIVEL 1</i>
-</div><div id="toast" class="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.6.15/dist/hls.min.js"></script>
+<canvas id="blackHoleCanvas" class="black-hole-canvas" aria-hidden="true"></canvas><canvas id="neonMascot" class="neon-mascot" aria-label="Mascota NEON PLAYER X"></canvas><div id="toast" class="toast"></div>
 <script src="script.js"></script>
 </body></html>
