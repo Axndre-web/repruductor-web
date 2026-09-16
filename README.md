@@ -18,3 +18,11 @@ Extensión acumulativa sobre la versión anterior:
 - órbitas y partículas adicionales al subir de nivel;
 - HUD compacto de estado y experiencia;
 - conserva radio, reproductor, memoria, economía, canal IA y funciones existentes.
+
+
+## V8.5 — RADIO HYBRID
+- Reproducción radio nativa separada del Web Audio Analyzer para evitar silencios provocados por CORS.
+- HLS/MP3/AAC con fallback.
+- Detección online/offline.
+- Modo OFFLINE LOCAL para reproducir un archivo de audio del dispositivo sin Internet.
+- La radio FM terrestre real no puede sintonizarse desde una página web sin hardware/receptor compatible; el modo offline reproduce archivos locales, no una señal FM en directo.
