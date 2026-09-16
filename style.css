@@ -41,3 +41,5 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 .orb-ai-actions,.orb-ai-chat{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.orb-ai-chat input{flex:1;min-width:150px;border:1px solid var(--line);border-radius:9px;background:#050507;color:#eee;padding:9px 10px;font-size:.65rem;outline:none}.orb-ai-chat input:focus{border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 12%,transparent)}
 .orb-ai-card .btn.mini{padding:8px 10px;font-size:.5rem}
 @media(max-width:520px){.orb-ai-actions,.orb-ai-chat{display:grid;grid-template-columns:1fr}.orb-ai-chat input{width:100%}.orb-ai-card .btn.mini{width:100%}}
+
+.evo-progress{height:5px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.evo-progress i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),#65ffb0);box-shadow:0 0 10px var(--accent);transition:width .35s ease}

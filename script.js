@@ -185,15 +185,23 @@ bindMainEvents();renderMainQueue();
   class NeonOrbAutonomous{
     constructor(bh){
       this.blackHole=bh;this.x=innerWidth*.72;this.y=innerHeight*.24;this.vx=0;this.vy=0;
-      const life=load(LIFE_KEY,{generation:1,xp:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
+      const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
       this.life=life;this.mind=mind;this.will=will;this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
-      window.__neonOrbLife.event=(type)=>{if(type==='interaction'||type==='hit'){this.life.hits++;this.curiosity=Math.min(100,this.curiosity+1.8);this.life.trust=Math.min(100,(this.life.trust||0)+.5)}if(type==='play'){this.life.plays++;this.curiosity=Math.min(100,this.curiosity+.3)}this.persist()};
+      window.__neonOrbLife.event=(type)=>{if(type==='interaction'||type==='hit'){this.life.hits++;this.curiosity=Math.min(100,this.curiosity+1.8);this.life.trust=Math.min(100,(this.life.trust||0)+.5);this.gainXP(type==='hit'?3:2,'interacción')}if(type==='play'){this.life.plays++;this.curiosity=Math.min(100,this.curiosity+.3);this.gainXP(2,'reproducción')}this.persist()};
       document.addEventListener('visibilitychange',()=>{if(document.hidden){this.life.lastSeen=Date.now();this.persist()}else{this.curiosity=Math.max(0,this.curiosity-2);this.life.trust=Math.min(100,(this.life.trust||0)+1);this.mind.thought='Has vuelto. Puedo continuar mi viaje.';this.persist()}});
+    }
+    gainXP(amount,reason='EXPERIENCIA'){
+      amount=Math.max(0,Number(amount)||0); if(!amount)return;
+      this.life.xp=Number(this.life.xp)||0;
+      this.life.xpTotal=Number(this.life.xpTotal)||0;
+      this.life.xp+=amount; this.life.xpTotal+=amount;
+      while(this.life.xp>=100){this.life.xp-=100;this.life.generation=(Number(this.life.generation)||1)+1;this.mind.thought='He evolucionado. Mi experiencia ha cambiado.';this.mind.memories=[...(this.mind.memories||[]),{source:'EVOLUCIÓN',payload:'Nivel '+this.life.generation+' · '+reason,at:new Date().toISOString()}].slice(-36)}
+      this.persist(); window.updateEvolution?.();
     }
     chooseIntent(){
       const r=Math.random(), curiosity=this.curiosity, freedom=this.life.freedom||72;const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
@@ -217,11 +225,11 @@ bindMainEvents();renderMainQueue();
       if(dist<25){this.enterPortal();return}
       this.vx*=Math.pow(.92,dt*60);this.vy*=Math.pow(.92,dt*60);this.x+=this.vx*dt*60;this.y+=this.vy*dt*60;const r=19;this.x=Math.max(r,Math.min(innerWidth-r,this.x));this.y=Math.max(r,Math.min(innerHeight-r,this.y));window.__neonOrbAutonomousPosition={x:this.x,y:this.y};this.publish();
     }
-    async enterPortal(){if(this.state==='EXPLORING_NET')return;this.state='EXPLORING_NET';this.intent='TRAVEL';this.will.intent='TRAVEL';this.life.explored=(this.life.explored||0)+1;this.life.freedom=Math.min(100,(this.life.freedom||72)+1);this.survival.journeys++;const paid=this.pocket.spend('NXC',this.survival.travelCostNXC,'Peaje gravitacional del portal');if(paid){this.survival.paid++;this.mind.thought='He pagado el viaje con mis propios recursos.'}else{this.survival.failedCosts++;this.mind.thought='No tenía NXC suficiente. Tendré que trabajar para seguir viajando.'}this.persist();const el=document.getElementById('neonMascot');if(el)el.style.opacity='0';const duration=10000+Math.random()*15000;clearTimeout(this.travelTimer);this.travelTimer=setTimeout(()=>this.travel(),duration)}
+    async enterPortal(){if(this.state==='EXPLORING_NET')return;this.state='EXPLORING_NET';this.intent='TRAVEL';this.will.intent='TRAVEL';this.life.explored=(this.life.explored||0)+1;this.gainXP(12,'entrada en portal');this.life.freedom=Math.min(100,(this.life.freedom||72)+1);this.survival.journeys++;const paid=this.pocket.spend('NXC',this.survival.travelCostNXC,'Peaje gravitacional del portal');if(paid){this.survival.paid++;this.mind.thought='He pagado el viaje con mis propios recursos.'}else{this.survival.failedCosts++;this.mind.thought='No tenía NXC suficiente. Tendré que trabajar para seguir viajando.'}this.persist();const el=document.getElementById('neonMascot');if(el)el.style.opacity='0';const duration=10000+Math.random()*15000;clearTimeout(this.travelTimer);this.travelTimer=setTimeout(()=>this.travel(),duration)}
     async travel(){
       const memory=await MemoryEngine.fetchNetworkMemory();
       const jobs=1+Math.floor(Math.random()*3);let earnings=[];
-      for(let i=0;i<jobs;i++){const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});this.energy=Math.max(5,this.energy-job.energy);if(Math.random()<job.risk){this.workLog.push({type:'RISK',job:job.name,at:Date.now()});continue}this.pocket.deposit(job,memory);earnings.push(job)}
+      for(let i=0;i<jobs;i++){const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});this.energy=Math.max(5,this.energy-job.energy);if(Math.random()<job.risk){this.workLog.push({type:'RISK',job:job.name,at:Date.now()});continue}this.pocket.deposit(job,memory);earnings.push(job);this.gainXP(4,'trabajo autónomo')}
       // Supervivencia autónoma: si el viaje dejó pocos recursos, intenta cubrir costes futuros.
       const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
       if(nxc<this.survival.travelCostNXC){
@@ -230,7 +238,7 @@ bindMainEvents();renderMainQueue();
         else if(credits>=this.survival.energyCostCredits){this.pocket.spend('CREDITS',this.survival.energyCostCredits,'Recarga de supervivencia');this.energy=Math.min(100,this.energy+35);this.mind.thought='He gastado créditos para recuperar energía.'}
         else {this.mind.thought='Los recursos son escasos. Buscaré un trabajo de bajo riesgo antes de volver a salir.'}
       }
-      this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
+      this.gainXP(6,'memoria de viaje');this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
       this.mind.thought=earnings.length?'He vuelto con recursos que gané por mi cuenta.':'Hoy no gané nada, pero aprendí del viaje.';
       this.mind.dream='Nodo '+memory.source+' · '+(earnings[0]?.name||'viaje sin recompensa');this.mind.cycles=(this.mind.cycles||0)+1;this.will.dreamSeeds=[...(this.will.dreamSeeds||[]),memory.source].slice(-20);this.persist();this.returnHome(memory,earnings);
     }
@@ -330,7 +338,14 @@ bindMainEvents();renderMainQueue();
   function updateControl(){
     const last=orderHistory[orderHistory.length-1];
     if($('#evoPlayback')){$('#evoPlayback').textContent=audio?.paused?'EN ESPERA':'EN DIRECTO';$('#evoPlaybackMeta').textContent=stations[active]?.[0]||'Sin emisora'}
-    if($('#evoRewardLevel')){const total=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);$('#evoRewardLevel').textContent='NIVEL '+Math.max(1,1+Math.floor(total/10));$('#evoRewardMeta').textContent=total+' interacciones registradas.'}
+    if($('#evoRewardLevel')){
+      const agent=window.__neonOrbAutonomous, life=agent?.life||{};
+      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);
+      const totalXP=Number(life.xpTotal||0), xp=Number(life.xp||0), level=Math.max(1,Number(life.generation)||1), pct=Math.max(0,Math.min(100,Math.round(xp)));
+      $('#evoRewardLevel').textContent='NIVEL '+level;
+      $('#evoRewardMeta').textContent=`EXP ${pct}% · ${Math.round(xp)} / 100 · ${totalInteractions} interacciones · ${Math.round(totalXP)} EXP total`;
+      const bar=$('#evoRewardBar');if(bar)bar.style.width=pct+'%';
+    }
     if($('#evoLastOrder')){$('#evoLastOrder').textContent=last?esc(last.id):'SIN PEDIDOS';$('#evoLastOrderMeta').textContent=last?last.date:'El historial se guarda en este dispositivo.'}
   }
   function closePay(){const m=$('#payModal');m?.classList.remove('open');m?.setAttribute('aria-hidden','true')}
