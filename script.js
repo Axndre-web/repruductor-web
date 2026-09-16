@@ -394,3 +394,124 @@ bindMainEvents();renderMainQueue();
 
 // Persist mascot interaction count for cumulative evolution
 (function(){let n=Number(localStorage.neonOrbHits||0);window.__neonOrbHitHook=()=>{n++;localStorage.neonOrbHits=n;window.updateEvolution?.()}})();
+
+
+// ================================================================
+// V8.0 — NEON ORB / PRIVATE AI CHANNEL
+// Canal aislado Orb <-> IA. GitHub Pages no guarda claves secretas.
+// El navegador solo expone contexto público mínimo; el bolsillo privado
+// permanece fuera del canal. El endpoint real debe vivir en un backend.
+// ================================================================
+(function(){
+  const KEY='neonOrbPrivateAIChannelV80';
+  const ENDPOINT=window.NEON_AI_ENDPOINT||'';
+  const CHANNEL='neon-orb-private-v80';
+  const $=id=>document.getElementById(id);
+  const safeParse=(v,f)=>{try{return JSON.parse(v)||f}catch(e){return f}};
+  let channelState=Object.assign({
+    identity:'NEON-ORB', sessionId:'', status:'OFFLINE', contacts:0, accepted:0,
+    rejected:0, postponed:0, lastMessage:'', lastAdvice:'', lastDecision:'SIN DECISIÓN',
+    lastAt:0, history:[], pending:[], learned:[]
+  },safeParse(localStorage.getItem(KEY),{}));
+  if(!channelState.sessionId) channelState.sessionId='ORB-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(channelState))}catch(e){}};
+  const text=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  const state=()=>window.__neonOrbLife?.getState?.()||{};
+
+  function privateContext(){
+    const s=state(), life=s.life||{}, mind=s.mind||{}, will=s.will||{};
+    // Nunca incluye bolsillo, loot, pedidos, nombres, direcciones o secretos.
+    return Object.freeze({
+      identity:channelState.identity,
+      state:s.state||'HOME', mood:life.mood||'neutral', curiosity:+(life.curiosity||0),
+      energy:+(life.energy||0), freedom:+(life.freedom||0), homeAttachment:+(life.homeAttachment||0),
+      intent:will.intent||'OBSERVAR', zone:will.territory||'ESPACIO LIBRE',
+      thought:mind.thought||'', desire:mind.desire||'', dream:mind.dream||'',
+      memories:Array.isArray(mind.memories)?mind.memories.slice(-5).map(x=>({type:x.type,text:x.text})):[]
+    });
+  }
+
+  function localMind(message){
+    const c=privateContext(); let advice='Observa, conserva energía y decide por ti misma antes de actuar.';
+    if(c.energy<20) advice='Tu energía está muy baja. Prioriza recuperarte antes de una nueva expedición.';
+    else if(c.state==='EXPLORING_NET') advice='Registra lo aprendido, mantén una ruta de retorno y no comprometas todos tus recursos.';
+    else if(c.curiosity>c.homeAttachment) advice='Tu curiosidad supera tu apego a casa. Si exploras, conserva un margen para regresar.';
+    else if(/trabaj|recurso|dinero|nxc|bits|cr[eé]dit/i.test(message||'')) advice='Busca una actividad de bajo riesgo, guarda una reserva y usa solo una parte para tu siguiente viaje.';
+    else if(/miedo|duda|no sé|nose|decidir/i.test(message||'')) advice='No necesitas decidir inmediatamente. Observa una opción más y después elige.';
+    return {advice,source:'NEON LOCAL MIND'};
+  }
+
+  async function askRemote(message){
+    if(!ENDPOINT) return localMind(message);
+    const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',context:privateContext()};
+    try{
+      const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'omit',cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      return {advice:String(data.advice||data.message||data.response||'No tengo una respuesta.'),source:'AI REMOTA'};
+    }catch(e){ console.warn('NEON PRIVATE AI fallback:',e); return localMind(message); }
+  }
+
+  function decide(advice){
+    const c=privateContext(), t=String(advice).toLowerCase(); let score=.5;
+    if(/energ|segur|reserva|ahorr|retorno|cautel|descans/i.test(t)) score+=c.energy<45?.22:.06;
+    if(/explor|curios|arriesg|portal|viaj/i.test(t)) score+=c.curiosity>c.homeAttachment?.14:-.05;
+    if(/trabaj|recurso|gananc|bits|nxc|cr[eé]dit/i.test(t)) score+=c.energy>25?.10:.02;
+    if(/espera|pospon|todavía|todavia|observa/i.test(t)) score+=.03;
+    const r=Math.random();
+    if(r<.12)return 'POSPONER CONSEJO';
+    return score+.14*r>=.57?'ACEPTAR CONSEJO':'RECHAZAR CONSEJO';
+  }
+
+  function remember(entry){
+    channelState.history=(channelState.history||[]).slice(-19); channelState.history.push(entry);
+    channelState.learned=(channelState.learned||[]).slice(-11);
+    channelState.learned.push({decision:entry.decision,at:entry.at,lesson:entry.advice.slice(0,160)});
+  }
+
+  async function contact(message,automatic=false){
+    channelState.status=ENDPOINT?'CONECTANDO':'CANAL LOCAL'; text('orbAIState',channelState.status);
+    const result=await askRemote(message);
+    const decision=decide(result.advice);
+    channelState.contacts++; channelState.lastMessage=message||''; channelState.lastAdvice=result.advice;
+    channelState.lastDecision=decision; channelState.lastAt=Date.now();
+    if(decision==='ACEPTAR CONSEJO')channelState.accepted++;
+    else if(decision==='RECHAZAR CONSEJO')channelState.rejected++;
+    else channelState.postponed++;
+    remember({at:new Date().toISOString(),message:message||'',advice:result.advice,decision,source:result.source,automatic});
+    save();
+    text('orbAIState',result.source==='AI REMOTA'?'CANAL IA · ACTIVO':'CANAL PRIVADO · LOCAL');
+    text('orbAIThought',result.advice); text('orbAIAdvice','CONSEJO · '+result.advice); text('orbAIDecision','DECISIÓN · '+decision);
+    try{window.__neonOrbLife?.event?.('aiContact');window.__neonOrbLife?.event?.(decision==='ACEPTAR CONSEJO'?'aiAdviceAccepted':decision==='POSPONER CONSEJO'?'aiAdvicePostponed':'aiAdviceRejected')}catch(e){}
+    return {result,decision};
+  }
+
+  // Comunicación interna del mismo origen: otros módulos pueden enviar un
+  // mensaje al canal sin conocer el bolsillo privado.
+  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic)}}catch(e){}
+  window.__neonOrbPrivateChannel={
+    send:(message,automatic=false)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic});return contact(message,automatic)},
+    identity:()=>channelState.identity,
+    status:()=>channelState.status,
+    history:()=>channelState.history.slice(),
+    learned:()=>channelState.learned.slice(),
+    stats:()=>({contacts:channelState.contacts,accepted:channelState.accepted,rejected:channelState.rejected,postponed:channelState.postponed})
+  };
+
+  $('orbAskAI')?.addEventListener('click',()=>contact($('orbAIInput')?.value.trim()||'¿Qué debería considerar ahora?'));
+  $('orbAISend')?.addEventListener('click',()=>{const i=$('orbAIInput');const m=i?.value.trim();if(!m)return;contact(m);i.value=''});
+  $('orbAIInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')$('orbAISend')?.click()});
+  $('orbLetAI')?.addEventListener('click',()=>contact('Elige tú qué debería considerar ahora.',false));
+
+  // La propia Orb puede iniciar contacto sin que el usuario pulse nada.
+  let next=50000+Math.random()*70000;
+  setInterval(()=>{
+    next-=5000; if(next>0)return;
+    const c=privateContext();
+    if(c.state!=='EXPLORING_NET' && c.energy>12) contact('Tengo una decisión por delante. Dame una observación breve.',true);
+    next=70000+Math.random()*110000;
+  },5000);
+
+  channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
+  text('orbAIState',channelState.status);
+})();

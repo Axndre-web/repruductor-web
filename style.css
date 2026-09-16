@@ -34,3 +34,10 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 .orb-control-card #orbLifeZone,.orb-control-card #orbMindZone{color:#7d6a8c}
 @media(max-width:900px){.control-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.control-grid{grid-template-columns:1fr}.orb-control-card b{font-size:.78rem}}
+
+/* V7.9 — NEON ORB / AI BRIDGE */
+.orb-ai-card{background:radial-gradient(circle at 18% 20%,rgba(0,243,255,.08),transparent 34%),linear-gradient(145deg,#090910,#020204);border-color:rgba(0,243,255,.18)}
+.orb-ai-card #orbAIState{color:#7dfff1}.orb-ai-card #orbAIAdvice{color:var(--accent)}.orb-ai-card #orbAIDecision{color:#8dff9f}
+.orb-ai-actions,.orb-ai-chat{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.orb-ai-chat input{flex:1;min-width:150px;border:1px solid var(--line);border-radius:9px;background:#050507;color:#eee;padding:9px 10px;font-size:.65rem;outline:none}.orb-ai-chat input:focus{border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 12%,transparent)}
+.orb-ai-card .btn.mini{padding:8px 10px;font-size:.5rem}
+@media(max-width:520px){.orb-ai-actions,.orb-ai-chat{display:grid;grid-template-columns:1fr}.orb-ai-chat input{width:100%}.orb-ai-card .btn.mini{width:100%}}
