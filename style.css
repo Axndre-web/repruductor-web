@@ -43,3 +43,19 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 @media(max-width:520px){.orb-ai-actions,.orb-ai-chat{display:grid;grid-template-columns:1fr}.orb-ai-chat input{width:100%}.orb-ai-card .btn.mini{width:100%}}
 
 .evo-progress{height:5px;margin-top:9px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}.evo-progress i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,var(--accent),#65ffb0);box-shadow:0 0 10px var(--accent);transition:width .35s ease}
+
+/* RADIO STATION GRID — navegación V8.2 */
+.radio-stations{position:relative;min-width:0;padding-right:25px}
+.radio-stations-head{height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 3px 7px}
+.radio-stations-head span{font:700 .5rem Orbitron;letter-spacing:.14em;color:#67636f}
+.radio-stations-head b{font:700 .48rem Orbitron;color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:99px;padding:4px 7px;background:rgba(255,255,255,.025)}
+.radio-stations .radio-grid{scrollbar-width:none;-ms-overflow-style:none;scroll-behavior:smooth;overscroll-behavior:contain;scroll-snap-type:y proximity;padding-right:4px}
+.radio-stations .radio-grid::-webkit-scrollbar{display:none}
+.radio-stations .radio-card{scroll-snap-align:start}
+.radio-scrollbar{position:absolute;right:7px;top:34px;bottom:3px;width:4px;border-radius:99px;background:rgba(255,255,255,.055);pointer-events:none}
+.radio-scrollbar i{position:absolute;left:0;top:0;width:100%;min-height:30px;height:34%;border-radius:99px;background:linear-gradient(180deg,var(--accent),var(--accent2));box-shadow:0 0 10px color-mix(in srgb,var(--accent) 42%,transparent);transition:top .16s ease,height .16s ease}
+.radio-scroll-btn{position:absolute;right:-1px;width:20px;height:20px;padding:0;border:1px solid rgba(255,255,255,.08);border-radius:50%;background:rgba(3,3,6,.94);color:#77737f;display:grid;place-items:center;font-size:.68rem;line-height:1;cursor:pointer;z-index:4;opacity:.72;transition:.2s}
+.radio-scroll-btn:hover{opacity:1;color:#fff;border-color:color-mix(in srgb,var(--accent) 48%,transparent);box-shadow:0 0 13px color-mix(in srgb,var(--accent) 18%,transparent)}
+.radio-scroll-up{top:9px}.radio-scroll-down{bottom:-1px}
+.radio-stations .radio-grid:focus-visible{outline:1px solid color-mix(in srgb,var(--accent) 45%,transparent);outline-offset:3px;border-radius:13px}
+@media(max-width:650px){.radio-stations{padding-right:21px}.radio-stations .radio-grid{padding-right:2px}}

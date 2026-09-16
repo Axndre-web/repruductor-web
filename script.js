@@ -530,3 +530,27 @@ bindMainEvents();renderMainQueue();
   channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
   text('orbAIState',channelState.status);
 })();
+
+// RADIO GRID — control de desplazamiento suave
+(function(){
+  function update(){
+    const g=document.getElementById('radioGrid'),t=document.getElementById('radioScrollThumb'),c=document.getElementById('radioStationCount');
+    if(!g||!t)return;
+    if(c)c.textContent=g.querySelectorAll('.radio-card').length;
+    const max=Math.max(0,g.scrollHeight-g.clientHeight), track=g.clientHeight;
+    const h=max?Math.max(30,Math.min(track,Math.round(track*track/g.scrollHeight))):track;
+    t.style.height=h+'px'; t.style.top=(max?Math.round(g.scrollTop/max*(track-h)):0)+'px';
+  }
+  function init(){
+    const g=document.getElementById('radioGrid'); if(!g||g.dataset.radioSmooth)return; g.dataset.radioSmooth='1';
+    document.getElementById('radioScrollUp')?.addEventListener('click',()=>g.scrollBy({top:-Math.max(140,g.clientHeight*.65),behavior:'smooth'}));
+    document.getElementById('radioScrollDown')?.addEventListener('click',()=>g.scrollBy({top:Math.max(140,g.clientHeight*.65),behavior:'smooth'}));
+    g.addEventListener('scroll',update,{passive:true});
+    g.addEventListener('keydown',e=>{if(e.key==='ArrowDown'){e.preventDefault();g.scrollBy({top:90,behavior:'smooth'})}else if(e.key==='ArrowUp'){e.preventDefault();g.scrollBy({top:-90,behavior:'smooth'})}else if(e.key==='PageDown'){e.preventDefault();g.scrollBy({top:g.clientHeight*.8,behavior:'smooth'})}else if(e.key==='PageUp'){e.preventDefault();g.scrollBy({top:-g.clientHeight*.8,behavior:'smooth'})}});
+    if(window.ResizeObserver)new ResizeObserver(update).observe(g);
+    if(window.MutationObserver)new MutationObserver(()=>requestAnimationFrame(update)).observe(g,{childList:true,subtree:true});
+    requestAnimationFrame(update);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+  window.addEventListener('resize',update,{passive:true});
+})();
