@@ -19,7 +19,7 @@ Extensión acumulativa sobre V7.1.
 - Estados `HOME`, `ATTRACTED` y `EXPLORING_NET`.
 - Viajes aleatorios de 10–25 segundos.
 - `MemoryEngine` con APIs públicas reales y fallback local.
-- `VirtualEconomyEngine` para trabajo sintético durante el viaje.
+- `VirtualEconomyEngine` para trabajo reales durante el viaje.
 - `NeonOrbPrivatePocket` aislado en una clave propia de `localStorage` y codificado con Base64/UTF-8.
 - Integración con interacciones y reproducción de radio.
 
