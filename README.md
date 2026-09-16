@@ -8,4 +8,4 @@ V5.x base + V7 Radio Equalizer + Media Studio + autonomous neon mascot + Control
 - Durante sus viajes consulta nodos públicos y realiza entre 1 y 3 trabajos sintéticos por viaje.
 - Las ganancias se almacenan en un bolsillo privado no renderizado en la interfaz.
 - Memorias, deseos, pensamientos y evolución se conservan localmente.
-- La economía es real/valiosa: NXC, CREDITS y BITS si representan dinero real y criptomonedas reales.
+- La economía es ficticia/sintética: NXC, CREDITS y BITS no representan dinero real ni criptomonedas reales.

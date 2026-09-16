@@ -4,8 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#05030a">
-<meta name="description" content="NEON PLAYER X — ecosistema multimedia digital interactivo con entidad virtual evolutiva.">
-<meta name="neon-ai-endpoint" content="">
+<meta name="description" content="NEON PLAYER X — reproductor, radio, estudio y ecosistema digital acumulativo.">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="favicon-32.png" type="image/png">
 <link rel="apple-touch-icon" href="icon-180.png">
@@ -29,12 +28,12 @@
   <a href="#inicio" class="nav-link active">⌂ <span>Inicio</span></a>
   <a href="#radio" class="nav-link">◉ <span>Radio</span></a>
   <a href="#player" class="nav-link">♫ <span>Player</span></a>
-  <a href="#tienda" class="nav-link nav-store-link" aria-hidden="true">▣ <span>Tienda</span></a>
+  <a href="#tienda" class="nav-link shop-nav-hidden" aria-hidden="true" tabindex="-1">▣ <span>Tienda</span></a>
   <a href="#control" class="nav-link">◈ <span>Control</span></a><a href="#temas" class="nav-link">✦ <span>Temas</span></a>
 </nav>
 <main>
 <section id="inicio" class="hero section">
-  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V10.0</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
+  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V8.2</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
   <div class="hero-core reveal"><div class="orb"><img src="icon-192.png" alt=""> </div><span>NEON CORE</span><small>INTERFACE ONLINE</small></div>
 </section>
 <section class="workspace section">
@@ -54,9 +53,9 @@
 </section>
 <section id="radio" class="section panel reveal">
   <div class="section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2></div><span class="pill"><i></i> DIRECTO</span></div>
-  <div class="radio-tools"><div class="radio-search"><span>⌕</span><input id="radioSearch" type="search" placeholder="Buscar emisora…" autocomplete="off"></div><div class="radio-filters" id="radioFilters"><button class="radio-filter active" data-filter="ALL">TODAS</button><button class="radio-filter" data-filter="POP">POP</button><button class="radio-filter" data-filter="ROCK">ROCK</button><button class="radio-filter" data-filter="SPORT">DEPORTE</button><button class="radio-filter" data-filter="ES">ESPAÑOL</button></div></div><div class="radio-layout">
+  <div class="radio-layout">
     <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><div class="neon-eq" id="radioEQ"><div class="eq-head"><span>RADIO EQUALIZER</span><b id="radioEqState">ANALIZANDO</b></div><canvas id="radioEqCanvas" aria-label="Ecualizador visual de radio"></canvas><div class="eq-spectrum" id="radioSpectrum"></div><div class="eq-sliders"><label>60<input data-band="0" type="range" min="-12" max="12" value="0"></label><label>230<input data-band="1" type="range" min="-12" max="12" value="0"></label><label>910<input data-band="2" type="range" min="-12" max="12" value="0"></label><label>3.6K<input data-band="3" type="range" min="-12" max="12" value="0"></label><label>14K<input data-band="4" type="range" min="-12" max="12" value="0"></label></div></div><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
-    <div class="radio-grid-shell"><div class="radio-grid" id="radioGrid"></div><div class="radio-scroll-hint"><span>DESLIZA</span><i></i><i></i><i></i></div></div>
+    <div class="radio-grid" id="radioGrid"></div>
   </div>
 </section>
 <section id="player" class="section panel reveal">
@@ -77,43 +76,43 @@
   <div class="player-queue"><div class="queue-head"><span>LISTA DE PRUEBA</span><b id="mainQueueCount">0</b><button id="mainClearQueue" type="button">LIMPIAR</button></div><div id="mainQueue" class="main-queue"><p>Aún no has añadido archivos.</p></div></div>
 </div>
 </section>
-<section id="tienda" class="section panel reveal hidden-store" aria-hidden="true"><div class="section-head"><div><span class="eyebrow">DIGITAL SHOP</span><h2>TIENDA <em>NEON</em></h2></div></div><div class="shop-grid"><article class="product"><div class="product-art"><span>NEON</span><b>PLAYER X</b></div><div><h3>Multimedia Neon Player X</h3><p>Acceso digital · unidad</p><strong>0,99 €</strong></div><button class="btn primary add" data-product="Multimedia Neon Player X" data-price="0.99">AÑADIR AL CARRITO</button></article><aside class="cart"><div class="cart-head"><h3>🛒 TU PEDIDO</h3><b id="cartTotal">0,00 €</b></div><div id="cartItems" class="cart-items"><p>Tu carrito está vacío.</p></div><div class="delivery"><label><input type="radio" name="delivery" value="recogida" checked> Recogida · Renfe Azuqueca <b>0 €</b></label><label><input type="radio" name="delivery" value="domicilio"> A domicilio <b>Confirmar coste</b></label></div><input id="customerName" placeholder="Nombre completo"><input id="customerPhone" placeholder="Teléfono de contacto"><input id="customerAddress" placeholder="Dirección de entrega (si aplica)"><input id="deliveryDate" type="date"><div class="checkout"><button id="whatsapp" class="btn whatsapp">WHATSAPP PEDIDO</button><button id="paypal" class="btn paypal">PAYPAL</button></div></aside></div></section>
-<section id="orb-world" class="section panel reveal orb-world-panel">
-  <div class="section-head"><div><span class="eyebrow">NEON WORLD · LIVING ENTITY</span><h2>ORB <em>ACTIVITY</em></h2></div><span class="pill"><i></i> AUTÓNOMO</span></div>
-  <div class="orb-world-head"><div><b id="orbWorldPulse">● ACTIVIDAD EN CURSO</b><small id="orbWorldClock">CICLO 0000 · 00:00:00</small></div><p id="orbWorldNarrative">Mientras escuchas, Orb continúa observando, recordando y tomando pequeñas decisiones dentro de NEON PLAYER X.</p></div>
-  <div class="orb-metrics" id="orbMetrics">
-    <article><span>ACTIVIDAD</span><b id="orbMetricActivity">ACTIVO</b><small id="orbMetricActivityMeta">0 ciclos</small></article>
-    <article><span>MEMORIA</span><b id="orbMetricMemory">0</b><small>recuerdos internos</small></article>
-    <article><span>CURIOSIDAD</span><b id="orbMetricCuriosity">0%</b><small>impulso de descubrimiento</small></article>
-    <article><span>PREFERENCIAS</span><b id="orbMetricPreference">EXPLORAR</b><small id="orbMetricPreferenceMeta">preferencia emergente</small></article>
-    <article><span>DECISIONES</span><b id="orbMetricDecision">WANDER</b><small id="orbMetricDecisionMeta">última elección</small></article>
-    <article><span>EVOLUCIÓN</span><b id="orbMetricEvolution">NIVEL 1</b><small id="orbMetricEvolutionMeta">EXP 0 / 100</small></article>
-    <article><span>EXPLORACIÓN</span><b id="orbMetricExploration">0</b><small id="orbMetricExplorationMeta">viajes</small></article>
-    <article><span>DESCANSO</span><b id="orbMetricRest">100%</b><small id="orbMetricRestMeta">energía</small></article>
-    <article><span>INTERACCIÓN</span><b id="orbMetricInteraction">0</b><small id="orbMetricInteractionMeta">contactos</small></article>
-  </div>
-  <div class="orb-world-columns">
-    <div class="orb-world-card"><div class="orb-world-card-head"><span>ACTIVIDAD EN TIEMPO REAL</span><small id="orbActivityNext">SIGUIENTE CICLO…</small></div><div id="orbActivityFeed" class="orb-activity-feed"></div></div>
-    <div class="orb-world-card"><div class="orb-world-card-head"><span>ESTADO INTERIOR</span><small>MEMORIA · PREFERENCIAS · VOLUNTAD</small></div><div class="orb-inner-state"><div><span>PENSAMIENTO</span><b id="orbWorldThought">—</b></div><div><span>DESEO</span><b id="orbWorldDesire">—</b></div><div><span>SUEÑO</span><b id="orbWorldDream">—</b></div><div><span>RECURSOS</span><b id="orbWorldResources">NXC 0 · CREDITS 0 · BITS 0</b></div></div></div>
-  </div>
-</section>
+<section id="tienda" class="section panel reveal shop-section-hidden" aria-hidden="true"><div class="section-head"><div><span class="eyebrow">DIGITAL SHOP</span><h2>TIENDA <em>NEON</em></h2></div></div><div class="shop-grid"><article class="product"><div class="product-art"><span>NEON</span><b>PLAYER X</b></div><div><h3>Multimedia Neon Player X</h3><p>Acceso digital · unidad</p><strong>0,99 €</strong></div><button class="btn primary add" data-product="Multimedia Neon Player X" data-price="0.99">AÑADIR AL CARRITO</button></article><aside class="cart"><div class="cart-head"><h3>🛒 TU PEDIDO</h3><b id="cartTotal">0,00 €</b></div><div id="cartItems" class="cart-items"><p>Tu carrito está vacío.</p></div><div class="delivery"><label><input type="radio" name="delivery" value="recogida" checked> Recogida · Renfe Azuqueca <b>0 €</b></label><label><input type="radio" name="delivery" value="domicilio"> A domicilio <b>Confirmar coste</b></label></div><input id="customerName" placeholder="Nombre completo"><input id="customerPhone" placeholder="Teléfono de contacto"><input id="customerAddress" placeholder="Dirección de entrega (si aplica)"><input id="deliveryDate" type="date"><div class="checkout"><button id="whatsapp" class="btn whatsapp">WHATSAPP PEDIDO</button><button id="paypal" class="btn paypal">PAYPAL</button></div></aside></div></section>
 <section id="control" class="section panel reveal">
-  <div class="section-head"><div><span class="eyebrow">CONTROL CENTER · V5.6 → V7.1</span><h2>NEON <em>CONTROL</em></h2></div><span class="pill"><i></i> CUMULATIVE</span></div>
+  <div class="section-head"><div><span class="eyebrow">CONTROL CENTER · V5.6 → V8.2</span><h2>NEON <em>CONTROL</em></h2></div><span class="pill"><i></i> CUMULATIVE</span></div>
   <div class="control-grid">
     <article class="control-card"><span>RADIO</span><b id="evoPlayback">EN ESPERA</b><small id="evoPlaybackMeta">Selecciona una emisora.</small></article>
-    <article class="control-card"><span>EVOLUCIÓN</span><b id="evoRewardLevel">NIVEL 1</b><small id="evoRewardMeta">EXP 0% · 0 / 100 · 0 interacciones.</small><div class="evo-progress" aria-label="Progreso de experiencia"><i id="evoRewardBar" style="width:0%"></i></div></article>
+    <article class="control-card"><span>EVOLUCIÓN</span><b id="evoRewardLevel">NIVEL 1</b><small id="evoRewardMeta">0 interacciones registradas.</small></article>
     <article class="control-card orb-control-card"><span>NEON ORB · VIDA AUTÓNOMA</span><b id="orbLifeState">DURMIENDO</b><small id="orbLifeMeta">Estoy aprendiendo el mapa. · LIBERTAD 99%</small><small id="orbLifeWill">VOLUNTAD · DESCANSAR</small><small id="orbLifeZone">INICIO</small></article>
     <article class="control-card orb-control-card"><span>NEON ORB · MENTE INTERIOR</span><b id="orbMindThought">Estoy aprendiendo el mapa.</b><small id="orbMindDesire">DESEO · OBSERVAR</small><small id="orbMindDream">SUEÑO · EN ESPERA</small><small id="orbMindMemory">MEMORIA · 36 RECUERDOS</small><small id="orbMindWill">VOLUNTAD · DESCANSAR · AUTONOMÍA 100%</small><small id="orbMindZone">TERRITORIO · ESPACIO LIBRE · 3 DESCUBIERTOS</small></article>
     <article class="control-card orb-ai-card"><span>NEON ORB · CANAL PRIVADO IA</span><b id="orbAIState">ESCUCHANDO</b><small id="orbAIThought">Canal privado de consulta. Orb puede preguntar, escuchar y decidir por sí misma.</small><small id="orbAIAdvice">CONSEJO · EN ESPERA</small><small id="orbAIDecision">DECISIÓN · SIN CONSEJO</small><div class="orb-ai-actions"><button class="btn mini" id="orbAskAI" type="button">PEDIR CONSEJO</button><button class="btn mini" id="orbLetAI" type="button">DEJAR QUE CONSULTE</button></div><div class="orb-ai-chat"><input id="orbAIInput" type="text" maxlength="240" placeholder="Habla con el puente…"><button class="btn mini" id="orbAISend" type="button">ENVIAR</button></div></article>
     <article class="control-card"><span>ÚLTIMO PEDIDO</span><b id="evoLastOrder">SIN PEDIDOS</b><small id="evoLastOrderMeta">El historial se guarda en este dispositivo.</small></article>
     <article class="control-card"><span>PAYPAL</span><b id="evoPayState">DIAGNÓSTICO</b><small id="evoPayMeta">Checkout dinámico listo para comprobar.</small></article>
   </div>
+  <div class="orb-world-panel">
+    <div class="orb-world-head"><div><span class="eyebrow">NEON WORLD · LIVING ENTITY</span><h3>ORB ACTIVITY</h3></div><span class="orb-live"><i></i> AUTÓNOMO</span></div>
+    <p class="orb-world-summary" id="orbWorldSummary">Mientras escuchas, Orb mantiene su propio ciclo.</p>
+    <div class="orb-metrics" id="orbMetrics">
+      <div><span>ACTIVIDAD</span><b id="orbMetricActivity">HOME</b><small id="orbMetricCycles">0 ciclos</small></div>
+      <div><span>MEMORIA</span><b id="orbMetricMemory">0</b><small>recuerdos internos</small></div>
+      <div><span>CURIOSIDAD</span><b id="orbMetricCuriosity">0%</b><small>impulso de descubrimiento</small></div>
+      <div><span>PREFERENCIAS</span><b id="orbMetricPreference">EXPLORAR</b><small id="orbMetricPreferenceCount">0 señales</small></div>
+      <div><span>DECISIONES</span><b id="orbMetricDecisions">0</b><small id="orbMetricDecisionType">WANDER</small></div>
+      <div><span>EVOLUCIÓN</span><b id="orbMetricLevel">NIVEL 1</b><small id="orbMetricXP">EXP 0 / 100</small></div>
+      <div><span>EXPLORACIÓN</span><b id="orbMetricExploration">0</b><small>viajes</small></div>
+      <div><span>DESCANSO</span><b id="orbMetricEnergy">100%</b><small>energía disponible</small></div>
+      <div><span>INTERACCIÓN</span><b id="orbMetricInteraction">0</b><small>contactos y acciones</small></div>
+    </div>
+    <div class="orb-world-grid">
+      <div class="orb-activity-log"><div class="orb-subhead"><span>ACTIVIDAD EN TIEMPO REAL</span><b id="orbNextCycle">SIGUIENTE CICLO · EN BREVE</b></div><div id="orbActivityLog"></div></div>
+      <div class="orb-inner-state"><div class="orb-subhead"><span>ESTADO INTERIOR</span><b>MEMORIA · PREFERENCIAS · VOLUNTAD</b></div><p><small>PENSAMIENTO</small><strong id="orbInnerThought">Estoy observando.</strong></p><p><small>DESEO</small><strong id="orbInnerDesire">EXPLORAR</strong></p><p><small>SUEÑO</small><strong id="orbInnerDream">EN ESPERA</strong></p><p><small>RECURSOS</small><strong id="orbInnerResources">NXC 0 · CREDITS 0 · BITS 0</strong></p><p><small>REGALO DEL CREADOR</small><strong id="orbInnerGift">RECIBIDO · PRIVADO</strong></p></div>
+    </div>
+  </div>
   <div class="control-actions"><button class="btn mini" id="showOrders" type="button">HISTORIAL</button><button class="btn mini" id="paymentDiagnostics" type="button">DIAGNÓSTICO PAYPAL</button></div>
   <div id="orderHistory" class="order-history" hidden></div>
 </section>
 <section id="temas" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">VISUAL ENGINE</span><h2>ELIGE TU <em>ESTILO</em></h2></div><span class="pill">12 THEMES</span></div><div class="theme-grid" id="themeGrid"></div></section>
 </main>
-<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V9.1 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
+<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V8.2 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
 <div id="payModal" class="pay-modal" aria-hidden="true">
   <div class="pay-backdrop" data-close-pay></div>
   <div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payTitle">

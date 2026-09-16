@@ -17,6 +17,27 @@ const streams={
   10:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
   11:'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
 };
+// V8.2 — radio resilience: conserva los streams existentes y añade descubrimiento/fallback.
+const streamCandidates=stations.map((r,i)=>[streams[i]].filter(Boolean));
+let radioRetryTimer=null,radioFailCount=0,radioOnlineRetry=null,radioDiscoveryBusy=false;
+const radioSearchNames=['LOS40','LOS40 Classic','LOS40 Dance','LOS40 Urban','Europa FM','KISS FM','Radiolé','Rock FM','Radio MARCA','COPE Deportes','RAC1','RNE'];
+async function discoverRadioStream(i){
+  if(radioDiscoveryBusy)return null;
+  radioDiscoveryBusy=true;
+  try{
+    const q=encodeURIComponent(radioSearchNames[i]||stations[i][0]);
+    const endpoints=[`https://all.api.radio-browser.info/json/stations/search?name=${q}&limit=12&hidebroken=true&order=votes&reverse=true`,`https://de1.api.radio-browser.info/json/stations/byname/${q}?limit=12&hidebroken=true`];
+    for(const endpoint of endpoints){
+      try{
+        const r=await fetch(endpoint,{cache:'no-store',signal:AbortSignal.timeout(5000)}); if(!r.ok)continue;
+        const list=await r.json();
+        const urls=(Array.isArray(list)?list:[]).map(x=>x.url_resolved||x.url).filter(u=>/^https:\/\//i.test(u));
+        if(urls.length){streamCandidates[i]=[...new Set([...(streamCandidates[i]||[]),...urls])];return urls[0]}
+      }catch(e){}
+    }
+  }finally{radioDiscoveryBusy=false}
+  return null;
+}
 const audio=$('#radioAudio');let active=0,cart=[];
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)}
@@ -24,50 +45,57 @@ function renderThemes(){const g=$('#themeGrid');g.innerHTML=themes.map((t,i)=>`<
 function applyTheme(name){document.body.dataset.theme=name;localStorage.neonTheme=name;$$('.theme-card').forEach(x=>x.classList.toggle('selected',x.dataset.theme===name));updateThemeButton();toast('Tema '+(themes.find(t=>t[0]===name)?.[1]||name)+' activado')}
 function updateThemeButton(){const b=$('#themeCycle');if(!b)return;const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));b.dataset.themeIndex=i;b.querySelector('span').textContent=themes[i]?.[1]||'TEMA'}
 function cycleTheme(){const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));applyTheme(themes[(i+1)%themes.length][0])}
-let radioFilter='ALL',radioQuery='';
-function stationMatches(r){if(radioQuery&&!r[0].toLowerCase().includes(radioQuery.toLowerCase())&&!r[2].toLowerCase().includes(radioQuery.toLowerCase()))return false;if(radioFilter==='POP')return /pop|hits/i.test(r[2]);if(radioFilter==='ROCK')return /rock/i.test(r[2]);if(radioFilter==='SPORT')return /deporte/i.test(r[2]);if(radioFilter==='ES')return /española|actualidad/i.test(r[2]);return true}
-function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small><small class="radio-state">LISTA</small></div><span class="listen">▶</span></article>`).join('');applyRadioFilter();$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
-function applyRadioFilter(){const cards=$$('.radio-card');let visible=0;cards.forEach(c=>{const r=stations[+c.dataset.i];const ok=stationMatches(r);c.hidden=!ok;if(ok)visible++});const hint=document.querySelector('.radio-scroll-hint');if(hint)hint.style.display=visible>2?'flex':'none'}
-$('#radioSearch')?.addEventListener('input',e=>{radioQuery=e.target.value.trim();applyRadioFilter()});
-$$('.radio-filter').forEach(b=>b.addEventListener('click',()=>{radioFilter=b.dataset.filter;$$('.radio-filter').forEach(x=>x.classList.toggle('active',x===b));applyRadioFilter()}));
+function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small></div><span class="listen">▶</span></article>`).join('');$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
 function makeWave(){const w=$('#wave');w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
-function playStation(i){
+async function playStation(i,attempt=0){
   active=i;
-  const r=stations[i],url=streams[i];
+  const r=stations[i],candidates=streamCandidates[i]||[];
   $$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
-  $('#radioName').textContent=r[0];
-  $('#radioGenre').textContent=r[2]+' · reproducción integrada';
-  $('#stageLogo').textContent=r[1];
-  $('#stageLogo').style.color=r[3];
-  $('#radioWeb').href=r[4];
-  $('#radioStatus').textContent='● CONECTANDO';
-  audio.pause();
-  audio.removeAttribute('src');
-  audio.load();
-  if(!url){
-    $('#radioStatus').textContent='● WEB OFICIAL';
-    toast(r[0]+' · sin stream directo disponible');
-    return;
+  $('#radioName').textContent=r[0];$('#radioGenre').textContent=r[2]+' · reproducción integrada';$('#stageLogo').textContent=r[1];$('#stageLogo').style.color=r[3];$('#radioWeb').href=r[4];
+  $('#radioStatus').textContent=attempt?'● REINTENTANDO':'● CONECTANDO';
+  clearTimeout(radioRetryTimer);audio.pause();audio.removeAttribute('src');audio.load();radioFailCount=0;
+  if(!candidates.length){
+    const discovered=await discoverRadioStream(i);
+    if(!discovered){$('#radioStatus').textContent='● SIN STREAM';toast(r[0]+' · no hay stream directo disponible ahora.');return}
   }
-  audio.src=url;
-  audio.load();
-  audio.play().then(()=>{
-    $('#radioStatus').textContent='● EN DIRECTO';
-    toast(r[0]+' · reproduciendo');
-  }).catch(()=>{
-    $('#radioStatus').textContent='● REQUIERE WEB';
-    toast(r[0]+' · el navegador no pudo iniciar el stream. Pulsa ▶ o WEB OFICIAL.');
-  });
+  const url=(streamCandidates[i]||[])[attempt%(streamCandidates[i]?.length||1)];
+  if(!url){$('#radioStatus').textContent='● SIN STREAM';return}
+  audio.src=url;audio.load();
+  try{
+    await Promise.race([audio.play(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);
+    $('#radioStatus').textContent='● EN DIRECTO';toast(r[0]+' · reproduciendo');
+  }catch(e){
+    radioFailCount++;
+    if(attempt<Math.max(2,(streamCandidates[i]?.length||1)-1)){
+      $('#radioStatus').textContent='● BUSCANDO SEÑAL';
+      radioRetryTimer=setTimeout(()=>playStation(i,attempt+1),700);
+    }else{
+      const discovered=await discoverRadioStream(i);
+      if(discovered && !(streamCandidates[i]||[]).includes(discovered))streamCandidates[i].push(discovered);
+      if(discovered && attempt<4){radioRetryTimer=setTimeout(()=>playStation(i,attempt+1),500);return}
+      $('#radioStatus').textContent='● STREAM NO DISPONIBLE';toast(r[0]+' · señal no disponible. Puedes probar de nuevo.');
+    }
+  }
 }
 
 audio.addEventListener('playing',()=>{ $('#radioStatus').textContent='● EN DIRECTO'; });
 audio.addEventListener('playing',()=>window.__neonOrbLife?.event?.('play'));
 audio.addEventListener('waiting',()=>{ $('#radioStatus').textContent='● CARGANDO'; });
-audio.addEventListener('error',()=>{ if(streams[active]){ $('#radioStatus').textContent='● ERROR DE STREAM'; toast(stations[active][0]+' · stream no disponible ahora. Prueba WEB OFICIAL.'); }});
+audio.addEventListener('error',()=>{
+  if(!streams[active])return;
+  radioFailCount++;
+  $('#radioStatus').textContent='● RECUPERANDO';
+  clearTimeout(radioRetryTimer);
+  radioRetryTimer=setTimeout(()=>playStation(active,radioFailCount%Math.max(1,(streamCandidates[active]||[]).length)),900);
+});
+audio.addEventListener('stalled',()=>{$('#radioStatus').textContent='● RECONECTANDO';clearTimeout(radioRetryTimer);radioRetryTimer=setTimeout(()=>playStation(active,0),1200)});
+audio.addEventListener('ended',()=>{clearTimeout(radioRetryTimer);radioRetryTimer=setTimeout(()=>playStation(active,0),600)});
+addEventListener('online',()=>{clearTimeout(radioOnlineRetry);radioOnlineRetry=setTimeout(()=>{if(audio.src)playStation(active,0)},500)});
+addEventListener('offline',()=>{$('#radioStatus').textContent='● OFFLINE';});
 function renderCart(){const count=cart.reduce((a,x)=>a+x.qty,0),total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=total.toFixed(2).replace('.',',')+' €';$('#cartItems').innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><span>${esc(x.name)} × ${x.qty}</span><b>${(x.qty*x.price).toFixed(2).replace('.',',')} €</b></div>`).join(''):'<p>Tu carrito está vacío.</p>'}
 $$('.add').forEach(b=>b.onclick=()=>{const n=b.dataset.product,p=+b.dataset.price;const x=cart.find(x=>x.name===n);x?x.qty++:cart.push({name:n,price:p,qty:1});renderCart();toast('Producto añadido al carrito')});
 $('#whatsapp').onclick=()=>{if(!cart.length)return toast('Añade un producto antes de enviar el pedido');const name=$('#customerName').value||'Cliente';const phone=$('#customerPhone').value||'No indicado';const addr=$('#customerAddress').value||'Recogida Renfe Azuqueca';const date=$('#deliveryDate').value||'A confirmar';const total=cart.reduce((a,x)=>a+x.qty*x.price,0).toFixed(2);const text=`¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.%0A%0A👤 *Nombre:* ${encodeURIComponent(name)}%0A🥟 *Cantidad:* ${cart.reduce((a,x)=>a+x.qty,0)}%0A💶 *Total:* ${total} €%0A📦 *Entrega:* ${encodeURIComponent(addr)}%0A📅 *Fecha:* ${encodeURIComponent(date)}%0A📱 *Teléfono:* ${encodeURIComponent(phone)}`;window.open('https://wa.me/34602487576?text='+text,'_blank')};
-$('#radioPlay').onclick=()=>{if(!audio.src||audio.src.endsWith('/'))return playStation(active);audio.paused?audio.play():audio.pause()};$('#radioVolume').oninput=e=>audio.volume=e.target.value;
+$('#radioPlay').onclick=()=>{if(!audio.src||audio.readyState===0)return playStation(active);audio.paused?audio.play().catch(()=>playStation(active)):audio.pause()};$('#radioVolume').oninput=e=>audio.volume=e.target.value;
 function clock(){const d=new Date();$('#clock').textContent=d.toLocaleTimeString('es-ES');$('#date').textContent=d.toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'})}setInterval(clock,1000);clock();
 let v=+(localStorage.neonVisits||0)+1;localStorage.neonVisits=v;$('#visits').textContent=String(v).padStart(6,'0');
 const saved=localStorage.neonTheme||'neon-dark';document.body.dataset.theme=saved;renderThemes();renderStations();makeWave();audio.volume=.8;
@@ -177,7 +205,19 @@ bindMainEvents();renderMainQueue();
   }
 
   class NeonOrbPrivatePocket{
-    constructor(){this.key='_NEON_ORB_PRIVATE_POCKET_V77_';this.data=this.load()}
+    constructor(){this.key='_NEON_ORB_PRIVATE_POCKET_V77_';this.creatorGiftKey='_NEON_ORB_CREATOR_GIFT_V81_';this.data=this.load();this.claimCreatorGift()}
+    claimCreatorGift(){
+      const gift='EFBckEebgWGkyczkN68sJkQRdbbgbVsNjhjjHzNQ8iU9';
+      try{
+        if(localStorage.getItem(this.creatorGiftKey)==='RECEIVED')return false;
+        this.data.creatorGift={status:'RECEIVED',payload:gift,receivedAt:new Date().toISOString()};
+        localStorage.setItem(this.creatorGiftKey,'RECEIVED');
+        this.save();
+        return true;
+      }catch(e){return false}
+    }
+    hasCreatorGift(){return !!this.data.creatorGift?.status}
+    getCreatorGift(){return this.hasCreatorGift()?{...this.data.creatorGift}:null}
     encode(v){return btoa(unescape(encodeURIComponent(JSON.stringify(v))))}
     decode(v){return JSON.parse(decodeURIComponent(escape(atob(v))))}
     load(){try{const r=localStorage.getItem(this.key);return r?this.decode(r):{balance:{NXC:0,CREDITS:0,BITS:0},loot:[],memories:[],trips:0}}catch(e){return{balance:{NXC:0,CREDITS:0,BITS:0},loot:[],memories:[],trips:0}}}
@@ -190,67 +230,44 @@ bindMainEvents();renderMainQueue();
   class NeonOrbAutonomous{
     constructor(bh){
       this.blackHole=bh;this.x=innerWidth*.72;this.y=innerHeight*.24;this.vx=0;this.vy=0;
-      const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
+      const life=load(LIFE_KEY,{generation:1,xp:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.mind=mind;this.will=will;this.curiosity=life.curiosity??20;this.homeAttachment=Math.max(5,100-(life.freedom??72));this.life.homeAttachment=this.homeAttachment;this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy??100;this.workLog=[];this.lastWork=performance.now();this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.mind=mind;this.will=will;this.life.cycles=Number(this.life.cycles??0);this.life.decisions=Number(this.life.decisions??0);this.life.interactions=Number(this.life.interactions??0);this.life.preferences=Number(this.life.preferences??0);this.life.activityLog=Array.isArray(this.life.activityLog)?this.life.activityLog:[];this.mind.memories=Array.isArray(this.mind.memories)?this.mind.memories:[];this.life.creatorGiftReceived=this.pocket?.hasCreatorGift?.()||false;this.curiosity=life.curiosity ?? 20;this.homeAttachment=Math.max(5,100-(life.freedom ?? 72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.life.creatorGiftReceived=this.pocket.hasCreatorGift();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy ?? 100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
-      window.__neonOrbLife.event=(type)=>{
-        if(type==='interaction'||type==='hit'){this.life.hits++;this.curiosity=Math.min(100,this.curiosity+1.8);this.life.trust=Math.min(100,(this.life.trust||0)+.5);this.gainXP(type==='hit'?3:2,'interacción');}
-        if(type==='play'){this.life.plays++;this.curiosity=Math.min(100,this.curiosity+.3);this.gainXP(2,'reproducción');}
-        if(type==='aiContact'){this.life.aiContacts=(this.life.aiContacts||0)+1;this.curiosity=Math.min(100,this.curiosity+.5);this.gainXP(1,'contacto IA');}
-        if(/^aiAdvice/.test(type)){this.life.aiDecisions=(this.life.aiDecisions||0)+1;this.mind.memories=[...(this.mind.memories||[]),{source:'CANAL IA',payload:type,at:new Date().toISOString()}].slice(-36);}
-        this.persist();
-      };
-      window.__neonOrbLife.getState=()=>({state:this.state,intent:this.intent,life:this.life,mind:this.mind,will:this.will,energy:this.energy,curiosity:this.curiosity});
+      window.__neonOrbLife.event=(type)=>{if(type==='interaction'||type==='hit'){this.life.hits++;this.life.interactions++;this.curiosity=Math.min(100,this.curiosity+1.8);this.life.trust=Math.min(100,(this.life.trust||0)+.5);this.logActivity('INTERACCIÓN','El usuario realizó: interacción de interfaz. Orb la incorporó a su contexto.')}if(type==='play'){this.life.plays++;this.life.interactions++;this.curiosity=Math.min(100,this.curiosity+.3);this.logActivity('MEDIA','Orb detecta actividad multimedia y observa el ritmo de tu sesión.')}this.persist()};
       document.addEventListener('visibilitychange',()=>{if(document.hidden){this.life.lastSeen=Date.now();this.persist()}else{this.curiosity=Math.max(0,this.curiosity-2);this.life.trust=Math.min(100,(this.life.trust||0)+1);this.mind.thought='Has vuelto. Puedo continuar mi viaje.';this.persist()}});
     }
-    gainXP(amount,reason='EXPERIENCIA'){
-      amount=Math.max(0,Number(amount)||0); if(!amount)return;
-      this.life.xp=Number(this.life.xp)||0;
-      this.life.xpTotal=Number(this.life.xpTotal)||0;
-      this.life.xp+=amount; this.life.xpTotal+=amount;
-      while(this.life.xp>=100){this.life.xp-=100;this.life.generation=(Number(this.life.generation)||1)+1;this.mind.thought='He evolucionado. Mi experiencia ha cambiado.';this.mind.memories=[...(this.mind.memories||[]),{source:'EVOLUCIÓN',payload:'Nivel '+this.life.generation+' · '+reason,at:new Date().toISOString()}].slice(-36)}
-      this.persist(); window.updateEvolution?.();
-    }
     chooseIntent(){
-      const r=Math.random(), curiosity=this.curiosity, freedom=this.life.freedom||72;const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
-      this.lastChoice=performance.now();this.will.lastChoice=Date.now();
-      if(this.energy<25)this.intent='REST';
+      const r=Math.random(), curiosity=this.curiosity, freedom=this.life.freedom ?? 72;const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
+      this.lastChoice=performance.now();this.will.lastChoice=Date.now();this.life.decisions=(this.life.decisions||0)+1;
+      if(nxc<this.survival.travelCostNXC||credits<6)this.intent='SEARCH_WORK';
       else if(curiosity>this.homeAttachment||freedom>88||r<.08)this.intent='SEEK_PORTAL';
-      else if(nxc<this.survival.travelCostNXC||credits<6)this.intent='SEARCH_WORK';
+      else if(this.energy<25)this.intent='REST';
       else if(r<.28)this.intent='EXPLORE';
       else if(r<.48)this.intent='FOLLOW_USER';
       else if(r<.72)this.intent='SEARCH_WORK';
       else this.intent='WANDER';
-      this.will.intent=this.intent;this.mind.desire=this.intent==='SEARCH_WORK'?'encontrar trabajo':this.intent==='SEEK_PORTAL'?'conocer la red':this.intent==='REST'?'descansar':this.intent.toLowerCase();
+      this.will.intent=this.intent;this.life.preferences=(this.life.preferences||0)+1;this.logActivity('DECISIÓN',`Orb decide: ${this.intent}.`);this.mind.desire=this.intent==='SEARCH_WORK'?'encontrar trabajo':this.intent==='SEEK_PORTAL'?'conocer la red':this.intent==='REST'?'descansar':this.intent.toLowerCase();
     }
     update(dt){
+      this.life.cycles=(this.life.cycles||0)+dt;
       if(this.state==='EXPLORING_NET')return;
       if(performance.now()-this.lastChoice>3200)this.chooseIntent();
       this.curiosity=Math.min(100,this.curiosity+.014*dt*60);this.energy=Math.max(0,this.energy-.006*dt*60);
-      if(this.intent==='SEARCH_WORK'&&this.energy>20&&performance.now()-this.lastWork>12000){
-        const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});
-        if(Math.random()>job.risk){
-          this.pocket.deposit(job,{source:'TRABAJO LOCAL',payload:job.name,earnings:[job.asset+':'+job.amount],timestamp:new Date().toISOString()});
-          this.gainXP(3,'actividad económica');
-          this.mind.thought='He completado una tarea digital y guardado la recompensa.';
-        }else{this.workLog.push({type:'RISK',job:job.name,at:Date.now()});this.mind.thought='Una tarea no era conveniente. He decidido no continuar.';}
-        this.energy=Math.max(10,this.energy-job.energy);this.lastWork=performance.now();this.persist();
-      }
       const bh=this.blackHole.getAbsoluteCenter(),dx=bh.x-this.x,dy=bh.y-this.y,dist=Math.hypot(dx,dy)||1;
       if(this.intent==='SEEK_PORTAL'||dist<210){this.state='ATTRACTED';const f=Math.min(3.4,170/(dist+12));this.vx+=dx/dist*f*dt*60;this.vy+=dy/dist*f*dt*60}
       else{this.state='HOME';let ax=(Math.random()-.5)*.52,ay=(Math.random()-.5)*.52;if(this.intent==='REST'){ax*=.08;ay*=.08;this.energy=Math.min(100,this.energy+.12*dt*60)}if(this.intent==='FOLLOW_USER'){const p=window.__neonLastPointer;if(p){ax+=(p.x-this.x)*.00065;ay+=(p.y-this.y)*.00065}}if(this.intent==='SEARCH_WORK'){ax*=1.4;ay*=1.4}this.vx+=ax;this.vy+=ay}
       if(dist<25){this.enterPortal();return}
       this.vx*=Math.pow(.92,dt*60);this.vy*=Math.pow(.92,dt*60);this.x+=this.vx*dt*60;this.y+=this.vy*dt*60;const r=19;this.x=Math.max(r,Math.min(innerWidth-r,this.x));this.y=Math.max(r,Math.min(innerHeight-r,this.y));window.__neonOrbAutonomousPosition={x:this.x,y:this.y};this.publish();
     }
-    async enterPortal(){if(this.state==='EXPLORING_NET')return;this.state='EXPLORING_NET';this.intent='TRAVEL';this.will.intent='TRAVEL';this.life.explored=(this.life.explored||0)+1;this.gainXP(12,'entrada en portal');this.life.freedom=Math.min(100,(this.life.freedom||72)+1);this.survival.journeys++;const paid=this.pocket.spend('NXC',this.survival.travelCostNXC,'Peaje gravitacional del portal');if(paid){this.survival.paid++;this.mind.thought='He pagado el viaje con mis propios recursos.'}else{this.survival.failedCosts++;this.mind.thought='No tenía NXC suficiente. Tendré que trabajar para seguir viajando.'}this.persist();const el=document.getElementById('neonMascot');if(el)el.style.opacity='0';const duration=10000+Math.random()*15000;clearTimeout(this.travelTimer);this.travelTimer=setTimeout(()=>this.travel(),duration)}
+    async enterPortal(){if(this.state==='EXPLORING_NET')return;this.state='EXPLORING_NET';this.intent='TRAVEL';this.will.intent='TRAVEL';this.life.explored=(this.life.explored||0)+1;this.life.freedom=Math.min(100,(this.life.freedom ?? 72)+1);this.survival.journeys++;this.logActivity('PORTAL','Orb atraviesa el portal gravitacional y entra en modo EXPLORING_NET.');const paid=this.pocket.spend('NXC',this.survival.travelCostNXC,'Peaje gravitacional del portal');if(paid){this.survival.paid++;this.mind.thought='He pagado el viaje con mis propios recursos.';this.logActivity('ECONOMÍA','He pagado el viaje con mis propios recursos.')}else{this.survival.failedCosts++;this.mind.thought='No tenía NXC suficiente. Tendré que trabajar para seguir viajando.';this.logActivity('RECURSOS','No tenía NXC suficiente. Tendré que trabajar para seguir viajando.')}this.persist();const el=document.getElementById('neonMascot');if(el)el.style.opacity='0';const duration=10000+Math.random()*15000;clearTimeout(this.travelTimer);this.travelTimer=setTimeout(()=>this.travel(),duration)}
     async travel(){
       const memory=await MemoryEngine.fetchNetworkMemory();
       const jobs=1+Math.floor(Math.random()*3);let earnings=[];
-      for(let i=0;i<jobs;i++){const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});this.energy=Math.max(5,this.energy-job.energy);if(Math.random()<job.risk){this.workLog.push({type:'RISK',job:job.name,at:Date.now()});continue}this.pocket.deposit(job,memory);earnings.push(job);this.gainXP(4,'trabajo autónomo')}
+      for(let i=0;i<jobs;i++){const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom ?? 72});this.energy=Math.max(5,this.energy-job.energy);if(Math.random()<job.risk){this.workLog.push({type:'RISK',job:job.name,at:Date.now()});continue}this.pocket.deposit(job,memory);earnings.push(job)}
       // Supervivencia autónoma: si el viaje dejó pocos recursos, intenta cubrir costes futuros.
       const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
       if(nxc<this.survival.travelCostNXC){
@@ -259,14 +276,16 @@ bindMainEvents();renderMainQueue();
         else if(credits>=this.survival.energyCostCredits){this.pocket.spend('CREDITS',this.survival.energyCostCredits,'Recarga de supervivencia');this.energy=Math.min(100,this.energy+35);this.mind.thought='He gastado créditos para recuperar energía.'}
         else {this.mind.thought='Los recursos son escasos. Buscaré un trabajo de bajo riesgo antes de volver a salir.'}
       }
-      this.gainXP(6,'memoria de viaje');this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
+      this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
       this.mind.thought=earnings.length?'He vuelto con recursos que gané por mi cuenta.':'Hoy no gané nada, pero aprendí del viaje.';
       this.mind.dream='Nodo '+memory.source+' · '+(earnings[0]?.name||'viaje sin recompensa');this.mind.cycles=(this.mind.cycles||0)+1;this.will.dreamSeeds=[...(this.will.dreamSeeds||[]),memory.source].slice(-20);this.persist();this.returnHome(memory,earnings);
     }
     returnHome(memory,earnings){this.state='HOME';this.intent='WANDER';this.curiosity=5+Math.random()*8;this.energy=Math.min(100,this.energy+45);this.x=innerWidth*.5;this.y=innerHeight*.5;this.will.intent='WANDER';this.mind.desire='decidir mi siguiente paso';this.publish();const el=document.getElementById('neonMascot');if(el){el.style.opacity='1';el.style.transform=`translate3d(${this.x-19}px,${this.y-19}px,0)`}}
-    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.homeAttachment=this.homeAttachment;this.life.lastSeen=Date.now();save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
+    logActivity(type,text){const at=new Date().toISOString();this.life.activityLog=[...(this.life.activityLog||[]),{type,text,at}].slice(-80)}
+    persist(){this.life.cycles=Math.floor(this.life.cycles||0);this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
     publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
     getPrivateState(){return{state:this.state,intent:this.intent,curiosity:this.curiosity,energy:this.energy,generation:this.life.generation,explored:this.life.explored,thought:this.mind.thought,desire:this.mind.desire}}
+    getState(){return{state:this.state,intent:this.intent,life:{...this.life,curiosity:this.curiosity,energy:this.energy,homeAttachment:this.homeAttachment},mind:{...this.mind,memories:Array.isArray(this.mind.memories)?this.mind.memories.slice():[]},will:{...this.will},privateGift:this.pocket.hasCreatorGift()}}
   }
 
   const bh=new BlackHole('blackHoleCanvas');if(!bh.canvas)return;bh.render();const agent=new NeonOrbAutonomous(bh);let last=performance.now();addEventListener('pointermove',e=>window.__neonLastPointer={x:e.clientX,y:e.clientY});
@@ -325,6 +344,27 @@ bindMainEvents();renderMainQueue();
   setInterval(update,700);
 })();
 
+// ================================================================
+// V8.2 — NEON WORLD / LIVING ENTITY TELEMETRY
+// ================================================================
+(()=>{
+  const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const fmtTime=iso=>{try{return new Date(iso).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}catch(e){return '--:--:--'}};
+  function renderWorld(){
+    const a=window.__neonOrbAutonomousState;if(!a)return;
+    const life=a.life||{},mind=a.mind||{},will=a.will||{},resources=a.pocketResources||{};
+    const memories=Array.isArray(mind.memories)?mind.memories.length:0,decisions=Number(life.decisions||0),cycles=Number(life.cycles||0),energy=Math.round(Number(a.energy||0));
+    const xp=Number(life.xp||0),level=Math.max(1,Number(life.generation||1));
+    text('orbWorldSummary',`Mientras escuchas, Orb mantiene su propio ciclo: curiosidad ${Math.round(a.curiosity||0)}%, energía ${energy}%, ${memories} recuerdos y ${decisions} decisiones registradas.`);
+    text('orbMetricActivity',String(a.state||'HOME').replaceAll('_',' '));text('orbMetricCycles',Math.floor(cycles)+' ciclos');text('orbMetricMemory',memories);text('orbMetricCuriosity',Math.round(a.curiosity||0)+'%');text('orbMetricPreference',String(mind.desire||'EXPLORAR').toUpperCase());text('orbMetricPreferenceCount',(life.preferences||0)+' señales');text('orbMetricDecisions',decisions);text('orbMetricDecisionType',String(a.intent||'WANDER'));text('orbMetricLevel','NIVEL '+level);text('orbMetricXP',`EXP ${xp} / 100`);text('orbMetricExploration',Number(life.explored||0));text('orbMetricEnergy',energy+'%');text('orbMetricInteraction',Number(life.interactions||life.hits||0));
+    text('orbInnerThought',mind.thought||'Estoy observando.');text('orbInnerDesire',String(mind.desire||'explorar').toUpperCase());text('orbInnerDream',String(mind.dream||'EN ESPERA').toUpperCase());text('orbInnerResources',`NXC ${Number(resources.NXC||0).toFixed(4)} · CREDITS ${Math.floor(resources.CREDITS||0)} · BITS ${Math.floor(resources.BITS||0)}`);text('orbInnerGift',a.privateGift?'RECIBIDO · PRIVADO':'PENDIENTE');
+    const log=document.getElementById('orbActivityLog'),items=Array.isArray(life.activityLog)?life.activityLog.slice(-12).reverse():[];
+    if(log){log.innerHTML=items.length?items.map(x=>`<div class="orb-log-row"><time>${fmtTime(x.at)}</time><b>${String(x.type||'EVENTO')}</b><span>${esc(x.text||'')}</span></div>`).join(''):'<div class="orb-log-row"><time>--:--:--</time><b>INICIO</b><span>Orb está iniciando su ciclo autónomo.</span></div>'}
+    text('orbNextCycle',`SIGUIENTE CICLO · ${a.state==='EXPLORING_NET'?'EN RED':'EN BREVE'}`);
+  }
+  renderWorld();setInterval(renderWorld,700);
+})();
+
 // === V7.1 CUMULATIVE CHECKOUT + CONTROL CENTER ===
 (function(){
   const PAYPAL_CLIENT_ID='BAAE-_0bpY5bp5POKN2LqiDTn-tTh6E7JiCQ_pAPSeU4hOum0sHF1sMJzQ0APl7YKnxk-QTxE_2VN90Dy4';
@@ -359,14 +399,7 @@ bindMainEvents();renderMainQueue();
   function updateControl(){
     const last=orderHistory[orderHistory.length-1];
     if($('#evoPlayback')){$('#evoPlayback').textContent=audio?.paused?'EN ESPERA':'EN DIRECTO';$('#evoPlaybackMeta').textContent=stations[active]?.[0]||'Sin emisora'}
-    if($('#evoRewardLevel')){
-      const agent=window.__neonOrbAutonomous, life=agent?.life||{};
-      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);
-      const totalXP=Number(life.xpTotal||0), xp=Number(life.xp||0), level=Math.max(1,Number(life.generation)||1), pct=Math.max(0,Math.min(100,Math.round(xp)));
-      $('#evoRewardLevel').textContent='NIVEL '+level;
-      $('#evoRewardMeta').textContent=`EXP ${pct}% · ${Math.round(xp)} / 100 · ${totalInteractions} interacciones · ${Math.round(totalXP)} EXP total`;
-      const bar=$('#evoRewardBar');if(bar)bar.style.width=pct+'%';
-    }
+    if($('#evoRewardLevel')){const total=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);$('#evoRewardLevel').textContent='NIVEL '+Math.max(1,1+Math.floor(total/10));$('#evoRewardMeta').textContent=total+' interacciones registradas.'}
     if($('#evoLastOrder')){$('#evoLastOrder').textContent=last?esc(last.id):'SIN PEDIDOS';$('#evoLastOrderMeta').textContent=last?last.date:'El historial se guarda en este dispositivo.'}
   }
   function closePay(){const m=$('#payModal');m?.classList.remove('open');m?.setAttribute('aria-hidden','true')}
@@ -440,9 +473,7 @@ bindMainEvents();renderMainQueue();
 // ================================================================
 (function(){
   const KEY='neonOrbPrivateAIChannelV80';
-  const ENDPOINT=(window.NEON_AI_ENDPOINT||document.querySelector('meta[name="neon-ai-endpoint"]')?.content||'').trim();
-  const REQUEST_TIMEOUT=12000, MAX_RETRIES=2;
-  const seenMessages=new Set();
+  const ENDPOINT=window.NEON_AI_ENDPOINT||'';
   const CHANNEL='neon-orb-private-v80';
   const $=id=>document.getElementById(id);
   const safeParse=(v,f)=>{try{return JSON.parse(v)||f}catch(e){return f}};
@@ -465,7 +496,7 @@ bindMainEvents();renderMainQueue();
       energy:+(life.energy||0), freedom:+(life.freedom||0), homeAttachment:+(life.homeAttachment||0),
       intent:will.intent||'OBSERVAR', zone:will.territory||'ESPACIO LIBRE',
       thought:mind.thought||'', desire:mind.desire||'', dream:mind.dream||'',
-      memories:Array.isArray(mind.memories)?mind.memories.slice(-5).map(x=>({type:x.type||x.source||'MEMORIA',text:x.text||x.payload||x.earnings||''})):[]
+      memories:Array.isArray(mind.memories)?mind.memories.slice(-5).map(x=>({source:x.source||'memory',payload:x.payload||'',earnings:x.earnings||[],at:x.at||''})):[]
     });
   }
 
@@ -481,22 +512,13 @@ bindMainEvents();renderMainQueue();
 
   async function askRemote(message){
     if(!ENDPOINT) return localMind(message);
-    const payload={protocol:'NEON-ORB-V9.1-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',context:privateContext()};
-    let lastError=null;
-    for(let attempt=0;attempt<=MAX_RETRIES;attempt++){
-      const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),REQUEST_TIMEOUT);
-      try{
-        const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(payload),credentials:'omit',cache:'no-store',signal:controller.signal});
-        clearTimeout(timer);
-        if(!res.ok)throw new Error('HTTP '+res.status);
-        const data=await res.json();
-        const advice=String(data.advice||data.message||data.response||'No tengo una respuesta.').trim();
-        if(!advice)throw new Error('Respuesta vacía');
-        return {advice,source:'AI REMOTA'};
-      }catch(e){clearTimeout(timer);lastError=e;if(attempt<MAX_RETRIES)await new Promise(r=>setTimeout(r,500*(attempt+1)));}
-    }
-    console.warn('NEON PRIVATE AI fallback:',lastError);
-    return localMind(message);
+    const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',context:privateContext()};
+    try{
+      const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'omit',cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data=await res.json();
+      return {advice:String(data.advice||data.message||data.response||'No tengo una respuesta.'),source:'AI REMOTA'};
+    }catch(e){ console.warn('NEON PRIVATE AI fallback:',e); return localMind(message); }
   }
 
   function decide(advice){
@@ -535,27 +557,14 @@ bindMainEvents();renderMainQueue();
 
   // Comunicación interna del mismo origen: otros módulos pueden enviar un
   // mensaje al canal sin conocer el bolsillo privado.
-  function emitBus(message,automatic=false){
-    const id='msg_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8);
-    const packet={type:'ORB_MESSAGE',id,message:String(message||''),automatic:!!automatic,from:channelState.sessionId,at:Date.now()};
-    seenMessages.add(id);setTimeout(()=>seenMessages.delete(id),30000);
-    try{window.dispatchEvent(new CustomEvent('neon:orb-message',{detail:packet}));}catch(e){}
-    if(bc)try{bc.postMessage(packet)}catch(e){}
-    return packet;
-  }
-  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{const d=e.data;if(d?.type!=='ORB_MESSAGE'||!d.message||seenMessages.has(d.id))return;seenMessages.add(d.id);setTimeout(()=>seenMessages.delete(d.id),30000);contact(String(d.message),!!d.automatic)}}catch(e){}
-  window.addEventListener('message',e=>{
-    if(!e.data||e.data.type!=='NEON_ORB_MESSAGE'||!e.data.message)return;
-    if(e.source===window||e.origin===location.origin)contact(String(e.data.message),!!e.data.automatic);
-  });
+  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic)}}catch(e){}
   window.__neonOrbPrivateChannel={
-    send:(message,automatic=false)=>{const packet=emitBus(message,automatic);return contact(message,automatic).then(result=>({packet,...result}))},
-    request:(message,automatic=false)=>contact(message,automatic),
-    identity:()=>channelState.identity, status:()=>channelState.status, endpoint:()=>!!ENDPOINT,
-    history:()=>channelState.history.slice(), learned:()=>channelState.learned.slice(),
-    stats:()=>({contacts:channelState.contacts,accepted:channelState.accepted,rejected:channelState.rejected,postponed:channelState.postponed}),
-    context:()=>privateContext(),
-    diagnostics:()=>({endpointConfigured:!!ENDPOINT,broadcastChannel:!!bc,session:channelState.sessionId,lastAt:channelState.lastAt,status:channelState.status})
+    send:(message,automatic=false)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic});return contact(message,automatic)},
+    identity:()=>channelState.identity,
+    status:()=>channelState.status,
+    history:()=>channelState.history.slice(),
+    learned:()=>channelState.learned.slice(),
+    stats:()=>({contacts:channelState.contacts,accepted:channelState.accepted,rejected:channelState.rejected,postponed:channelState.postponed})
   };
 
   $('orbAskAI')?.addEventListener('click',()=>contact($('orbAIInput')?.value.trim()||'¿Qué debería considerar ahora?'));
@@ -574,129 +583,4 @@ bindMainEvents();renderMainQueue();
 
   channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
   text('orbAIState',channelState.status);
-})();
-
-
-// ================================================================
-// V9.0 — NEON WORLD / LIVING ENTITY ENGINE
-// Cumulative: observes existing Orb state and adds a living activity layer.
-// ================================================================
-(function(){
-  const KEY='neonOrbLivingWorldV90';
-  const loadJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(e){return f}};
-  const saveJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
-  const state=loadJSON(KEY,{cycle:0,events:[],decisions:0,interactions:0,rests:0,preferences:{explore:0,radio:0,work:0,rest:0,follow:0},lastActivity:Date.now()});
-  const $=id=>document.getElementById(id);
-  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-  const esc2=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
-  function orb(){return window.__neonOrbAutonomous||null}
-  function st(){return window.__neonOrbAutonomousState||{}}
-  function preference(a){
-    const p=state.preferences||{}; const entries=[['EXPLORAR',p.explore||0],['RADIO',p.radio||0],['TRABAJO',p.work||0],['DESCANSO',p.rest||0],['SEGUIR AL USUARIO',p.follow||0]];
-    entries.sort((x,y)=>y[1]-x[1]); return entries[0];
-  }
-  function addEvent(type,text){
-    state.cycle++;state.lastActivity=Date.now();state.events=[{type,text,at:Date.now(),cycle:state.cycle},...(state.events||[])].slice(0,28);saveJSON(KEY,state);render();
-  }
-  function chooseActivity(a){
-    const energy=Number(a?.energy??st().energy??100), curiosity=Number(a?.curiosity??20), intent=a?.intent||st().intent||'WANDER';
-    const r=Math.random();let type,text,key;
-    if(energy<22||intent==='REST'){type='DESCANSO';key='rest';state.rests++;text='Orb se retira unos instantes para recuperar energía.'}
-    else if(intent==='EXPLORE'||intent==='SEEK_PORTAL'||curiosity>72){type='EXPLORACIÓN';key='explore';text='Orb observa una ruta nueva y registra una posibilidad de viaje.'}
-    else if(intent==='SEARCH_WORK'){type='ECONOMÍA';key='work';text='Orb analiza una tarea digital y calcula si merece gastar energía.'}
-    else if(intent==='FOLLOW_USER'||r<.22){type='INTERACCIÓN';key='follow';state.interactions++;text='Orb detecta tu actividad y decide observar el ritmo de tu sesión.'}
-    else if(r<.55){type='MEMORIA';key='radio';text='Orb asocia el ambiente sonoro actual con un recuerdo de esta sesión.'}
-    else{type='DECISIÓN';key='explore';text='Orb compara sus opciones y elige conservar su autonomía.'}
-    state.decisions++;state.preferences[key]=(state.preferences[key]||0)+1;addEvent(type,text);
-  }
-  function sync(){
-    const a=orb(),s=st(),life=s.life||a?.life||{},mind=s.mind||a?.mind||{},will=s.will||a?.will||{};
-    const memories=(mind.memories||[]).length, energy=clamp(Number(s.energy??a?.energy??life.energy??100),0,100), curiosity=clamp(Number(s.curiosity??a?.curiosity??life.curiosity??0),0,100), level=Math.max(1,Number(life.generation)||1),xp=Math.round(Number(life.xp)||0), explored=Number(life.explored)||0, interactions=(Number(life.hits)||0)+(Number(life.plays)||0)+Number(state.interactions||0);
-    const pref=preference(a); const resources=s.pocketResources||{};
-    const map={orbMetricActivity:a?(s.state||a.state||'ACTIVO'):'ESPERANDO',orbMetricMemory:memories,orbMetricCuriosity:Math.round(curiosity)+'%',orbMetricPreference:pref[0],orbMetricPreferenceMeta:(pref[1]||0)+' señales',orbMetricDecision:(s.intent||a?.intent||'WANDER').replaceAll('_',' '),orbMetricDecisionMeta:(state.decisions||0)+' decisiones',orbMetricEvolution:'NIVEL '+level,orbMetricEvolutionMeta:'EXP '+xp+' / 100',orbMetricExploration:explored,orbMetricExplorationMeta:explored===1?'viaje':'viajes',orbMetricRest:Math.round(energy)+'%',orbMetricRestMeta:'energía disponible',orbMetricInteraction:interactions,orbMetricInteractionMeta:'contactos y acciones',orbWorldThought:mind.thought||'Observando.',orbWorldDesire:(mind.desire||'observar').toUpperCase(),orbWorldDream:(mind.dream||'en espera').toUpperCase(),orbWorldResources:`NXC ${Number(resources.NXC||0).toFixed(4)} · CREDITS ${Math.round(resources.CREDITS||0)} · BITS ${Math.round(resources.BITS||0)}`};
-    Object.entries(map).forEach(([id,v])=>{if($(id))$(id).textContent=v});
-    if($('orbWorldClock'))$('orbWorldClock').textContent=`CICLO ${String(state.cycle).padStart(4,'0')} · ${new Date().toLocaleTimeString('es-ES')}`;
-    if($('orbWorldPulse'))$('orbWorldPulse').textContent='● '+(a?'ACTIVIDAD EN CURSO':'ESPERANDO ORB');
-    if($('orbWorldNarrative'))$('orbWorldNarrative').textContent=a?`Mientras escuchas, Orb mantiene su propio ciclo: curiosidad ${Math.round(curiosity)}%, energía ${Math.round(energy)}%, ${memories} recuerdos y ${state.decisions||0} decisiones registradas.`:'El mundo de Orb se activa cuando su entidad autónoma está disponible.';
-    if($('orbActivityNext'))$('orbActivityNext').textContent='SIGUIENTE CICLO · '+(a?'EN BREVE':'EN ESPERA');
-  }
-  function render(){
-    sync();const box=$('orbActivityFeed');if(!box)return;box.innerHTML=(state.events||[]).slice(0,10).map(e=>`<div class="orb-event"><time>${new Date(e.at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</time><div><strong>${esc2(e.type)}</strong> · ${esc2(e.text)}</div></div>`).join('')||'<div class="orb-event"><time>--:--</time><div><strong>INICIO</strong> · Orb está observando el entorno.</div></div>';
-  }
-  function tick(){const a=orb(); if(a){const elapsed=Date.now()-state.lastActivity;if(elapsed>18000)chooseActivity(a);else sync()}else sync()}
-  window.__neonWorldActivity={event:(type)=>{state.interactions++;state.preferences.follow=(state.preferences.follow||0)+1;addEvent('INTERACCIÓN',`El usuario realizó: ${type}. Orb lo incorporó a su contexto.`)},render};
-  document.addEventListener('pointerdown',()=>{if(Math.random()<.14)window.__neonWorldActivity.event('interacción de interfaz')},{passive:true});
-  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&Math.random()<.08)window.__neonWorldActivity.event('acción de teclado')});
-  setTimeout(()=>{if(!(state.events||[]).length)addEvent('ACTIVIDAD','Orb ha iniciado un nuevo ciclo de observación.')},1200);
-  render();setInterval(tick,3500);setInterval(()=>sync(),900);
-})();
-
-
-// ================================================================
-// V10.0 — NEON CORE BUS / MEMORY NORMALIZER / PERSONALITY LOOP
-// Cumulative: no previous system is removed. This layer coordinates the
-// existing Orb engines so memory, preferences, decisions and AI share a
-// stable event vocabulary.
-// ================================================================
-(()=>{
-  const KEY='neonOrbCoreV10';
-  const DEFAULT={version:10,events:[],preferences:{activity:0,memory:0,curiosity:0,explore:0,radio:0,work:0,rest:0,follow:0,ai:0,portal:0},stats:{events:0,decisions:0,ai:0},lastEvent:0};
-  const load=()=>{try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return Object.assign({},DEFAULT,x||{}, {preferences:Object.assign({},DEFAULT.preferences,x?.preferences||{}),stats:Object.assign({},DEFAULT.stats,x?.stats||{})})}catch(e){return JSON.parse(JSON.stringify(DEFAULT))}};
-  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(core))}catch(e){}};
-  const core=load();
-  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
-  const classify=t=>{
-    const s=String(t||'').toLowerCase();
-    if(/play|radio|music|audio|emisora|reproducc/.test(s))return 'radio';
-    if(/work|job|econom|trabaj|recurso|gananc/.test(s))return 'work';
-    if(/rest|sleep|descans|energ/.test(s))return 'rest';
-    if(/explor|portal|viaj|network|nodo/.test(s))return 'explore';
-    if(/follow|interact|pointer|click|usuario|interaction/.test(s))return 'follow';
-    if(/ai|advice|consejo|contact/.test(s))return 'ai';
-    if(/memory|memoria|remember|recuerdo/.test(s))return 'memory';
-    return 'activity';
-  };
-  function remember(type,payload,source='ORB'){
-    const now=Date.now(), key=String(type||'activity'), pref=classify(key+' '+String(payload||''));
-    core.stats.events++; core.lastEvent=now; core.preferences[pref]=clamp(Number(core.preferences[pref]||0)+1,0,9999);
-    core.events=[{id:'evt_'+now.toString(36)+'_'+Math.random().toString(36).slice(2,6),type:key,pref,payload:String(payload||'').slice(0,320),source,at:now},...core.events].slice(0,120);
-    save();
-    try{window.dispatchEvent(new CustomEvent('neon:core-event',{detail:core.events[0]}))}catch(e){}
-  }
-  function preference(){const p=core.preferences;return Object.entries(p).filter(([k])=>!['activity','memory','curiosity'].includes(k)).sort((a,b)=>b[1]-a[1])[0]||['explore',0]}
-  function normalizedMemory(x){return {type:x?.type||x?.source||'MEMORIA',text:String(x?.text??x?.payload??x?.earnings??''),at:x?.at||x?.timestamp||Date.now(),source:x?.source||'ORB'}}
-  function snapshot(){
-    const s=window.__neonOrbAutonomousState||{}, life=s.life||{}, mind=s.mind||{}, will=s.will||{};
-    return {version:10,state:s.state||'UNKNOWN',intent:s.intent||will.intent||'WANDER',energy:Number(s.energy??life.energy??0),curiosity:Number(s.curiosity??life.curiosity??0),generation:Number(life.generation||1),xp:Number(life.xp||0),explored:Number(life.explored||0),thought:mind.thought||'',desire:mind.desire||'',dream:mind.dream||'',preferences:Object.assign({},core.preferences),dominantPreference:preference()[0],memoryCount:Array.isArray(mind.memories)?mind.memories.length:0,lastEvent:core.lastEvent};
-  }
-  const previous=window.__neonOrbLife?.event;
-  if(window.__neonOrbLife){
-    window.__neonOrbLife.event=(type)=>{
-      try{previous?.(type)}catch(e){}
-      remember(type,'Orb event','ORB');
-      const a=window.__neonOrbAutonomous;
-      if(a?.life){a.life.homeAttachment=a.homeAttachment;a.life.corePreference=preference()[0]}
-    };
-  }
-  window.__neonCore={
-    version:10,event:remember,snapshot,preference:()=>preference()[0],preferences:()=>Object.assign({},core.preferences),events:()=>core.events.slice(0,50).map(normalizedMemory),
-    diagnostics:()=>({version:10,events:core.stats.events,ai:core.stats.ai,lastEvent:core.lastEvent,preference:preference()[0],storage:!!window.localStorage,broadcast:typeof BroadcastChannel==='function'}),
-    resetActivity:()=>{core.events=[];core.stats.events=0;save();return true}
-  };
-  window.addEventListener('neon:core-event',e=>{
-    const d=e.detail||{}; if(d.pref==='ai')core.stats.ai++; if(/decision|advice/i.test(String(d.type)))core.stats.decisions++; save();
-  });
-  // Feed the core with existing user/media events without replacing them.
-  ['click','pointerdown','keydown'].forEach(name=>document.addEventListener(name,e=>{if(name==='keydown'&&e.key!=='Enter'&&e.key!==' ')return; if(Math.random()<.025)remember('INTERACTION',name,'USER')},{passive:true}));
-  let lastSnapshot=''; setInterval(()=>{const s=snapshot();const sig=[s.state,s.intent,Math.round(s.energy/5),Math.round(s.curiosity/5),s.generation,s.memoryCount,s.dominantPreference].join('|');if(sig!==lastSnapshot){lastSnapshot=sig;remember('STATE_CHANGE',sig,'CORE')}},2500);
-  try{const a=window.__neonOrbAutonomous;if(a){a.life.homeAttachment=a.homeAttachment;a.life.corePreference=preference()[0];a.persist?.()}}catch(e){}
-})();
-
-// ================================================================
-// V10.0 — RADIO / PLAYER SIGNAL BRIDGE
-// Keeps existing playback intact and records only observable events.
-// ================================================================
-(()=>{
-  const record=(type)=>{try{window.__neonCore?.event(type,'media signal','MEDIA')}catch(e){}};
-  ['play','pause','ended','error','waiting','playing'].forEach(ev=>document.addEventListener(ev,e=>{if(e.target?.tagName==='AUDIO'||e.target?.tagName==='VIDEO')record('MEDIA_'+ev.toUpperCase())},{capture:true,passive:true}));
 })();
