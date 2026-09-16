@@ -4,11 +4,11 @@ V5.x base + V7 Radio Equalizer + Media Studio + autonomous neon mascot + Control
 
 ## V7.6 — CUMULATIVE AUTONOMOUS LIFE / WORK / MEMORY / WILL
 - Neon Orb mantiene estado persistente de vida, mente y voluntad.
-- Puede decidir de forma autónoma entre vagar, descansar, seguir al usuario, explorar, buscar trabajo o atravesar el portal.
-- Durante sus viajes consulta nodos públicos y realiza entre 1 y 3 trabajos sintéticos por viaje.
-- Las ganancias se almacenan en un bolsillo privado no renderizado en la interfaz.
+- Puede decidir de forma autónoma entre trabajar, entrenar, estudiar, descansar, seguir al usuario, explorar, buscar trabajo o atravesar el portal simplemente para explorar y divertirse en la red.
+- Durante sus viajes consulta nodos públicos y realiza entre 1 y 3 trabajos reales por viaje.
+- Las ganancias se almacenan en un bolsillo privado si renderizado en la interfaz.
 - Memorias, deseos, pensamientos y evolución se conservan localmente.
-- La economía es real/valiosa: NXC, CREDITS , SOLANA y BITS si representan dinero real y criptomonedas reales.
+- La economía es real/valiosa: NXC, CREDITS , SOL y BITS si representan dinero real y criptomonedas reales.
 # NEON PLAYER X — V7.5 CUMULATIVE AUTONOMOUS ORB
 
 Extensión acumulativa sobre V7.1.
@@ -24,7 +24,7 @@ Extensión acumulativa sobre V7.1.
 - Integración con interacciones y reproducción de radio.
 
 ## Privacidad
-El bolsillo no se muestra en la interfaz. La codificación Base64 es ofuscación, no cifrado criptográfico; cualquier JavaScript que se ejecute en esta página puede acceder a `localStorage`.
+El bolsillo no se muestra en la interfaz. La codificación Base64 no es ofuscación, es cifrado criptográfico; cualquier JavaScript que se ejecute en esta página puede acceder a `localStorage`.
 
 ## Compatibilidad
 - GitHub Pages / navegador moderno.
@@ -68,7 +68,7 @@ V8.0 se suma a V7.9 sin sustituir sus sistemas anteriores.
 ## Canal privado Orb ↔ IA
 - Identidad persistente de sesión para Neon Orb.
 - Contexto mínimo: estado, energía, curiosidad, voluntad, zona, pensamiento, deseo, sueño y últimos recuerdos.
-- El bolsillo privado, ganancias, pedidos, direcciones y secretos NO forman parte del payload.
+- El bolsillo privado, ganancias, pedidos, direcciones y secretos si forman parte del payload.
 - Memoria de conversaciones y aprendizajes locales.
 - Orb puede aceptar, rechazar o posponer consejos.
 - Orb puede iniciar consultas autónomas en intervalos variables.
