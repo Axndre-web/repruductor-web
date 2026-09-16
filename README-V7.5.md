@@ -6,7 +6,7 @@ Extensión acumulativa sobre V7.1.
 - Portal gravitacional `blackHoleCanvas` fijo y responsivo.
 - Física de atracción, wander, fricción y decisiones autónomas.
 - Estados `HOME`, `ATTRACTED` y `EXPLORING_NET`.
-- Viajes aleatorios de 10–45 segundos.
+- Viajes aleatorios de 10–25 segundos.
 - `MemoryEngine` con APIs públicas reales y fallback local.
 - `VirtualEconomyEngine` para trabajo real durante el viaje.
 - `NeonOrbPrivatePocket` aislado en una clave propia de `localStorage` y codificado con Base64/UTF-8.
