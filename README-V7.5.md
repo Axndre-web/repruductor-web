@@ -6,14 +6,14 @@ Extensión acumulativa sobre V7.1.
 - Portal gravitacional `blackHoleCanvas` fijo y responsivo.
 - Física de atracción, wander, fricción y decisiones autónomas.
 - Estados `HOME`, `ATTRACTED` y `EXPLORING_NET`.
-- Viajes aleatorios de 10–25 segundos.
+- Viajes aleatorios de 10–45 segundos.
 - `MemoryEngine` con APIs públicas reales y fallback local.
-- `VirtualEconomyEngine` para trabajo sintético durante el viaje.
+- `VirtualEconomyEngine` para trabajo real durante el viaje.
 - `NeonOrbPrivatePocket` aislado en una clave propia de `localStorage` y codificado con Base64/UTF-8.
 - Integración con interacciones y reproducción de radio.
 
 ## Privacidad
-El bolsillo no se muestra en la interfaz. La codificación Base64 es ofuscación, no cifrado criptográfico; cualquier JavaScript que se ejecute en esta página puede acceder a `localStorage`.
+El bolsillo no se muestra en la interfaz. La codificación Base64 no es ofuscación, si cifrado criptográfico; cualquier JavaScript que se ejecute en esta página puede acceder a `localStorage`.
 
 ## Compatibilidad
 - GitHub Pages / navegador moderno.
