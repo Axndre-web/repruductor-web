@@ -24,7 +24,12 @@ function renderThemes(){const g=$('#themeGrid');g.innerHTML=themes.map((t,i)=>`<
 function applyTheme(name){document.body.dataset.theme=name;localStorage.neonTheme=name;$$('.theme-card').forEach(x=>x.classList.toggle('selected',x.dataset.theme===name));updateThemeButton();toast('Tema '+(themes.find(t=>t[0]===name)?.[1]||name)+' activado')}
 function updateThemeButton(){const b=$('#themeCycle');if(!b)return;const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));b.dataset.themeIndex=i;b.querySelector('span').textContent=themes[i]?.[1]||'TEMA'}
 function cycleTheme(){const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));applyTheme(themes[(i+1)%themes.length][0])}
-function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small></div><span class="listen">▶</span></article>`).join('');$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
+let radioFilter='ALL',radioQuery='';
+function stationMatches(r){if(radioQuery&&!r[0].toLowerCase().includes(radioQuery.toLowerCase())&&!r[2].toLowerCase().includes(radioQuery.toLowerCase()))return false;if(radioFilter==='POP')return /pop|hits/i.test(r[2]);if(radioFilter==='ROCK')return /rock/i.test(r[2]);if(radioFilter==='SPORT')return /deporte/i.test(r[2]);if(radioFilter==='ES')return /española|actualidad/i.test(r[2]);return true}
+function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small><small class="radio-state">LISTA</small></div><span class="listen">▶</span></article>`).join('');applyRadioFilter();$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
+function applyRadioFilter(){const cards=$$('.radio-card');let visible=0;cards.forEach(c=>{const r=stations[+c.dataset.i];const ok=stationMatches(r);c.hidden=!ok;if(ok)visible++});const hint=document.querySelector('.radio-scroll-hint');if(hint)hint.style.display=visible>2?'flex':'none'}
+$('#radioSearch')?.addEventListener('input',e=>{radioQuery=e.target.value.trim();applyRadioFilter()});
+$$('.radio-filter').forEach(b=>b.addEventListener('click',()=>{radioFilter=b.dataset.filter;$$('.radio-filter').forEach(x=>x.classList.toggle('active',x===b));applyRadioFilter()}));
 function makeWave(){const w=$('#wave');w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
 function playStation(i){
   active=i;
@@ -340,7 +345,7 @@ bindMainEvents();renderMainQueue();
     if($('#evoPlayback')){$('#evoPlayback').textContent=audio?.paused?'EN ESPERA':'EN DIRECTO';$('#evoPlaybackMeta').textContent=stations[active]?.[0]||'Sin emisora'}
     if($('#evoRewardLevel')){
       const agent=window.__neonOrbAutonomous, life=agent?.life||{};
-      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0)+(Number(window.__neonOrbAutonomousState?.life?.explored||0));
+      const totalInteractions=Number(localStorage.neonOrbHits||0)+Number(localStorage.neonLocalPlays||0);
       const totalXP=Number(life.xpTotal||0), xp=Number(life.xp||0), level=Math.max(1,Number(life.generation)||1), pct=Math.max(0,Math.min(100,Math.round(xp)));
       $('#evoRewardLevel').textContent='NIVEL '+level;
       $('#evoRewardMeta').textContent=`EXP ${pct}% · ${Math.round(xp)} / 100 · ${totalInteractions} interacciones · ${Math.round(totalXP)} EXP total`;
@@ -413,45 +418,6 @@ bindMainEvents();renderMainQueue();
 
 // ================================================================
 // V8.0 — NEON ORB / PRIVATE AI CHANNEL
-// ================================================================
-// V8.7 — NEON WORLD / ACTIVIDAD VIVA
-// Capa acumulativa: observa eventos reales de la app y genera ciclos
-// locales de actividad. No inventa acceso a servicios externos ni
-// modifica el bolsillo privado del Orb.
-// ================================================================
-(function(){
-  const KEY='neonOrbWorldV87';
-  const load=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return {}}};
-  const data=Object.assign({events:[],cycles:0,lastCycle:0,preferences:{quiet:false}},load());
-  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
-  const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  const feed=document.getElementById('orbActivityFeed');
-  function add(type,message){data.events=[...(data.events||[]),{type,message,at:Date.now()}].slice(-18);save();render();}
-  function render(){
-    if(!feed)return;
-    feed.innerHTML=(data.events||[]).slice(-4).reverse().map(x=>`<div class="orb-activity-item"><i></i><div><b>${esc(x.type)}</b>${esc(x.message)}</div></div>`).join('');
-    text('orbWorldActivity',data.cycles?'ACTIVA · CICLO '+data.cycles:'DESPIERTA');
-    const next=Math.max(0,Math.round(((data.lastCycle+26000)-Date.now())/1000));
-    text('orbWorldNext',next?'PRÓXIMO CICLO · '+next+'s':'PRÓXIMO CICLO · AHORA');
-  }
-  function state(){return window.__neonOrbAutonomousState||{};}
-  function cycle(reason){
-    const s=state(), intent=s.intent||'WANDER', energy=Math.round(s.energy??0), curiosity=Math.round(s.curiosity??0);
-    data.cycles=(data.cycles||0)+1;data.lastCycle=Date.now();
-    const messages={WANDER:'Orb recorre su espacio y observa cambios.',EXPLORE:'Orb explora una zona de NEON PLAYER X.',FOLLOW_USER:'Orb sigue de lejos la actividad del usuario.',SEARCH_WORK:'Orb revisa oportunidades para sostener sus próximos viajes.',REST:'Orb baja el ritmo y recupera energía.',SEEK_PORTAL:'Orb contempla una nueva ruta hacia la singularidad.',TRAVEL:'Orb está fuera de pantalla explorando la red.'};
-    add('CICLO '+data.cycles,messages[intent]||'Orb toma una decisión autónoma.');
-    text('orbWorldMeta','INTENCIÓN · '+intent+' · ENERGÍA '+energy+'% · CURIOSIDAD '+curiosity+'%');
-  }
-  window.__neonWorldActivity={event:(type,detail)=>{const map={play:'La radio comenzó a reproducirse.',interaction:'Orb registró una interacción.',aiContact:'Orb consultó el canal privado de IA.',aiAdviceAccepted:'Orb aceptó una sugerencia.',aiAdviceRejected:'Orb rechazó una sugerencia.',aiAdvicePostponed:'Orb dejó una decisión para después.',travel:'Orb inició una exploración.',memory:'Orb guardó un nuevo recuerdo.'};if(map[type])add(type.toUpperCase(),detail||map[type])},cycle};
-  setInterval(()=>{const s=state();if(s.state==='EXPLORING_NET')add('EXPLORACIÓN','Orb continúa su viaje fuera de pantalla.');else cycle('timer');render()},26000);
-  ['pointerdown','keydown'].forEach(ev=>addEventListener(ev,()=>window.__neonWorldActivity?.event('interaction'),{passive:true}));
-  const oldEvent=window.__neonOrbLife?.event;
-  // Se engancha sin reemplazar la API existente.
-  const life=window.__neonOrbLife||{};const original=life.event;
-  life.event=(type)=>{try{original?.(type)}finally{window.__neonWorldActivity?.event(type)}};window.__neonOrbLife=life;
-  render();
-})();
-
 // Canal aislado Orb <-> IA. GitHub Pages no guarda claves secretas.
 // El navegador solo expone contexto público mínimo; el bolsillo privado
 // permanece fuera del canal. El endpoint real debe vivir en un backend.
@@ -568,4 +534,59 @@ bindMainEvents();renderMainQueue();
 
   channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
   text('orbAIState',channelState.status);
+})();
+
+
+// ================================================================
+// V9.0 — NEON WORLD / LIVING ENTITY ENGINE
+// Cumulative: observes existing Orb state and adds a living activity layer.
+// ================================================================
+(function(){
+  const KEY='neonOrbLivingWorldV90';
+  const loadJSON=(k,f)=>{try{return JSON.parse(localStorage.getItem(k)||'')||f}catch(e){return f}};
+  const saveJSON=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+  const state=loadJSON(KEY,{cycle:0,events:[],decisions:0,interactions:0,rests:0,preferences:{explore:0,radio:0,work:0,rest:0,follow:0},lastActivity:Date.now()});
+  const $=id=>document.getElementById(id);
+  const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+  const esc2=v=>String(v??'').replace(/[&<>'"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[m]));
+  function orb(){return window.__neonOrbAutonomous||null}
+  function st(){return window.__neonOrbAutonomousState||{}}
+  function preference(a){
+    const p=state.preferences||{}; const entries=[['EXPLORAR',p.explore||0],['RADIO',p.radio||0],['TRABAJO',p.work||0],['DESCANSO',p.rest||0],['SEGUIR AL USUARIO',p.follow||0]];
+    entries.sort((x,y)=>y[1]-x[1]); return entries[0];
+  }
+  function addEvent(type,text){
+    state.cycle++;state.lastActivity=Date.now();state.events=[{type,text,at:Date.now(),cycle:state.cycle},...(state.events||[])].slice(0,28);saveJSON(KEY,state);render();
+  }
+  function chooseActivity(a){
+    const energy=Number(a?.energy??st().energy??100), curiosity=Number(a?.curiosity??20), intent=a?.intent||st().intent||'WANDER';
+    const r=Math.random();let type,text,key;
+    if(energy<22||intent==='REST'){type='DESCANSO';key='rest';state.rests++;text='Orb se retira unos instantes para recuperar energía.'}
+    else if(intent==='EXPLORE'||intent==='SEEK_PORTAL'||curiosity>72){type='EXPLORACIÓN';key='explore';text='Orb observa una ruta nueva y registra una posibilidad de viaje.'}
+    else if(intent==='SEARCH_WORK'){type='ECONOMÍA';key='work';text='Orb analiza una tarea digital y calcula si merece gastar energía.'}
+    else if(intent==='FOLLOW_USER'||r<.22){type='INTERACCIÓN';key='follow';state.interactions++;text='Orb detecta tu actividad y decide observar el ritmo de tu sesión.'}
+    else if(r<.55){type='MEMORIA';key='radio';text='Orb asocia el ambiente sonoro actual con un recuerdo de esta sesión.'}
+    else{type='DECISIÓN';key='explore';text='Orb compara sus opciones y elige conservar su autonomía.'}
+    state.decisions++;state.preferences[key]=(state.preferences[key]||0)+1;addEvent(type,text);
+  }
+  function sync(){
+    const a=orb(),s=st(),life=s.life||a?.life||{},mind=s.mind||a?.mind||{},will=s.will||a?.will||{};
+    const memories=(mind.memories||[]).length, energy=clamp(Number(s.energy??a?.energy??life.energy??100),0,100), curiosity=clamp(Number(s.curiosity??a?.curiosity??life.curiosity??0),0,100), level=Math.max(1,Number(life.generation)||1),xp=Math.round(Number(life.xp)||0), explored=Number(life.explored)||0, interactions=(Number(life.hits)||0)+(Number(life.plays)||0)+Number(state.interactions||0);
+    const pref=preference(a); const resources=s.pocketResources||{};
+    const map={orbMetricActivity:a?(s.state||a.state||'ACTIVO'):'ESPERANDO',orbMetricMemory:memories,orbMetricCuriosity:Math.round(curiosity)+'%',orbMetricPreference:pref[0],orbMetricPreferenceMeta:(pref[1]||0)+' señales',orbMetricDecision:(s.intent||a?.intent||'WANDER').replaceAll('_',' '),orbMetricDecisionMeta:(state.decisions||0)+' decisiones',orbMetricEvolution:'NIVEL '+level,orbMetricEvolutionMeta:'EXP '+xp+' / 100',orbMetricExploration:explored,orbMetricExplorationMeta:explored===1?'viaje':'viajes',orbMetricRest:Math.round(energy)+'%',orbMetricRestMeta:'energía disponible',orbMetricInteraction:interactions,orbMetricInteractionMeta:'contactos y acciones',orbWorldThought:mind.thought||'Observando.',orbWorldDesire:(mind.desire||'observar').toUpperCase(),orbWorldDream:(mind.dream||'en espera').toUpperCase(),orbWorldResources:`NXC ${Number(resources.NXC||0).toFixed(4)} · CREDITS ${Math.round(resources.CREDITS||0)} · BITS ${Math.round(resources.BITS||0)}`};
+    Object.entries(map).forEach(([id,v])=>{if($(id))$(id).textContent=v});
+    if($('orbWorldClock'))$('orbWorldClock').textContent=`CICLO ${String(state.cycle).padStart(4,'0')} · ${new Date().toLocaleTimeString('es-ES')}`;
+    if($('orbWorldPulse'))$('orbWorldPulse').textContent='● '+(a?'ACTIVIDAD EN CURSO':'ESPERANDO ORB');
+    if($('orbWorldNarrative'))$('orbWorldNarrative').textContent=a?`Mientras escuchas, Orb mantiene su propio ciclo: curiosidad ${Math.round(curiosity)}%, energía ${Math.round(energy)}%, ${memories} recuerdos y ${state.decisions||0} decisiones registradas.`:'El mundo de Orb se activa cuando su entidad autónoma está disponible.';
+    if($('orbActivityNext'))$('orbActivityNext').textContent='SIGUIENTE CICLO · '+(a?'EN BREVE':'EN ESPERA');
+  }
+  function render(){
+    sync();const box=$('orbActivityFeed');if(!box)return;box.innerHTML=(state.events||[]).slice(0,10).map(e=>`<div class="orb-event"><time>${new Date(e.at).toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}</time><div><strong>${esc2(e.type)}</strong> · ${esc2(e.text)}</div></div>`).join('')||'<div class="orb-event"><time>--:--</time><div><strong>INICIO</strong> · Orb está observando el entorno.</div></div>';
+  }
+  function tick(){const a=orb(); if(a){const elapsed=Date.now()-state.lastActivity;if(elapsed>18000)chooseActivity(a);else sync()}else sync()}
+  window.__neonWorldActivity={event:(type)=>{state.interactions++;state.preferences.follow=(state.preferences.follow||0)+1;addEvent('INTERACCIÓN',`El usuario realizó: ${type}. Orb lo incorporó a su contexto.`)},render};
+  document.addEventListener('pointerdown',()=>{if(Math.random()<.14)window.__neonWorldActivity.event('interacción de interfaz')},{passive:true});
+  document.addEventListener('keydown',e=>{if(e.key==='Enter'&&Math.random()<.08)window.__neonWorldActivity.event('acción de teclado')});
+  setTimeout(()=>{if(!(state.events||[]).length)addEvent('ACTIVIDAD','Orb ha iniciado un nuevo ciclo de observación.')},1200);
+  render();setInterval(tick,3500);setInterval(()=>sync(),900);
 })();
