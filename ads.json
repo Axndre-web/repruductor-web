@@ -7,7 +7,13 @@
     "image": "",
     "button": "DESCUBRIR",
     "priority": 1,
-    "target": "_blank"
+    "target": "_blank",
+    "type": "recommendation",
+    "category": "NEON",
+    "sponsor": "NEON PLAYER X",
+    "startsAt": "",
+    "endsAt": "",
+    "id": "neon-rewards"
   },
   {
     "active": true,
@@ -17,6 +23,12 @@
     "image": "",
     "button": "CONECTAR",
     "priority": 2,
-    "target": "_blank"
+    "target": "_blank",
+    "type": "recommendation",
+    "category": "NEON",
+    "sponsor": "NEON PLAYER X",
+    "startsAt": "",
+    "endsAt": "",
+    "id": "solana-ecosystem"
   }
 ]

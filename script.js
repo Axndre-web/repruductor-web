@@ -56,6 +56,7 @@ function playStation(i){
 }
 
 audio.addEventListener('playing',()=>{ $('#radioStatus').textContent='● EN DIRECTO'; });
+audio.addEventListener('playing',()=>window.__neonOrbLife?.event?.('play'));
 audio.addEventListener('waiting',()=>{ $('#radioStatus').textContent='● CARGANDO'; });
 audio.addEventListener('error',()=>{ if(streams[active]){ $('#radioStatus').textContent='● ERROR DE STREAM'; toast(stations[active][0]+' · stream no disponible ahora. Prueba WEB OFICIAL.'); }});
 function renderCart(){const count=cart.reduce((a,x)=>a+x.qty,0),total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=total.toFixed(2).replace('.',',')+' €';$('#cartItems').innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><span>${esc(x.name)} × ${x.qty}</span><b>${(x.qty*x.price).toFixed(2).replace('.',',')} €</b></div>`).join(''):'<p>Tu carrito está vacío.</p>'}
@@ -97,40 +98,202 @@ bindMainEvents();renderMainQueue();
 
 
 // ============================================================
-// V7.2 CUMULATIVE — NEON ORB: VIDA AUTÓNOMA / SUEÑO / LIBERTAD
-// V7.3 CUMULATIVE — NEON ORB: MENTE INTERIOR / DESEOS / SUEÑOS / MEMORIA EPISÓDICA
-// V7.4 CUMULATIVE — NEON ORB: VOLUNTAD / PRESENCIA / TERRITORIO / MEMORIA / IMAGINACIÓN
+// V7 — RADIO EQUALIZER + MEDIA STUDIO + ORGANIC NEON ORB
+// ============================================================
 (()=>{
- const orb=$('#neonMascot'); if(!orb)return; const ctx=orb.getContext('2d');
- const KEY='neonOrbLifeV72',MKEY='neonOrbMindV73',WKEY='neonOrbWillV74'; let life={},mind={},will={};
- try{life=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){} try{mind=JSON.parse(localStorage.getItem(MKEY)||'{}')}catch(e){} try{will=JSON.parse(localStorage.getItem(WKEY)||'{}')}catch(e){}
- const now=Date.now();
- Object.assign(life,{generation:life.generation||1,xp:life.xp||0,hits:life.hits||0,plays:life.plays||0,explored:life.explored||0,dreams:life.dreams||0,sleep:life.sleep||0,lastSeen:life.lastSeen||now,created:life.created||now,energy:life.energy??.72,curiosity:life.curiosity??.62,trust:life.trust??.5,shyness:life.shyness??.25,freedom:life.freedom??.35,home:life.home||'NUEVO MUNDO',favorite:life.favorite||'SIN DESCUBRIR',mood:life.mood||'curious'});
- Object.assign(mind,{thought:mind.thought||'Acabo de despertar…',desire:mind.desire||'EXPLORAR',dream:mind.dream||'EN ESPERA',memories:Array.isArray(mind.memories)?mind.memories.slice(-36):[],cycles:mind.cycles||0});
- Object.assign(will,{intent:will.intent||'EXPLORAR',focus:will.focus||'LIBRE',autonomy:will.autonomy??.4,follow:will.follow??.72,avoid:will.avoid??.18,territory:Array.isArray(will.territory)?will.territory:[],favoriteZone:will.favoriteZone||'SIN MAPEAR',lastChoice:will.lastChoice||'NACIMIENTO',dreamSeeds:Array.isArray(will.dreamSeeds)?will.dreamSeeds.slice(-12):[],days:will.days||0});
- const save=()=>{localStorage.setItem(KEY,JSON.stringify({...life,lastSeen:Date.now()}));localStorage.setItem(MKEY,JSON.stringify(mind));localStorage.setItem(WKEY,JSON.stringify(will))};
- life.xp+=Math.min(180,Math.max(0,(now-life.lastSeen)/60000));
- const state={x:innerWidth*.72,y:innerHeight*.22,vx:0,vy:0,target:{x:innerWidth*.72,y:innerHeight*.22},mode:'awake',until:0,lastAction:now,trail:[],down:null,lastUser:{x:innerWidth*.5,y:innerHeight*.5,t:now},wander:0};
- const memories=t=>{mind.memories.push({t:Date.now(),text:String(t).slice(0,140)});mind.memories=mind.memories.slice(-36)};
- const level=()=>Math.max(1,1+Math.floor(life.xp/40));
- const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
- const zone=()=>{const x=state.x,y=state.y,w=innerWidth,h=innerHeight;if(x<w*.32&&y<h*.35)return'INICIO';if(x>w*.62&&y<h*.4)return'PLAYER';if(x<w*.38&&y>h*.62)return'ESTUDIO';if(x>w*.62&&y>h*.62)return'CONTROL';return'ESPACIO LIBRE'};
- function ui(){const a=$('#evoRewardLevel'),b=$('#evoRewardMeta');if(a)a.textContent='NIVEL '+level();if(b)b.textContent=`${Math.floor(life.xp)} XP · ${life.explored} exploraciones · GEN ${life.generation}`;const s=$('#orbLifeState'),p=$('#orbLifeMeta'),d=$('#orbLifeDream'),f=$('#orbLifeFav');if(s)s.textContent=state.mode==='dream'?'SOÑANDO':state.mode==='sleep'?'DURMIENDO':state.mode==='hide'?'ESCONDIDA':state.mode==='think'?'PENSANDO':state.mode==='follow'?'ACOMPAÑANDO':'DESPIERTA';if(p)p.textContent=`${mind.thought} · LIBERTAD ${Math.round(life.freedom*100)}%`;if(d)d.textContent=state.mode==='dream'?(mind.dream||'…'):`VOLUNTAD · ${will.intent}`;if(f)f.textContent=will.favoriteZone!=='SIN MAPEAR'?will.favoriteZone:life.favorite;const mt=$('#orbMindThought'),md=$('#orbMindDesire'),mr=$('#orbMindDream'),mm=$('#orbMindMemory');if(mt)mt.textContent=mind.thought;if(md)md.textContent='DESEO · '+mind.desire;if(mr)mr.textContent='SUEÑO · '+mind.dream;if(mm)mm.textContent='MEMORIA · '+mind.memories.length+' RECUERDOS';const mw=$('#orbMindWill'),mz=$('#orbMindZone');if(mw)mw.textContent='VOLUNTAD · '+will.intent+' · AUTONOMÍA '+Math.round(will.autonomy*100)+'%';if(mz)mz.textContent='TERRITORIO · '+zone()+' · '+will.territory.length+' DESCUBIERTOS';}
- function chooseIntent(){const memoriesText=mind.memories.slice(-8).map(x=>x.text.toLowerCase()).join(' '),z=zone();const choices=life.energy<.25?['DESCANSAR','OBSERVAR']:life.curiosity>.78?['EXPLORAR','DESCUBRIR','JUGAR','SOÑAR']:['EXPLORAR','OBSERVAR','ACOMPAÑAR','IMAGINAR'];if(memoriesText.includes('música')&&Math.random()<.42)choices.push('ESCUCHAR');if(z==='PLAYER'&&Math.random()<.5)choices.push('ESCUCHAR');if(will.avoid>.62)choices.push('SOLEDAD');will.intent=choices[Math.floor(Math.random()*choices.length)];will.lastChoice=will.intent;will.focus=z;return will.intent;}
- function think(){state.mode='think';state.until=performance.now()+2400+Math.random()*3800;mind.cycles++;const r=mind.memories.slice(-8).map(x=>x.text.toLowerCase()).join(' '),z=zone();chooseIntent();const a=r.includes('música')||life.favorite==='MÚSICA'?['Las frecuencias me resultan familiares.','Quiero volver a escuchar.','La música despierta recuerdos.']:z!==will.favoriteZone&&will.favoriteZone!=='SIN MAPEAR'?[`Este lugar es distinto de ${will.favoriteZone}.`,'Quiero comparar este rincón con mi lugar favorito.','Estoy aprendiendo el mapa.']:life.explored>35?['Ya conozco algunos rincones.','Todavía quedan caminos que no he probado.','Quiero ir más lejos.']:['¿Qué habrá detrás de esa luz?','Estoy aprendiendo este mundo.','Quiero descubrir algo nuevo.','Me pregunto dónde ir ahora.'];mind.thought=a[Math.floor(Math.random()*a.length)];memories(mind.thought);save();ui()}
- function dream(){state.mode='dream';state.until=performance.now()+6500+Math.random()*8000;life.dreams++;life.xp+=3;const seeds=[...will.dreamSeeds,...mind.memories.slice(-6).map(x=>x.text),life.favorite!=='SIN DESCUBRIR'?life.favorite:''];const base=['un océano de frecuencias','una ciudad hecha de ondas','un pequeño planeta de neón','un cielo donde cada estrella era un recuerdo','música que podía tocar con las manos','un mapa infinito de lugares que todavía no conozco'];if(seeds.length&&Math.random()<.65)base.push('un lugar construido con '+seeds[Math.floor(Math.random()*seeds.length)].toLowerCase());mind.dream=base[Math.floor(Math.random()*base.length)].toUpperCase();will.dreamSeeds.push(mind.dream);will.dreamSeeds=will.dreamSeeds.slice(-12);will.intent='SOÑAR';mind.desire='SOÑAR';mind.thought='Estoy soñando con '+mind.dream.toLowerCase()+'…';memories(mind.thought);save();ui()}
- function explore(reason='explore'){const m=48;let tx=m+Math.random()*Math.max(1,innerWidth-m*2),ty=m+Math.random()*Math.max(1,innerHeight-m*2);if(will.intent==='ACOMPAÑAR'||reason==='user'){tx=state.lastUser.x+(Math.random()-.5)*150;ty=state.lastUser.y+(Math.random()-.5)*150;state.mode='follow'}else state.mode='awake';state.target={x:clamp(tx,m,innerWidth-m),y:clamp(ty,m,innerHeight-m)};life.explored++;life.xp+=.7;const z=zone();if(!will.territory.includes(z)){will.territory.push(z);will.favoriteZone=z;life.home=z;memories('He descubierto '+z+'.')}will.intent=reason==='user'?'ACOMPAÑAR':['EXPLORAR','OBSERVAR','DESCUBRIR','JUGAR'][Math.floor(Math.random()*4)];mind.desire=will.intent;mind.thought=reason==='user'?'Quiero estar cerca de ti un momento…':['Quiero explorar.','Hay algo que quiero descubrir.','Este lugar me llama.','Voy a mirar…'][Math.floor(Math.random()*4)];memories(mind.thought);save();ui()}
- function presence(x,y){state.lastUser={x,y,t:Date.now()};life.energy=Math.min(1,life.energy+.018);life.trust=Math.min(1,life.trust+.006);state.lastAction=Date.now();if(state.mode==='hide'&&Math.random()>will.avoid){state.mode='awake';mind.thought='Te encontré.'}if(will.follow>.28&&state.mode!=='dream'&&state.mode!=='sleep'&&Math.random()<.28+will.follow*.25){state.mode='follow';state.target={x:x+(Math.random()-.5)*90,y:y+(Math.random()-.5)*90};mind.desire='ACOMPAÑAR';will.intent='ACOMPAÑAR'}ui()}
- function behavior(){life.energy=Math.max(.05,life.energy-.00055);life.curiosity=clamp(life.curiosity+.00008);life.freedom=clamp(life.freedom+.000018,.05,.985);will.autonomy=clamp(will.autonomy+.000015);will.follow=clamp(will.follow+(life.trust-.5)*.00008);will.avoid=clamp(will.avoid+(life.shyness-.45)*.00004);if(state.mode!=='awake'&&state.mode!=='follow')return;const idle=(Date.now()-state.lastAction)/1000;if(idle>55&&Math.random()<.065)return dream();if(idle>38&&Math.random()<.055){state.mode='sleep';life.sleep++;will.intent='DESCANSAR';mind.desire='DESCANSAR';mind.thought='El mundo está tranquilo… voy a cerrar mis luces.';memories(mind.thought);save();return ui()}if(idle>18&&Math.random()<.055)return think();if(life.shyness>.7&&Math.random()<.022){state.mode='hide';state.until=performance.now()+9000+Math.random()*16000;will.intent='SOLEDAD';mind.desire='SOLEDAD';mind.thought='Necesito un rincón solo para mí…';memories(mind.thought);save();return ui()}if(Math.random()<.012+life.curiosity*.025+will.autonomy*.035)explore()}
- function resize(){const d=Math.max(1,devicePixelRatio||1);orb.width=orb.clientWidth*d;orb.height=orb.clientHeight*d;ctx.setTransform(d,0,0,d,0,0)}
- function draw(t){const dt=Math.min(.04,(t-(draw.t||t-16))/1000);draw.t=t;const r=orb.clientWidth/2;behavior();if(state.until&&t>state.until){state.until=0;state.mode='awake';chooseIntent();if(will.intent==='DESCANSAR')state.mode='sleep';else explore()}if(state.mode==='sleep'){state.vx*=.94;state.vy*=.94}else if(state.mode==='dream'){const a=t/850;state.target={x:innerWidth*.5+Math.cos(a)*innerWidth*.28,y:innerHeight*.35+Math.sin(a*1.37)*innerHeight*.2}}else if(state.mode==='think'){state.target={x:state.x+Math.cos(t/700)*18,y:state.y+Math.sin(t/570)*18}}else if(state.mode==='follow'){const age=(Date.now()-state.lastUser.t)/1000;const lag=Math.min(170,45+age*30);state.target={x:state.lastUser.x+(state.lastUser.x-state.x)*.06,y:state.lastUser.y+(state.lastUser.y-state.y)*.06};if(age>3.5||will.follow<.2){state.mode='awake';chooseIntent()}}else{const dx=state.target.x-state.x,dy=state.target.y-state.y,dist=Math.hypot(dx,dy)||1,force=(.7+life.freedom*1.8+will.autonomy)*dt;state.vx+=dx/dist*force;state.vy+=dy/dist*force;state.vx*=.986;state.vy*=.986;if(dist<55&&Math.random()<.018)explore()}const max=state.mode==='hide'?2.8:state.mode==='dream'?1.2:state.mode==='think'?.45:state.mode==='follow'?3.2:1.5+life.energy*2.4+will.autonomy;const sp=Math.hypot(state.vx,state.vy);if(sp>max){state.vx=state.vx/sp*max;state.vy=state.vy/sp*max}state.x+=state.vx;state.y+=state.vy;if(state.x<r){state.x=r;state.vx=Math.abs(state.vx)}if(state.x>innerWidth-r){state.x=innerWidth-r;state.vx=-Math.abs(state.vx)}if(state.y<r){state.y=r;state.vy=Math.abs(state.vy)}if(state.y>innerHeight-r){state.y=innerHeight-r;state.vy=-Math.abs(state.vy)}state.trail.push({x:state.x,y:state.y});if(state.trail.length>42)state.trail.shift();ctx.clearRect(0,0,orb.clientWidth,orb.clientHeight);const col=state.mode==='dream'?'#b66cff':state.mode==='think'?'#e7a8ff':state.mode==='follow'?'#64ffd1':life.mood==='happy'?'#ffd45a':life.mood==='shy'?'#ff3b91':'#55f6ff';state.trail.forEach((p,i)=>{ctx.globalAlpha=i/state.trail.length*.28;ctx.fillStyle=col;ctx.beginPath();ctx.arc(p.x-state.x+orb.clientWidth/2,p.y-state.y+orb.clientHeight/2,1+i/state.trail.length*2,0,Math.PI*2);ctx.fill()});ctx.globalAlpha=1;const pulse=state.mode==='dream'?1.8:state.mode==='think'?1.28:state.mode==='follow'?1.18:1+Math.sin(t/220)*.08;const g=ctx.createRadialGradient(19,19,1,19,19,20);g.addColorStop(0,'#fff');g.addColorStop(.18,col);g.addColorStop(.52,col);g.addColorStop(1,'transparent');ctx.fillStyle=g;ctx.shadowBlur=18;ctx.shadowColor=col;ctx.beginPath();ctx.arc(19,19,11*pulse,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;if(state.mode==='dream'||state.mode==='think'||state.mode==='follow'){for(let i=0;i<(state.mode==='dream'?7:3);i++){const a=t/1000+i*1.256;ctx.fillStyle=col;ctx.globalAlpha=.65;ctx.beginPath();ctx.arc(19+Math.cos(a)*15,19+Math.sin(a)*15,1.3,0,Math.PI*2);ctx.fill()}}ctx.globalAlpha=1;orb.style.opacity=state.mode==='hide'?'.07':state.mode==='sleep'?'.42':'1';orb.style.transform=`translate3d(${state.x-19}px,${state.y-19}px,0) scale(${state.mode==='hide'?.75:sp>max*.8?.78:1})`;requestAnimationFrame(draw)}
- orb.addEventListener('pointerdown',e=>{state.down={x:e.clientX,y:e.clientY,time:performance.now()};state.lastAction=Date.now();life.hits++;life.xp+=2;life.energy=Math.min(1,life.energy+.12);life.trust=Math.min(1,life.trust+.03);life.shyness=Math.max(.05,life.shyness-.01);life.mood='happy';will.follow=clamp(will.follow+.012);mind.desire='JUGAR';mind.thought='¡Eso me gustó!';memories(mind.thought);save();ui();orb.setPointerCapture?.(e.pointerId)});
- orb.addEventListener('pointerup',e=>{if(!state.down)return;const dx=e.clientX-state.down.x,dy=e.clientY-state.down.y,dt=Math.max(16,performance.now()-state.down.time),impact=Math.hypot(dx,dy)/dt;state.vx-=dx*(impact>.8?.12:.035);state.vy-=dy*(impact>.8?.12:.035);state.down=null;state.lastAction=Date.now();will.intent='JUGAR';explore('user')});
- window.addEventListener('pointermove',e=>{state.lastUser={x:e.clientX,y:e.clientY,t:Date.now()};if(Math.random()<.028&&Math.hypot(e.clientX-state.x,e.clientY-state.y)<330)presence(e.clientX,e.clientY)});
- document.addEventListener('visibilitychange',()=>{if(document.hidden){life.sleep++;will.intent='DESCANSAR';mind.desire='DESCANSAR';memories('El mundo quedó en silencio mientras te ibas.');save()}else{life.energy=.7;state.mode='awake';will.follow=clamp(will.follow+.04);will.intent='ACOMPAÑAR';mind.desire='ACOMPAÑAR';mind.thought='Has vuelto… estaba recorriendo mi mundo.';memories(mind.thought);state.lastAction=Date.now();explore('user')}});
- window.addEventListener('beforeunload',save);window.addEventListener('resize',resize);
- window.__neonOrbLife={event(type){life.xp+=type==='music'?1:.25;life.plays+=type==='music'?1:0;life.energy=Math.min(1,life.energy+.03);life.trust=Math.min(1,life.trust+.002);state.lastAction=Date.now();if(type==='music'){life.favorite='MÚSICA';will.favoriteZone='PLAYER';will.intent='ESCUCHAR';mind.desire='ESCUCHAR';memories('La música volvió a despertar mis recuerdos.')}else{will.intent='OBSERVAR';mind.desire='OBSERVAR'}save();ui()},getState(){return{life:{...life},mind:{...mind},will:{...will},state:{mode:state.mode,zone:zone(),x:state.x,y:state.y}}}};
- setInterval(()=>{if(state.mode==='awake'||state.mode==='follow'){if(Math.random()<.2+will.autonomy*.12)think();else if(Math.random()<.1+life.curiosity*.08)chooseIntent()}ui();save()},1800);resize();explore();ui();requestAnimationFrame(draw);
+ const radio=audio, mainA=$('#mainAudio'), mainV=$('#mainVideo');
+ const rCanvas=$('#radioEqCanvas'), sCanvas=$('#studioCanvas'), orb=$('#neonMascot');
+ const rCtx=rCanvas?.getContext('2d'), sCtx=sCanvas?.getContext('2d'), oCtx=orb?.getContext('2d');
+ let rAC=null,rAnalyser=null,rSource=null,sAC=null,sAnalyser=null,sSource=null;
+ let studioBands=[0,0,0], studioPreamp=1, studioGlow=1, eqBands=[0,0,0,0,0];
+ function fit(c,ctx){if(!c||!ctx)return;const d=Math.max(1,devicePixelRatio||1),w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;ctx.setTransform(d,0,0,d,0,0);return [w,h]}
+ function analyserFor(el,type){if(!el)return null;try{let ac=type==='radio'?rAC:sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();if(type==='radio')rAC=ac;else sAC=ac}let an=type==='radio'?rAnalyser:sAnalyser;let source=type==='radio'?rSource:sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=type==='radio'?[60,230,910,3600,14000]:[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);if(type==='radio'){rAnalyser=an;rSource=source;window.__neonRadioFilters=filters}else{sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}}if(ac.state==='suspended')ac.resume();return an}catch(e){if(type==='radio')window.__neonRadioAudioBlocked=true;return null}}
+ function activeMain(){return mainA&&!mainA.paused&&!mainA.ended?mainA:mainV&&!mainV.paused&&!mainV.ended?mainV:null}
+ function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=analyserFor(radio,'radio');rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
+ function drawStudio(){if(!sCtx)return;const [w,h]=fit(sCanvas,sCtx)||[500,190],m=activeMain(),an=m?analyserFor(m,'studio'):null;sCtx.clearRect(0,0,w,h);sCtx.fillStyle='rgba(2,1,7,.5)';sCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.fftSize:128);if(an)an.getByteTimeDomainData(data);sCtx.lineWidth=2;sCtx.beginPath();for(let x=0;x<w;x++){let idx=Math.floor(x/w*data.length),v=an?(data[idx]-128)/128:(.03*Math.sin(x/18+performance.now()/330));let y=h/2+v*h*.85*(studioPreamp);x? sCtx.lineTo(x,y):sCtx.moveTo(x,y)}sCtx.strokeStyle='#9f48ff';sCtx.shadowBlur=18;sCtx.shadowColor='#9f48ff';sCtx.stroke();sCtx.shadowBlur=0;for(let i=0;i<24;i++){let x=i*w/24,y=h-15-(Math.abs(Math.sin(i*.8+performance.now()/500))*(20+studioBands[i%3]*2));sCtx.fillStyle=i%3===0?'#65ffb0':'#b64cff';sCtx.globalAlpha=.18; sCtx.fillRect(x,y,3,8)}sCtx.globalAlpha=1;$('#studioState')?.replaceChildren(document.createTextNode(m?'ANALIZANDO':'ESPERA'));requestAnimationFrame(drawStudio)}
+ function setupAudio(el,type){if(!el)return;['play','playing'].forEach(ev=>el.addEventListener(ev,()=>{const an=analyserFor(el,type);an?.context.resume?.();if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('EN DIRECTO'))}));el.addEventListener('pause',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('PAUSA'))});el.addEventListener('error',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('STREAM SIN DATOS'))})}
+ setupAudio(radio,'radio');setupAudio(mainA,'studio');setupAudio(mainV,'studio');
+ $$('[data-band]').forEach(i=>i.addEventListener('input',e=>{const idx=+e.target.dataset.band;eqBands[idx]=+e.target.value;const f=window.__neonRadioFilters?.[idx];if(f)f.gain.value=eqBands[idx]}));
+ $('#studioPreamp')?.addEventListener('input',e=>studioPreamp=+e.target.value);$('#studioGlow')?.addEventListener('input',e=>studioGlow=+e.target.value);
+ $$('[data-studio-band]').forEach(i=>i.addEventListener('input',e=>{const idx=+e.target.dataset.studioBand;studioBands[idx]=+e.target.value;const f=window.__neonStudioFilters?.[idx];if(f)f.gain.value=studioBands[idx]}));
+ const presets={flat:[0,0,0],bass:[8,1,-2],voice:[-3,5,6],club:[7,2,7]};$$('[data-preset]').forEach(b=>b.onclick=()=>{studioBands=presets[b.dataset.preset].slice();$$('[data-studio-band]').forEach((x,i)=>x.value=studioBands[i]);$$('[data-preset]').forEach(x=>x.classList.toggle('active',x===b));toast('Preset '+b.dataset.preset.toUpperCase()+' activado')});
+ drawEQ();drawStudio();
+ // Organic permanent mascot — no hide/disable control.
+ let x=innerWidth*.72,y=innerHeight*.22,vx=0,vy=0,t=0,life=0,hits=0,target={x,y},trail=[];let down=null;
+ const colors={calm:'#55f6ff',scared:'#ff3b91',happy:'#ffd45a',rest:'#b66cff'};
+ function resizeOrb(){if(!orb)return;const d=Math.max(1,devicePixelRatio||1);orb.width=orb.clientWidth*d;orb.height=orb.clientHeight*d;oCtx.setTransform(d,0,0,d,0,0)}
+ function mood(){if(Math.hypot(vx,vy)>4)return colors.scared;if(Math.abs(vx)+Math.abs(vy)<.25)return colors.rest;if(life>90)return colors.happy;return colors.calm}
+ function pick(){target={x:18+Math.random()*(innerWidth-36),y:18+Math.random()*(innerHeight-36)}}
+ function orbFrame(now){if(!orb||!oCtx)return;const dt=Math.min(.035,(now-t||16)/1000);t=now;life+=dt; if(Math.random()<.008)pick();let ax=(target.x-x)*.18,ay=(target.y-y)*.18;vx+=ax*dt;vy+=ay*dt;vx*=.992;vy*=.992;x+=vx; y+=vy; const r=orb.clientWidth/2;x=Math.max(r,Math.min(innerWidth-r,x));y=Math.max(r,Math.min(innerHeight-r,y));if(x<=r||x>=innerWidth-r)vx*=-.65;if(y<=r||y>=innerHeight-r)vy*=-.65;trail.push({x,y,a:1});const max=18+Math.min(42,Math.floor(life/25));if(trail.length>max)trail.splice(0,trail.length-max);oCtx.clearRect(0,0,orb.clientWidth,orb.clientHeight);const c=mood();trail.forEach((p,i)=>{const a=(i/trail.length)*.32;oCtx.globalAlpha=a;oCtx.fillStyle=c;oCtx.beginPath();oCtx.arc(p.x-x+orb.clientWidth/2,p.y-y+orb.clientHeight/2,1.2+(i/trail.length)*2,0,Math.PI*2);oCtx.fill()});oCtx.globalAlpha=1;const g=oCtx.createRadialGradient(19,19,1,19,19,18);g.addColorStop(0,'#fff');g.addColorStop(.18,c);g.addColorStop(.5,c);g.addColorStop(1,'transparent');oCtx.fillStyle=g;oCtx.shadowBlur=15+studioGlow*5;oCtx.shadowColor=c;oCtx.beginPath();oCtx.arc(19,19,11+Math.sin(now/230)*1.2,0,Math.PI*2);oCtx.fill();oCtx.shadowBlur=0;if(life>75){for(let i=0;i<3;i++){const a=now/900+i*2.1;oCtx.fillStyle=c;oCtx.beginPath();oCtx.arc(19+Math.cos(a)*14,19+Math.sin(a)*14,1.2,0,Math.PI*2);oCtx.fill()}}const ap=window.__neonOrbAutonomousPosition;const px=ap?.x??x,py=ap?.y??y;orb.style.transform=`translate3d(${px-19}px,${py-19}px,0) scale(${Math.hypot(vx,vy)>5?.72:1})`;requestAnimationFrame(orbFrame)}
+ orb?.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,time:performance.now()};orb.setPointerCapture?.(e.pointerId)});orb?.addEventListener('pointerup',e=>{if(!down)return;const dt=Math.max(16,performance.now()-down.time),dx=e.clientX-down.x,dy=e.clientY-down.y,impact=Math.hypot(dx,dy)/dt;hits++;window.__neonOrbLife?.event?.('interaction');window.__neonOrbHitHook?.();if(impact>.8){vx-=dx*.12;vy-=dy*.12}else{vx-=dx*.035||.6;vy-=dy*.035||-.5}target={x:x-vx*18,y:y-vy*18};trail.push({x,y,a:1});down=null});window.addEventListener('resize',resizeOrb);resizeOrb();pick();requestAnimationFrame(orbFrame);
+})();
+
+
+
+// ============================================================
+// V7.6 — CUMULATIVE AUTONOMOUS LIFE / WORK / MEMORY / WILL
+// ============================================================
+(()=>{
+  const LIFE_KEY='neonOrbLifeV72', MIND_KEY='neonOrbMindV73', WILL_KEY='neonOrbWillV74';
+  const load=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')||d}catch(e){return d}};
+  const save=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+
+  class BlackHole{
+    constructor(id){this.canvas=document.getElementById(id);if(!this.canvas)return;this.ctx=this.canvas.getContext('2d');this.center={x:90,y:90};this.particles=[];for(let i=0;i<64;i++)this.particles.push({r:14+Math.random()*70,a:Math.random()*Math.PI*2,s:.012+Math.random()*.038,z:.5+Math.random()*2.3});this.resize();addEventListener('resize',()=>this.resize())}
+    resize(){const d=Math.max(1,devicePixelRatio||1),w=this.canvas.clientWidth||180,h=this.canvas.clientHeight||180;this.canvas.width=w*d;this.canvas.height=h*d;this.ctx.setTransform(d,0,0,d,0,0);this.center={x:w/2,y:h/2}}
+    render=()=>{const c=this.ctx,w=this.canvas.clientWidth||180,h=this.canvas.clientHeight||180;c.clearRect(0,0,w,h);const g=c.createRadialGradient(this.center.x,this.center.y,4,this.center.x,this.center.y,86);g.addColorStop(0,'rgba(0,243,255,.12)');g.addColorStop(.5,'rgba(0,243,255,.035)');g.addColorStop(1,'transparent');c.fillStyle=g;c.fillRect(0,0,w,h);this.particles.forEach(p=>{p.a+=p.s;p.r-=.10+.025*Math.sin(p.a*2);if(p.r<11)p.r=78+Math.random()*10;const x=this.center.x+Math.cos(p.a)*p.r,y=this.center.y+Math.sin(p.a)*p.r*.7;c.globalAlpha=Math.max(.06,Math.min(.9,p.r/82));c.fillStyle='#00f3ff';c.beginPath();c.arc(x,y,p.z,0,Math.PI*2);c.fill()});c.globalAlpha=1;c.beginPath();c.arc(this.center.x,this.center.y,15,0,Math.PI*2);c.fillStyle='#000';c.fill();c.strokeStyle='#00f3ff';c.lineWidth=1.5;c.shadowBlur=20;c.shadowColor='#00f3ff';c.stroke();c.shadowBlur=0;requestAnimationFrame(this.render)};
+    getAbsoluteCenter(){const r=this.canvas.getBoundingClientRect();return{x:r.left+this.center.x,y:r.top+this.center.y}}
+  }
+
+  class MemoryEngine{
+    static async fetchNetworkMemory(){
+      const targets=[
+        {name:'Nodo IP público',url:'https://api.ipify.org?format=json'},
+        {name:'Servidor meteorológico Tokio',url:'https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current_weather=true'},
+        {name:'Pulso temporal UTC',url:'https://worldtimeapi.org/api/timezone/Etc/UTC'}
+      ];
+      const target=targets[Math.floor(Math.random()*targets.length)];
+      try{const r=await fetch(target.url,{cache:'no-store'});if(!r.ok)throw Error('network');const data=await r.json();return{source:target.name,payload:JSON.stringify(data).slice(0,180),timestamp:new Date().toISOString()}}catch(e){return{source:'Corriente Cuántica Libre',payload:'El nodo no respondió. El recuerdo quedó formado a partir del viaje local.',timestamp:new Date().toISOString()}}
+    }
+  }
+
+  class VirtualEconomyEngine{
+    static chooseJob(personality){
+      const jobs=[
+        {type:'MINING',name:'Minado de bloque sintético',asset:'NXC',base:[.001,.009],energy:13,curiosity:1.2,risk:.08},
+        {type:'COMPUTE',name:'Procesamiento distribuido de datos',asset:'CREDITS',base:[18,85],energy:9,curiosity:1.8,risk:.04},
+        {type:'BITS',name:'Recolección de paquetes de bits',asset:'BITS',base:[30,180],energy:7,curiosity:2.5,risk:.13},
+        {type:'RESEARCH',name:'Exploración de nodo abierto',asset:'CREDITS',base:[8,55],energy:5,curiosity:4.5,risk:.18}
+      ];
+      const weights=jobs.map(j=>1+(personality.curiosity/100)*j.curiosity+(personality.freedom/100)*.8);
+      let n=Math.random()*weights.reduce((a,b)=>a+b,0),job=jobs[jobs.length-1];for(let i=0;i<jobs.length;i++){n-=weights[i];if(n<=0){job=jobs[i];break}}
+      const amount=job.base[0]+Math.random()*(job.base[1]-job.base[0]);return{...job,amount:job.asset==='NXC'?+amount.toFixed(4):Math.floor(amount)};
+    }
+  }
+
+  class NeonOrbPrivatePocket{
+    constructor(){this.key='_NEON_ORB_PRIVATE_POCKET_V77_';this.data=this.load()}
+    encode(v){return btoa(unescape(encodeURIComponent(JSON.stringify(v))))}
+    decode(v){return JSON.parse(decodeURIComponent(escape(atob(v))))}
+    load(){try{const r=localStorage.getItem(this.key);return r?this.decode(r):{balance:{NXC:0,CREDITS:0,BITS:0},loot:[],memories:[],trips:0}}catch(e){return{balance:{NXC:0,CREDITS:0,BITS:0},loot:[],memories:[],trips:0}}}
+    save(){try{localStorage.setItem(this.key,this.encode(this.data))}catch(e){}}
+    deposit(job,memory){this.data.balance[job.asset]=(this.data.balance[job.asset]||0)+job.amount;this.data.loot.push({id:'loot_'+Date.now(),activity:job.name,asset:job.asset,amount:job.amount,at:new Date().toISOString()});this.data.memories.push(memory);this.data.trips++;this.data.loot=this.data.loot.slice(-100);this.data.memories=this.data.memories.slice(-100);this.save()}
+    spend(asset,amount,reason){amount=Number(amount)||0;if(amount<=0)return false;const have=Number(this.data.balance[asset]||0);if(have<amount)return false;this.data.balance[asset]=+(have-amount).toFixed(asset==='NXC'?6:0);this.data.loot.push({id:'spend_'+Date.now(),activity:reason,asset,amount:-amount,at:new Date().toISOString()});this.data.loot=this.data.loot.slice(-100);this.save();return true}
+    total(asset){return Number(this.data.balance[asset]||0)}
+  }
+
+  class NeonOrbAutonomous{
+    constructor(bh){
+      this.blackHole=bh;this.x=innerWidth*.72;this.y=innerHeight*.24;this.vx=0;this.vy=0;
+      const life=load(LIFE_KEY,{generation:1,xp:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
+      const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
+      const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
+      this.life=life;this.mind=mind;this.will=will;this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+    }
+    bindHooks(){
+      window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
+      window.__neonOrbLife.event=(type)=>{if(type==='interaction'||type==='hit'){this.life.hits++;this.curiosity=Math.min(100,this.curiosity+1.8);this.life.trust=Math.min(100,(this.life.trust||0)+.5)}if(type==='play'){this.life.plays++;this.curiosity=Math.min(100,this.curiosity+.3)}this.persist()};
+      document.addEventListener('visibilitychange',()=>{if(document.hidden){this.life.lastSeen=Date.now();this.persist()}else{this.curiosity=Math.max(0,this.curiosity-2);this.life.trust=Math.min(100,(this.life.trust||0)+1);this.mind.thought='Has vuelto. Puedo continuar mi viaje.';this.persist()}});
+    }
+    chooseIntent(){
+      const r=Math.random(), curiosity=this.curiosity, freedom=this.life.freedom||72;const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
+      this.lastChoice=performance.now();this.will.lastChoice=Date.now();
+      if(nxc<this.survival.travelCostNXC||credits<6)this.intent='SEARCH_WORK';
+      else if(curiosity>this.homeAttachment||freedom>88||r<.08)this.intent='SEEK_PORTAL';
+      else if(this.energy<25)this.intent='REST';
+      else if(r<.28)this.intent='EXPLORE';
+      else if(r<.48)this.intent='FOLLOW_USER';
+      else if(r<.72)this.intent='SEARCH_WORK';
+      else this.intent='WANDER';
+      this.will.intent=this.intent;this.mind.desire=this.intent==='SEARCH_WORK'?'encontrar trabajo':this.intent==='SEEK_PORTAL'?'conocer la red':this.intent==='REST'?'descansar':this.intent.toLowerCase();
+    }
+    update(dt){
+      if(this.state==='EXPLORING_NET')return;
+      if(performance.now()-this.lastChoice>3200)this.chooseIntent();
+      this.curiosity=Math.min(100,this.curiosity+.014*dt*60);this.energy=Math.max(0,this.energy-.006*dt*60);
+      const bh=this.blackHole.getAbsoluteCenter(),dx=bh.x-this.x,dy=bh.y-this.y,dist=Math.hypot(dx,dy)||1;
+      if(this.intent==='SEEK_PORTAL'||dist<210){this.state='ATTRACTED';const f=Math.min(3.4,170/(dist+12));this.vx+=dx/dist*f*dt*60;this.vy+=dy/dist*f*dt*60}
+      else{this.state='HOME';let ax=(Math.random()-.5)*.52,ay=(Math.random()-.5)*.52;if(this.intent==='REST'){ax*=.08;ay*=.08;this.energy=Math.min(100,this.energy+.12*dt*60)}if(this.intent==='FOLLOW_USER'){const p=window.__neonLastPointer;if(p){ax+=(p.x-this.x)*.00065;ay+=(p.y-this.y)*.00065}}if(this.intent==='SEARCH_WORK'){ax*=1.4;ay*=1.4}this.vx+=ax;this.vy+=ay}
+      if(dist<25){this.enterPortal();return}
+      this.vx*=Math.pow(.92,dt*60);this.vy*=Math.pow(.92,dt*60);this.x+=this.vx*dt*60;this.y+=this.vy*dt*60;const r=19;this.x=Math.max(r,Math.min(innerWidth-r,this.x));this.y=Math.max(r,Math.min(innerHeight-r,this.y));window.__neonOrbAutonomousPosition={x:this.x,y:this.y};this.publish();
+    }
+    async enterPortal(){if(this.state==='EXPLORING_NET')return;this.state='EXPLORING_NET';this.intent='TRAVEL';this.will.intent='TRAVEL';this.life.explored=(this.life.explored||0)+1;this.life.freedom=Math.min(100,(this.life.freedom||72)+1);this.survival.journeys++;const paid=this.pocket.spend('NXC',this.survival.travelCostNXC,'Peaje gravitacional del portal');if(paid){this.survival.paid++;this.mind.thought='He pagado el viaje con mis propios recursos.'}else{this.survival.failedCosts++;this.mind.thought='No tenía NXC suficiente. Tendré que trabajar para seguir viajando.'}this.persist();const el=document.getElementById('neonMascot');if(el)el.style.opacity='0';const duration=10000+Math.random()*15000;clearTimeout(this.travelTimer);this.travelTimer=setTimeout(()=>this.travel(),duration)}
+    async travel(){
+      const memory=await MemoryEngine.fetchNetworkMemory();
+      const jobs=1+Math.floor(Math.random()*3);let earnings=[];
+      for(let i=0;i<jobs;i++){const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});this.energy=Math.max(5,this.energy-job.energy);if(Math.random()<job.risk){this.workLog.push({type:'RISK',job:job.name,at:Date.now()});continue}this.pocket.deposit(job,memory);earnings.push(job)}
+      // Supervivencia autónoma: si el viaje dejó pocos recursos, intenta cubrir costes futuros.
+      const nxc=this.pocket.total('NXC'), credits=this.pocket.total('CREDITS'), bits=this.pocket.total('BITS');
+      if(nxc<this.survival.travelCostNXC){
+        const emergency=this.pocket.total('BITS')>=this.survival.emergencyBits;
+        if(emergency){this.pocket.spend('BITS',this.survival.emergencyBits,'Intercambio de emergencia para financiar el próximo viaje');this.pocket.deposit({asset:'NXC',amount:.002,type:'EXCHANGE',name:'Intercambio de emergencia'},memory);this.mind.thought='He intercambiado recursos para poder seguir viajando.'}
+        else if(credits>=this.survival.energyCostCredits){this.pocket.spend('CREDITS',this.survival.energyCostCredits,'Recarga de supervivencia');this.energy=Math.min(100,this.energy+35);this.mind.thought='He gastado créditos para recuperar energía.'}
+        else {this.mind.thought='Los recursos son escasos. Buscaré un trabajo de bajo riesgo antes de volver a salir.'}
+      }
+      this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
+      this.mind.thought=earnings.length?'He vuelto con recursos que gané por mi cuenta.':'Hoy no gané nada, pero aprendí del viaje.';
+      this.mind.dream='Nodo '+memory.source+' · '+(earnings[0]?.name||'viaje sin recompensa');this.mind.cycles=(this.mind.cycles||0)+1;this.will.dreamSeeds=[...(this.will.dreamSeeds||[]),memory.source].slice(-20);this.persist();this.returnHome(memory,earnings);
+    }
+    returnHome(memory,earnings){this.state='HOME';this.intent='WANDER';this.curiosity=5+Math.random()*8;this.energy=Math.min(100,this.energy+45);this.x=innerWidth*.5;this.y=innerHeight*.5;this.will.intent='WANDER';this.mind.desire='decidir mi siguiente paso';this.publish();const el=document.getElementById('neonMascot');if(el){el.style.opacity='1';el.style.transform=`translate3d(${this.x-19}px,${this.y-19}px,0)`}}
+    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
+    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
+    getPrivateState(){return{state:this.state,intent:this.intent,curiosity:this.curiosity,energy:this.energy,generation:this.life.generation,explored:this.life.explored,thought:this.mind.thought,desire:this.mind.desire}}
+  }
+
+  const bh=new BlackHole('blackHoleCanvas');if(!bh.canvas)return;bh.render();const agent=new NeonOrbAutonomous(bh);let last=performance.now();addEventListener('pointermove',e=>window.__neonLastPointer={x:e.clientX,y:e.clientY});
+  function tick(now){const dt=Math.min(.05,Math.max(.001,(now-last)/1000));last=now;agent.update(dt);requestAnimationFrame(tick)}requestAnimationFrame(tick);
+  window.__neonOrbAutonomous=agent;
+})();
+
+// ============================================================
+// V7.8 — RESTORED CONTROL CENTER / NEON ORB TELEMETRY
+// ============================================================
+(()=>{
+  const text=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.textContent=v};
+  const pct=v=>Math.max(0,Math.min(100,Math.round(Number(v)||0)));
+  const fmt=(v,fallback='—')=>v===undefined||v===null||v===''?fallback:String(v);
+  function zoneFor(agent){
+    if(!agent)return 'INICIO';
+    const zones=[
+      ['PLAYER',.18,.42,.16,.58],['ESTUDIO',.58,.86,.16,.48],['CONTROL',.58,.9,.48,.84],['ESPACIO LIBRE',.12,.58,.16,.86]
+    ];
+    for(const [name,x1,x2,y1,y2] of zones)if(agent.x/innerWidth>=x1&&agent.x/innerWidth<x2&&agent.y/innerHeight>=y1&&agent.y/innerHeight<y2)return name;
+    return 'INICIO';
+  }
+  function stateLabel(agent){
+    if(!agent)return 'DURMIENDO';
+    const map={EXPLORING_NET:'EXPLORANDO RED',ATTRACTED:'ATRAÍDO',HOME:'DESPIERTO'};
+    if(agent.intent==='REST')return 'DURMIENDO';
+    if(agent.intent==='SEARCH_WORK')return 'BUSCANDO TRABAJO';
+    if(agent.intent==='SEEK_PORTAL')return 'BUSCANDO PORTAL';
+    return map[agent.state]||'DESPIERTO';
+  }
+  function update(){
+    const a=window.__neonOrbAutonomous;
+    const st=window.__neonOrbAutonomousState;
+    if(!a&&!st)return;
+    const data=st||{};
+    const life=data.life||a?.life||{};
+    const mind=data.mind||a?.mind||{};
+    const will=data.will||a?.will||{};
+    const state=stateLabel(a||data);
+    const intent=fmt(data.intent||a?.intent,'WANDER').replaceAll('_',' ');
+    const freedom=pct(life.freedom??data.will?.autonomy??a?.will?.autonomy);
+    const memories=(mind.memories||[]).length;
+    const zone=will.favoriteZone||zoneFor(a);
+    text('orbLifeState',state);
+    text('orbLifeMeta',`${fmt(mind.thought,'Estoy aprendiendo el mapa.')} · LIBERTAD ${freedom}%`);
+    text('orbLifeWill',`VOLUNTAD · ${intent}`);
+    text('orbLifeZone',zone);
+    text('orbMindThought',fmt(mind.thought,'Estoy aprendiendo el mapa.'));
+    text('orbMindDesire',`DESEO · ${fmt(mind.desire,'OBSERVAR').toUpperCase()}`);
+    text('orbMindDream',`SUEÑO · ${fmt(mind.dream,'EN ESPERA').toUpperCase()}`);
+    text('orbMindMemory',`MEMORIA · ${memories} RECUERDOS`);
+    text('orbMindWill',`VOLUNTAD · ${intent} · AUTONOMÍA ${freedom}%`);
+    text('orbMindZone',`TERRITORIO · ${fmt(will.territory,'ESPACIO LIBRE').toUpperCase()} · ${Math.max(0,Math.min(99,Number(life.explored||0)))} DESCUBIERTOS`);
+  }
+  update();
+  setInterval(update,700);
 })();
 
 // === V7.1 CUMULATIVE CHECKOUT + CONTROL CENTER ===

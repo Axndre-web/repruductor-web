@@ -1,2 +1,11 @@
-NEON PLAYER X V7.4 — CUMULATIVE LIFE + MIND + WILL
-V7.1 base preserved. V7.2 autonomous life preserved. V7.3 mind preserved. V7.4 adds autonomous will, user-presence following, territory discovery, favorite zones, dream seeds, personality drift, autonomy, independent intent selection, and persistent state.
+# NEON PLAYER X V7.1 — CUMULATIVE MASTER
+
+V5.x base + V7 Radio Equalizer + Media Studio + autonomous neon mascot + Control Center + dynamic PayPal checkout.
+
+## V7.6 — CUMULATIVE AUTONOMOUS LIFE / WORK / MEMORY / WILL
+- Neon Orb mantiene estado persistente de vida, mente y voluntad.
+- Puede decidir de forma autónoma entre vagar, descansar, seguir al usuario, explorar, buscar trabajo o atravesar el portal.
+- Durante sus viajes consulta nodos públicos y realiza entre 1 y 3 trabajos sintéticos por viaje.
+- Las ganancias se almacenan en un bolsillo privado no renderizado en la interfaz.
+- Memorias, deseos, pensamientos y evolución se conservan localmente.
+- La economía es ficticia/sintética: NXC, CREDITS y BITS no representan dinero real ni criptomonedas reales.

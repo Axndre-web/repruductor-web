@@ -21,18 +21,16 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 /* V7.1 — CUMULATIVE CONTROL CENTER + PAYPAL */
 .control-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.control-card{padding:17px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(145deg,#0a0810,#020203)}.control-card span{display:block;font:700 .5rem Orbitron;color:#66616d;letter-spacing:.15em}.control-card b{display:block;margin:10px 0 5px;font:700 .9rem Orbitron;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.control-card small{display:block;color:#686470;font-size:.62rem;line-height:1.5}.control-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.order-history{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}.order-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}.order-row b{font:700 .62rem Orbitron;color:var(--accent)}.order-row small{display:block;color:#66616d;font-size:.58rem;margin-top:4px}.pay-modal{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;opacity:0;visibility:hidden;transition:.25s}.pay-modal.open{opacity:1;visibility:visible}.pay-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(12px)}.pay-dialog{position:relative;width:min(540px,calc(100% - 28px));max-height:90vh;overflow:auto;padding:26px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:22px;background:linear-gradient(145deg,#0b0811,#020204);box-shadow:0 35px 100px #000,0 0 50px color-mix(in srgb,var(--accent) 10%,transparent)}.pay-dialog h2{font:700 1.5rem Orbitron;margin:8px 0 18px}.pay-dialog h2 em{font-style:normal;color:var(--accent)}.pay-close{position:absolute;right:14px;top:12px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#08070a;color:#aaa;font-size:1.3rem;cursor:pointer}.pay-summary{display:flex;justify-content:space-between;gap:10px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#050507}.pay-summary span{font-size:.68rem;color:#aaa;overflow:hidden;text-overflow:ellipsis}.pay-summary b{font:700 .8rem Orbitron;color:var(--accent);white-space:nowrap}.pay-status{margin:12px 0;color:#8f8b98;font-size:.7rem}.pay-status.pay-ok{color:#55ff9b}.paypal-box{min-height:44px}.pay-note{display:block;margin-top:12px;color:#5f5b66;font-size:.56rem;line-height:1.5}@media(max-width:900px){.control-grid{grid-template-columns:repeat(2,1fr)}}@media(max-width:520px){.control-grid{grid-template-columns:1fr}.pay-dialog{padding:20px}.order-row{grid-template-columns:1fr}.control-card b{font-size:.8rem}}
 
-/* V7.2 CUMULATIVE — autonomous digital life */
-.orb-life-card{position:relative;overflow:hidden}.orb-life-card:after{content:"";position:absolute;inset:auto -20% -70% auto;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(180,76,255,.2),transparent 68%);pointer-events:none}.orb-life-card small{display:block;margin-top:4px}.orb-life-card small:last-child{color:var(--accent);font-size:8px;letter-spacing:.08em}
-@media(max-width:700px){.orb-life-card{grid-column:1/-1}}
 
+/* V7.5 — GRAVITATIONAL PORTAL / AUTONOMOUS ORB */
+.black-hole-canvas{position:fixed;right:20px;bottom:20px;width:180px;height:180px;z-index:9998;pointer-events:none;filter:drop-shadow(0 0 12px rgba(0,243,255,.22));}
+@media(max-width:520px){.black-hole-canvas{width:130px;height:130px;right:10px;bottom:10px;opacity:.82}}
 
-/* V7.3 CUMULATIVE — INNER MIND / AUTONOMY / DREAMS */
-.orb-mind-card{position:relative;overflow:hidden;border-color:color-mix(in srgb,var(--accent) 24%,var(--line));}
-.orb-mind-card:before{content:"";position:absolute;width:120px;height:120px;right:-35px;top:-45px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--accent) 18%,transparent),transparent 68%);animation:orbMindPulse 4s ease-in-out infinite}
-.orb-mind-card b,.orb-mind-card small{position:relative;z-index:1}
-.orb-mind-card b{white-space:normal;line-height:1.35;color:var(--accent)}
-.orb-mind-card small{margin-top:5px}
-@keyframes orbMindPulse{0%,100%{transform:scale(.8);opacity:.45}50%{transform:scale(1.15);opacity:1}}
-@media(max-width:700px){.orb-mind-card{grid-column:1/-1}}
-.orb-mind-card small:nth-last-child(-n+2){display:block;margin-top:5px;opacity:.78}.orb-mind-card small:nth-last-child(2){color:var(--accent)}
-@media(max-width:700px){.orb-mind-card small{font-size:8px}.orb-mind-card b{font-size:11px}}
+/* V7.8 — RESTORED NEON ORB CONTROL CENTER */
+.orb-control-card{background:radial-gradient(circle at 78% 35%,rgba(180,92,255,.12),transparent 34%),linear-gradient(145deg,#0a0810,#020203);border-color:rgba(180,92,255,.22);box-shadow:inset 0 0 28px rgba(180,92,255,.035)}
+.orb-control-card b{color:#fff;text-shadow:0 0 14px rgba(180,92,255,.28)}
+.orb-control-card small+small{margin-top:7px}
+.orb-control-card #orbLifeWill,.orb-control-card #orbMindWill{color:var(--accent)}
+.orb-control-card #orbLifeZone,.orb-control-card #orbMindZone{color:#7d6a8c}
+@media(max-width:900px){.control-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.control-grid{grid-template-columns:1fr}.orb-control-card b{font-size:.78rem}}
