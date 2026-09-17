@@ -33,7 +33,7 @@
 </nav>
 <main>
 <section id="inicio" class="hero section">
-  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V7.1</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
+  <div class="hero-copy reveal"><span class="eyebrow">NEON PLAYER X / V8.8</span><h1>FUTURO EN SOMBRA.<br><span>NEÓN VIVO.</span></h1><p>Una interfaz futurista donde radio, música, pedidos y entretenimiento conviven en una sola experiencia.</p><div class="hero-actions"><a class="btn primary" href="#radio">▶ ESCUCHAR RADIO</a><a class="btn ghost" href="#temas">✦ CAMBIAR ESTILO</a></div></div>
   <div class="hero-core reveal"><div class="orb"><img src="icon-192.png" alt=""> </div><span>NEON CORE</span><small>INTERFACE ONLINE</small></div>
 </section>
 <section class="workspace section">
@@ -52,10 +52,17 @@
   </aside>
 </section>
 <section id="radio" class="section panel reveal">
-  <div class="section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2></div><span class="pill"><i></i> DIRECTO</span></div>
+  <div class="section-head radio-section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2><p class="section-note">Red de emisoras · reconexión automática · estado en tiempo real</p></div><div class="radio-network-status"><span class="pill" id="radioNetworkPill"><i></i> <b id="radioNetworkState">RED LISTA</b></span><button class="btn mini radio-refresh" id="radioRefresh" type="button" title="Comprobar emisoras">↻ <span>ACTUALIZAR</span></button></div></div>
   <div class="radio-layout">
     <div class="radio-stage"><div class="stage-top"><div><small id="radioStatus">● LISTO</small><h3 id="radioName">Selecciona una emisora</h3><p id="radioGenre">Reproducción dentro de la página</p></div><div class="stage-logo" id="stageLogo">40</div></div><div class="wave" id="wave"></div><div class="neon-eq" id="radioEQ"><div class="eq-head"><span>RADIO EQUALIZER</span><b id="radioEqState">ANALIZANDO</b></div><canvas id="radioEqCanvas" aria-label="Ecualizador visual de radio"></canvas><div class="eq-spectrum" id="radioSpectrum"></div><div class="eq-sliders"><label>60<input data-band="0" type="range" min="-12" max="12" value="0"></label><label>230<input data-band="1" type="range" min="-12" max="12" value="0"></label><label>910<input data-band="2" type="range" min="-12" max="12" value="0"></label><label>3.6K<input data-band="3" type="range" min="-12" max="12" value="0"></label><label>14K<input data-band="4" type="range" min="-12" max="12" value="0"></label></div></div><audio id="radioAudio" preload="none"></audio><div class="stage-controls"><button id="radioPlay" class="round-btn">▶</button><div class="range"><span>VOLUMEN</span><input id="radioVolume" type="range" min="0" max="1" step=".01" value=".8"></div><a id="radioWeb" class="btn mini" target="_blank" rel="noopener">WEB OFICIAL ↗</a></div></div>
-    <div class="radio-grid" id="radioGrid"></div>
+    <div class="radio-station-panel">
+      <div class="radio-grid-tools">
+        <div><span class="eyebrow">STATION MATRIX</span><strong id="radioGridCount">12 EMISORAS</strong></div>
+        <div class="radio-filters" role="group" aria-label="Filtrar emisoras"><button type="button" class="radio-filter active" data-filter="all">TODAS</button><button type="button" class="radio-filter" data-filter="pop">POP</button><button type="button" class="radio-filter" data-filter="rock">ROCK</button><button type="button" class="radio-filter" data-filter="sport">DEPORTE</button></div>
+      </div>
+      <div class="radio-grid" id="radioGrid" aria-live="polite"></div>
+      <div class="radio-grid-footer"><span id="radioGridHint">Selecciona una emisora para iniciar la señal.</span><span><kbd>←</kbd><kbd>→</kbd> navegar · <kbd>ENTER</kbd> reproducir</span></div>
+    </div>
   </div>
 </section>
 <section id="player" class="section panel reveal">
@@ -78,7 +85,7 @@
 </section>
 <section id="tienda" class="section panel reveal" aria-hidden="true"><div class="section-head"><div><span class="eyebrow">DIGITAL SHOP</span><h2>TIENDA <em>NEON</em></h2></div></div><div class="shop-grid"><article class="product"><div class="product-art"><span>NEON</span><b>PLAYER X</b></div><div><h3>Multimedia Neon Player X</h3><p>Acceso digital · unidad</p><strong>0,99 €</strong></div><button class="btn primary add" data-product="Multimedia Neon Player X" data-price="0.99">AÑADIR AL CARRITO</button></article><aside class="cart"><div class="cart-head"><h3>🛒 TU PEDIDO</h3><b id="cartTotal">0,00 €</b></div><div id="cartItems" class="cart-items"><p>Tu carrito está vacío.</p></div><div class="delivery"><label><input type="radio" name="delivery" value="recogida" checked> Recogida · Renfe Azuqueca <b>0 €</b></label><label><input type="radio" name="delivery" value="domicilio"> A domicilio <b>Confirmar coste</b></label></div><input id="customerName" placeholder="Nombre completo"><input id="customerPhone" placeholder="Teléfono de contacto"><input id="customerAddress" placeholder="Dirección de entrega (si aplica)"><input id="deliveryDate" type="date"><div class="checkout"><button id="whatsapp" class="btn whatsapp">WHATSAPP PEDIDO</button><button id="paypal" class="btn paypal">PAYPAL</button></div></aside></div></section>
 <section id="control" class="section panel reveal">
-  <div class="section-head"><div><span class="eyebrow">CONTROL CENTER · V5.6 → V7.1</span><h2>NEON <em>CONTROL</em></h2></div><span class="pill"><i></i> CUMULATIVE</span></div>
+  <div class="section-head"><div><span class="eyebrow">CONTROL CENTER · V5.6 → V8.8</span><h2>NEON <em>CONTROL</em></h2></div><span class="pill"><i></i> CUMULATIVE</span></div>
   <div class="control-grid">
     <article class="control-card"><span>RADIO</span><b id="evoPlayback">EN ESPERA</b><small id="evoPlaybackMeta">Selecciona una emisora.</small></article>
     <article class="control-card"><span>EVOLUCIÓN</span><b id="evoRewardLevel">NIVEL 1</b><small id="evoRewardMeta">EXP 0% · 0 / 100 · 0 interacciones.</small><div class="evo-progress" aria-label="Progreso de experiencia"><i id="evoRewardBar" style="width:0%"></i></div></article>
@@ -93,7 +100,7 @@
 </section>
 <section id="temas" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">VISUAL ENGINE</span><h2>ELIGE TU <em>ESTILO</em></h2></div><span class="pill">12 THEMES</span></div><div class="theme-grid" id="themeGrid"></div></section>
 </main>
-<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V7.1 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
+<footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V8.8 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
 <div id="payModal" class="pay-modal" aria-hidden="true">
   <div class="pay-backdrop" data-close-pay></div>
   <div class="pay-dialog" role="dialog" aria-modal="true" aria-labelledby="payTitle">

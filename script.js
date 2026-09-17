@@ -24,41 +24,84 @@ function renderThemes(){const g=$('#themeGrid');g.innerHTML=themes.map((t,i)=>`<
 function applyTheme(name){document.body.dataset.theme=name;localStorage.neonTheme=name;$$('.theme-card').forEach(x=>x.classList.toggle('selected',x.dataset.theme===name));updateThemeButton();toast('Tema '+(themes.find(t=>t[0]===name)?.[1]||name)+' activado')}
 function updateThemeButton(){const b=$('#themeCycle');if(!b)return;const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));b.dataset.themeIndex=i;b.querySelector('span').textContent=themes[i]?.[1]||'TEMA'}
 function cycleTheme(){const i=Math.max(0,themes.findIndex(t=>t[0]===document.body.dataset.theme));applyTheme(themes[(i+1)%themes.length][0])}
-function renderStations(){const g=$('#radioGrid');g.innerHTML=stations.map((r,i)=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}"><div class="station-logo">${r[1]}</div><div><b>${r[0]}</b><small>${r[2]}</small></div><span class="listen">▶</span></article>`).join('');$$('.radio-card').forEach(c=>c.onclick=()=>playStation(+c.dataset.i))}
-function makeWave(){const w=$('#wave');w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
-function playStation(i){
-  active=i;
-  const r=stations[i],url=streams[i];
-  $$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
-  $('#radioName').textContent=r[0];
-  $('#radioGenre').textContent=r[2]+' · reproducción integrada';
-  $('#stageLogo').textContent=r[1];
-  $('#stageLogo').style.color=r[3];
-  $('#radioWeb').href=r[4];
-  $('#radioStatus').textContent='● CONECTANDO';
-  audio.pause();
-  audio.removeAttribute('src');
-  audio.load();
-  if(!url){
-    $('#radioStatus').textContent='● WEB OFICIAL';
-    toast(r[0]+' · sin stream directo disponible');
-    return;
-  }
-  audio.src=url;
-  audio.load();
-  audio.play().then(()=>{
-    $('#radioStatus').textContent='● EN DIRECTO';
-    toast(r[0]+' · reproduciendo');
-  }).catch(()=>{
-    $('#radioStatus').textContent='● REQUIERE WEB';
-    toast(r[0]+' · el navegador no pudo iniciar el stream. Pulsa ▶ o WEB OFICIAL.');
-  });
+const streamCandidates={
+  0:['https://playerservices.streamtheworld.com/api/livestream-redirect/Los40.mp3'],
+  1:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_CLASSIC.mp3'],
+  2:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_DANCE.mp3'],
+  3:['https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40_URBAN.mp3'],
+  4:['https://one.cloudstreaming.eu/proxy/europa/stream'],
+  5:['https://kissfm.kissfmradio.cires21.com/kissfm.mp3'],
+  6:['https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOLE.mp3'],
+  7:['https://rockfm-cope-rrcast.flumotion.com/cope/rockfm-low.mp3'],
+  8:['https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONAL.mp3'],
+  9:['https://flucast09-h-cloud.flumotion.com/cope/net1.mp3'],
+  10:['https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3'],
+  11:['https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high']
+};
+let radioRetryTimer=null,radioRequest=0,radioFailCount=0,radioFilter='all',radioOnlineRetry=null;
+const radioCategories=['pop','classic','dance','urban','pop','rock','pop','rock','sport','sport','sport','general'];
+const radioSearchNames=['LOS40','LOS40 Classic','LOS40 Dance','LOS40 Urban','Europa FM','KISS FM','Radiolé','Rock FM','Radio MARCA','COPE Deportes','RAC1','RNE'];
+function radioStageClass(kind){const el=$('.radio-stage');if(!el)return;el.classList.remove('signal-live','signal-loading','signal-error');if(kind)el.classList.add('signal-'+kind)}
+function setRadioStatus(text,kind='loading'){$('#radioStatus').textContent='● '+text;radioStageClass(kind);const pill=$('#radioNetworkPill');if(pill){pill.classList.toggle('offline',kind==='error');}const st=$('#radioNetworkState');if(st)st.textContent=kind==='live'?'SEÑAL ACTIVA':kind==='error'?'SEÑAL INESTABLE':'BUSCANDO SEÑAL'}
+function stationStateHTML(i){const state=i===active&&audio&&!audio.paused&&!audio.error?'EN DIRECTO':i===active&&radioFailCount?'RECUPERANDO':'LISTA';const cls=state==='EN DIRECTO'?'live':state==='RECUPERANDO'?'loading':'';return `<small class="station-state ${cls}" data-station-state="${i}">${state}</small>`}
+function filteredStations(){return stations.map((r,i)=>({r,i})).filter(({i})=>radioFilter==='all'||radioCategories[i]===radioFilter)}
+function renderStations(){
+  const g=$('#radioGrid');if(!g)return;
+  const list=filteredStations();
+  g.innerHTML=list.map(({r,i})=>`<article class="radio-card ${i===active?'active':''}" data-i="${i}" style="--station:${r[3]}" tabindex="0" role="button" aria-label="${esc(r[0])}"><div class="station-logo">${esc(r[1])}</div><div><b>${esc(r[0])}</b><small>${esc(r[2])}</small>${stationStateHTML(i)}</div><span class="listen">${i===active&&!audio.paused?'Ⅱ':'▶'}</span></article>`).join('');
+  $$('.radio-card').forEach(c=>{c.onclick=()=>playStation(+c.dataset.i);c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();playStation(+c.dataset.i)}}});
+  const count=$('#radioGridCount');if(count)count.textContent=`${list.length} ${list.length===1?'EMISORA':'EMISORAS'}`;
 }
-
-audio.addEventListener('playing',()=>{ $('#radioStatus').textContent='● EN DIRECTO'; });
+function refreshStationStates(){
+  $$('.radio-card').forEach(c=>{const i=+c.dataset.i,st=c.querySelector('[data-station-state]'),btn=c.querySelector('.listen');if(st){const live=i===active&&audio&&!audio.paused&&!audio.error;st.textContent=live?'EN DIRECTO':i===active&&radioFailCount?'RECUPERANDO':'LISTA';st.className='station-state '+(live?'live':i===active&&radioFailCount?'loading':'')}if(btn)btn.textContent=i===active&&!audio.paused?'Ⅱ':'▶';c.classList.toggle('active',i===active)});
+}
+function makeWave(){const w=$('#wave');if(w)w.innerHTML=Array.from({length:11},()=>'<i></i>').join('')}
+async function discoverRadioStream(i){
+  try{
+    const q=encodeURIComponent(radioSearchNames[i]||stations[i][0]);
+    const endpoints=[`https://all.api.radio-browser.info/json/stations/search?name=${q}&limit=10&hidebroken=true&order=votes&reverse=true`,`https://de1.api.radio-browser.info/json/stations/search?name=${q}&limit=10&hidebroken=true&order=votes&reverse=true`];
+    for(const endpoint of endpoints){
+      const ctl=new AbortController(),timer=setTimeout(()=>ctl.abort(),6500);
+      try{const res=await fetch(endpoint,{signal:ctl.signal,headers:{Accept:'application/json'}});clearTimeout(timer);if(!res.ok)continue;const data=await res.json();const item=data.find(x=>x.url_resolved||x.url);const url=item?.url_resolved||item?.url;if(url)return url}catch(e){clearTimeout(timer)}
+    }
+  }catch(e){}
+  return null;
+}
+async function playStation(i,attempt=0){
+  if(!stations[i])return;
+  active=i;const req=++radioRequest,r=stations[i];radioFailCount=attempt;
+  $$('.radio-card').forEach(c=>c.classList.toggle('active',+c.dataset.i===i));
+  $('#radioName').textContent=r[0];$('#radioGenre').textContent=r[2]+' · reproducción integrada';$('#stageLogo').textContent=r[1];$('#stageLogo').style.color=r[3];$('#radioWeb').href=r[4];
+  setRadioStatus(attempt?'REINTENTANDO':'CONECTANDO','loading');refreshStationStates();
+  clearTimeout(radioRetryTimer);audio.pause();audio.removeAttribute('src');audio.load();
+  let candidates=streamCandidates[i]||[];
+  if(!candidates.length){const discovered=await discoverRadioStream(i);if(req!==radioRequest)return;if(discovered){streamCandidates[i]=[discovered];candidates=streamCandidates[i]}}
+  if(!candidates.length){setRadioStatus('SIN STREAM','error');toast(r[0]+' · no hay señal directa disponible ahora.');refreshStationStates();return}
+  const url=candidates[attempt%candidates.length];audio.src=url;audio.load();
+  try{
+    await Promise.race([audio.play(),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);
+    if(req!==radioRequest)return;radioFailCount=0;setRadioStatus('EN DIRECTO','live');const hint=$('#radioGridHint');if(hint)hint.textContent=`${r[0]} · señal activa`;toast(r[0]+' · reproduciendo');refreshStationStates();
+  }catch(e){
+    if(req!==radioRequest)return;radioFailCount=attempt+1;setRadioStatus('RECUPERANDO','loading');refreshStationStates();
+    if(attempt<Math.min(3,Math.max(1,candidates.length-1))){radioRetryTimer=setTimeout(()=>playStation(i,attempt+1),800);return}
+    const discovered=await discoverRadioStream(i);
+    if(req!==radioRequest)return;
+    if(discovered&&!candidates.includes(discovered)){streamCandidates[i].push(discovered);radioRetryTimer=setTimeout(()=>playStation(i,0),600);return}
+    setRadioStatus('STREAM NO DISPONIBLE','error');toast(r[0]+' · señal no disponible; puedes reintentar.');refreshStationStates();
+  }
+}
+audio.addEventListener('playing',()=>{setRadioStatus('EN DIRECTO','live');radioFailCount=0;refreshStationStates();});
 audio.addEventListener('playing',()=>window.__neonOrbLife?.event?.('play'));
-audio.addEventListener('waiting',()=>{ $('#radioStatus').textContent='● CARGANDO'; });
-audio.addEventListener('error',()=>{ if(streams[active]){ $('#radioStatus').textContent='● ERROR DE STREAM'; toast(stations[active][0]+' · stream no disponible ahora. Prueba WEB OFICIAL.'); }});
+audio.addEventListener('pause',()=>{if(active>=0){const live=document.visibilityState!=='hidden';if(live)refreshStationStates()}});
+audio.addEventListener('waiting',()=>{setRadioStatus('CARGANDO','loading');refreshStationStates()});
+audio.addEventListener('stalled',()=>{setRadioStatus('RECUPERANDO','loading');refreshStationStates()});
+audio.addEventListener('error',()=>{if(!stations[active])return;radioFailCount++;setRadioStatus('RECUPERANDO','loading');clearTimeout(radioRetryTimer);radioRetryTimer=setTimeout(()=>playStation(active,Math.min(radioFailCount,4)),900);refreshStationStates()});
+window.addEventListener('online',()=>{const s=$('#radioNetworkState');if(s)s.textContent='RED RECUPERADA';clearTimeout(radioOnlineRetry);if(stations[active]&&(audio.paused||audio.error))radioOnlineRetry=setTimeout(()=>playStation(active,0),1200)});
+window.addEventListener('offline',()=>{setRadioStatus('SIN INTERNET','error');clearTimeout(radioRetryTimer);const h=$('#radioGridHint');if(h)h.textContent='Sin conexión · la radio se recuperará automáticamente al volver internet.';refreshStationStates()});
+$('#radioRefresh')?.addEventListener('click',()=>{clearTimeout(radioRetryTimer);playStation(active,0)});
+$$('.radio-filter').forEach(b=>b.addEventListener('click',()=>{radioFilter=b.dataset.filter;$$('.radio-filter').forEach(x=>x.classList.toggle('active',x===b));renderStations()}));
+const radioGrid=$('#radioGrid');radioGrid?.addEventListener('wheel',e=>{if(Math.abs(e.deltaY)>Math.abs(e.deltaX)&&radioGrid.scrollHeight>radioGrid.clientHeight){e.preventDefault();radioGrid.scrollTop+=e.deltaY}},{passive:false});
+window.addEventListener('keydown',e=>{if(!$('#radio')?.matches(':hover'))return;if(e.key==='ArrowDown'||e.key==='ArrowRight'){e.preventDefault();const list=filteredStations(),pos=Math.max(0,list.findIndex(x=>x.i===active)),next=list[(pos+1)%list.length];if(next)playStation(next.i)}if(e.key==='ArrowUp'||e.key==='ArrowLeft'){e.preventDefault();const list=filteredStations(),pos=Math.max(0,list.findIndex(x=>x.i===active)),prev=list[(pos-1+list.length)%list.length];if(prev)playStation(prev.i)}});
 function renderCart(){const count=cart.reduce((a,x)=>a+x.qty,0),total=cart.reduce((a,x)=>a+x.qty*x.price,0);$('#cartCount').textContent=count;$('#cartTotal').textContent=total.toFixed(2).replace('.',',')+' €';$('#cartItems').innerHTML=cart.length?cart.map((x,i)=>`<div class="cart-line"><span>${esc(x.name)} × ${x.qty}</span><b>${(x.qty*x.price).toFixed(2).replace('.',',')} €</b></div>`).join(''):'<p>Tu carrito está vacío.</p>'}
 $$('.add').forEach(b=>b.onclick=()=>{const n=b.dataset.product,p=+b.dataset.price;const x=cart.find(x=>x.name===n);x?x.qty++:cart.push({name:n,price:p,qty:1});renderCart();toast('Producto añadido al carrito')});
 $('#whatsapp').onclick=()=>{if(!cart.length)return toast('Añade un producto antes de enviar el pedido');const name=$('#customerName').value||'Cliente';const phone=$('#customerPhone').value||'No indicado';const addr=$('#customerAddress').value||'Recogida Renfe Azuqueca';const date=$('#deliveryDate').value||'A confirmar';const total=cart.reduce((a,x)=>a+x.qty*x.price,0).toFixed(2);const text=`¡Hola! Me gustaría confirmar la disponibilidad de mi pedido.%0A%0A👤 *Nombre:* ${encodeURIComponent(name)}%0A🥟 *Cantidad:* ${cart.reduce((a,x)=>a+x.qty,0)}%0A💶 *Total:* ${total} €%0A📦 *Entrega:* ${encodeURIComponent(addr)}%0A📅 *Fecha:* ${encodeURIComponent(date)}%0A📱 *Teléfono:* ${encodeURIComponent(phone)}`;window.open('https://wa.me/34602487576?text='+text,'_blank')};
