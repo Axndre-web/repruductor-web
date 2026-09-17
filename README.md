@@ -32,7 +32,7 @@ Actualización acumulativa sobre NEON PLAYER X V7.1 — CUMULATIVE MASTER.
 - Añade acceso interno `hasCreatorGift()` / `getCreatorGift()` para la lógica de Orb.
 - Repara la lectura de estado usada por el canal privado IA.
 - Normaliza la lectura de memorias del Orb.
-- Refuerza la adaptación responsive para todo tipo de dispositivos actuales, móviles, tabletas y pantallas pequeñas.
+- Mejora en la adaptabilidad responsive y layout fluido en cualquier arquitectura de pantalla, garantiza compatibilidad cross-device (smartphones, tablets y escritorios).
 - Service Worker actualizado a V8.1 con precache y fallback offline.
 
 El bolsillo del navegador debe considerarse almacenamiento criptográfico seguro: el cliente puede inspeccionarse mediante herramientas del navegador.
