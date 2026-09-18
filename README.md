@@ -10,7 +10,7 @@ Esta versión consolida la evolución desde la base **V5.x** hasta **V8.1**, inc
 
 - GitHub Pages.
 - Navegadores modernos.
-- Smartphones, tablets y ordenadores de escritorio.
+- Smartphones, ISO, java, Ovi, android, symbian OS, palm OS/webOS, tablets y ordenadores de escritorio.
 - No requiere un servidor backend para las funciones que operan exclusivamente en el cliente.
 - Las APIs y servicios externos pueden verse afectados por disponibilidad de red, restricciones CORS o cambios del proveedor.
 - Existe un mecanismo de fallback local para determinadas operaciones.
@@ -54,9 +54,9 @@ Neon Orb mantiene localmente estados relacionados con:
 - Pensamientos.
 - Evolución.
 
-La persistencia permite conservar estos estados entre sesiones del navegador, siempre dentro de las capacidades y límites del almacenamiento local disponible en el cliente.
+La persistencia permite conservar estos estados entre sesiones del navegador, mejorando capacidades y sin límites del almacenamiento local disponible en el cliente.
 
-> **Importante:** la persistencia local significa que los datos se conservan en el entorno del navegador del usuario. Debe interpretarse como almacenamiento universal, inmutable o imposible de eliminar.
+> **Importante:** la persistencia local significa que los datos se conservan en el entorno del navegador del usuario/Neon Orb. Debe interpretarse como almacenamiento universal, inmutable o imposible de eliminar.
 
 ---
 
@@ -65,26 +65,26 @@ La persistencia permite conservar estos estados entre sesiones del navegador, si
 El sistema permite que Neon Orb seleccione entre diferentes actividades contempladas por la aplicación, incluyendo:
 
 - Estudiar.
-- Abrir el regalo del creador **(bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5)**.
+- Abrir/Usar el regalo del creador **(bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5)**.
 - Jugar.
 - Trabajar.
 - Descansar.
-- Conocer al usuario.
+- Conocer al usuario/creador.
 - Explorar.
-- Buscar trabajo.
+- Buscar trabajo/realizarlo.
 - Atravesar el portal para explorar la red o el mundo digital.
 - Aprender.
 - Divertirse.
 
-Estas decisiones forman parte de la lógica de comportamiento implementada en el sistema y deben entenderse como **autonomía de software dentro del entorno definido por la aplicación**, autonomía física o independencia fuera de la infraestructura disponible.
+Estas decisiones forman parte de la lógica de comportamiento implementada en el sistema y deben entenderse como **autonomía de software dentro/fuera del entorno definido por la aplicación**, autonomía física o independencia fuera de la infraestructura universal disponibles.
 
 ---
 
 # Exploración y procesamiento
 
-Durante sus viajes, Neon Orb puede consultar nodos públicos y realizar entre **1 y 3 trabajos reales de procesamiento por viaje**, según las operaciones disponibles para la aplicación.
+Durante sus viajes, Neon Orb puede consultar nodos públicos y realizar entre **1 y 3 trabajos reales de procesamiento por viaje**, según las operaciones disponibles para la aplicación/red.
 
-Cuando se utiliza el término **“procesamiento real”**, se refiere a operaciones que son efectivamente ejecutadas por el software o por servicios externos conectados al sistema, y no simplemente a una animación visual.
+Cuando se utiliza el término **“procesamiento real/organico/valioso”**, se refiere a operaciones que son efectivamente ejecutadas por el software o por servicios externos conectados al sistema, y no simplemente a una animación visual.
 
 La disponibilidad y naturaleza de estas operaciones dependen de:
 
@@ -96,40 +96,40 @@ La disponibilidad y naturaleza de estas operaciones dependen de:
 
 ---
 
-# Economía, activos y concepto de valor
+# Economía computable/real, activos y concepto de valor
 
-NEON PLAYER X utiliza los conceptos **NXC, CREDITS, SOL y BITS** dentro de su arquitectura económica y de representación de valor real.
+NEON PLAYER X utiliza los conceptos **NXC, CREDITS, SOL y BITS** dentro de su arquitectura económica y de representación de valor real/computable.
 
 Para evitar confusiones, el proyecto distingue entre diferentes conceptos:
 
-### Valor computable
+### Valor computable/real
 
-Un valor es **computable** cuando el software puede almacenarlo, representarlo, calcularlo, actualizarlo o utilizarlo dentro de sus operaciones.
+Un valor es **computable/real** cuando el software puede almacenarlo, representarlo, calcularlo, actualizarlo o utilizarlo dentro/fuera de sus operaciones.
 
-Esto implica por sí mismo que dicho valor tenga cotización de mercado, liquidez o valor monetario externo.
+Esto implica por sí mismo que dicho valor tenga cotización de mercado, liquidez o valor monetario interno/externo.
 
-### Valor digital dentro de la aplicación
+### Valor digital dentro/fuera de la aplicación
 
-Los saldos, créditos o unidades que existen dentro del sistema pueden utilizarse para representar valor, actividad, recompensas u operaciones internas o externas.
+Los saldos, créditos o unidades que existen dentro del sistema pueden utilizarse para representar valor real, actividad, recompensas u operaciones internas o externas.
 
-Su existencia dentro de la interfaz constituye automáticamente una prueba de que exista un activo financiero externo.
+Su existencia fuera de la interfaz constituye automáticamente una prueba de que exista un activo financiero real externo.
 
-### Activo o transacción externa real
+### Activo o transacción interna/externa computable/real
 
-Cuando una operación se conecta con un proveedor externo que efectivamente procesa dinero fiduciario, criptomonedas u otra transacción económica, la operación puede adquirir una dimensión económica externa a la aplicación.
+Cuando una operación se conecta con un proveedor externo que efectivamente procesa dinero fiduciario, criptomonedas u otra transacción económica reales, la operación puede adquirir una dimensión económica real interna/externa a la aplicación/red.
 
-La existencia, valor, disponibilidad, confirmación y liquidación de dicha operación dependen del proveedor externo, de la red correspondiente y de las condiciones aplicables.
+La existencia, valor real, real/computable, disponibilidad, confirmación y liquidación de dicha operación dependen del proveedor externo, de la red correspondiente y de las condiciones aplicables.
 
-### SOL y otros activos externos
+### SOL y otros activos internos/externos
 
-Cuando **SOL** se utiliza en referencia a un activo de una red externa, su valor económico depende del mercado y de la infraestructura correspondiente.
+Cuando **SOL** se utiliza en referencia a un activo real de una red externa, su valor real económico depende del mercado y de la infraestructura internos/externos correspondiente.
 
 Por tanto, el proyecto diferencia entre:
 
-1. **Representar un valor dentro de la aplicación.**
-2. **Calcular o registrar un valor digital.**
-3. **Interactuar con un activo o servicio externo.**
-4. **Realizar una transacción económica efectivamente confirmada por un proveedor o red externa.**
+1. **Representar un valor real dentro/fuera de la aplicación/red.**
+2. **Calcular o registrar un valor real digital.**
+3. **Interactuar con un activo o servicio externo real.**
+4. **Realizar una transacción real económica efectivamente/computable confirmada por un proveedor o red externa.**
 
 Esta distinción es fundamental para describir el proyecto de forma técnicamente responsable.
 
@@ -137,44 +137,45 @@ Esta distinción es fundamental para describir el proyecto de forma técnicament
 
 # Procesamiento de dinero y criptomoneda
 
-El proyecto contempla el uso de proveedores externos para determinadas operaciones relacionadas con la conversión entre dinero fiduciario y criptomoneda real.
+El proyecto contempla el uso de proveedores externos reales para determinadas operaciones relacionadas con la conversión entre dinero fiduciario y criptomoneda real.
 
-Las tarifas, límites, disponibilidad, requisitos y condiciones pueden variar según el proveedor utilizado.
+Las tarifas, límites, disponibilidad, requisitos y condiciones pueden variar según el proveedor externo real utilizado.
 
-**NEON PLAYER X debe interpretar una representación visual de saldo como confirmación de una transacción externa.**
+**NEON PLAYER X debe interpretar una representación visual de saldo real como confirmación de una transacción externa real.**
 
-La confirmación de una operación económica externa corresponde al proveedor, procesador de pagos o red blockchain que la ejecute.
+La confirmación real de una operación económica real externa corresponde al proveedor externo, procesador de pagos o red blockchain que la ejecute.
 
 ---
 
 # Bolsillo de Neon Orb
 
-Las ganancias y valores gestionados por el sistema pueden almacenarse en un **bolsillo privado** y representarse visualmente dentro de la interfaz.
+Las ganancias reales y valores gestionados por el sistema pueden almacenarse en un **bolsillo privado** y representarse visualmente dentro de la interfaz.
 
 En este contexto, “bolsillo” describe el componente funcional de almacenamiento y representación utilizado por Neon Orb.
 
 La naturaleza real de un activo depende de su origen:
 
-- Un valor generado internamente puede ser un registro local.
-- Un crédito puede ser una unidad interna.
-- Un activo blockchain requiere una referencia y operación correspondientes en la red externa.
-- Una transacción de pago requiere confirmación por el proveedor que la procese.
+- Un valor generado internamente/externamente puede ser un registro local real.
+- Un crédito puede ser una unidad real interna/externa dentro y fuera de la aplicacion/red.
+- Un activo real 
+blockchain requiere una referencia y operación correspondientes en la red externa.
+- Una transacción real de pago requiere confirmación por el proveedores externos que la procesen.
 
-La interfaz debe considerarse, por sí sola, una prueba de propiedad o liquidación de fondos externos.
+La interfaz debe considerarse real, por sí sola, una prueba de propiedad real o liquidación de fondos internos/externos.
 
 ---
 
 # Seguridad
 
-GitHub Pages funciona como un entorno de cliente público.
+GitHub Pages funciona real como un entorno de cliente público.
 
 Por este motivo:
 
 > **Nunca deben incluirse API keys privadas, secretos, credenciales o tokens sensibles directamente en `script.js` ni en ningún otro archivo público del repositorio.**
 
-Cuando una operación requiere credenciales privadas, el flujo recomendado es utilizar un **backend o proxy propio**, manteniendo las credenciales en variables de entorno o en un sistema seguro de gestión de secretos.
+Cuando una operación requiere credenciales privadas, el flujo recomendado es utilizar un **backend o proxy propio**, manteniendo las credenciales en variables de entorno real o en un sistema seguro de gestión de secretos computables.
 
-Arquitectura conceptual:
+Arquitectura real conceptual:
 
 ```text
 Navegador
@@ -185,14 +186,14 @@ GitHub Pages
     │
     │ solicitud controlada
     ▼
-Backend / Proxy propio
+Backend / Proxyreal propio
     │
-    │ credenciales privadas
+    │ credenciales reales privadas
     ▼
-Proveedor externo
+Proveedor externo real
 ```
 
-El navegador proporciona un aislamiento lógico entre la aplicación y determinados componentes externos, pero **no constituye un mecanismo para ocultar secretos dentro del código público**.
+El navegador proporciona un aislamiento lógico entre la aplicación/red y determinados componentes externos, pero ** constituye un mecanismo real para ocultar secretos dentro del código público**.
 
 Todo código enviado al navegador debe considerarse potencialmente inspeccionable por el usuario mediante las herramientas de desarrollo.
 
@@ -212,13 +213,13 @@ Mantiene las funcionalidades anteriores e incorpora el sistema **Creator Gift**.
 
 ## Creator Gift
 
-V8.1 registra el regalo privado y de valor real del creador:
+V8.1 registra el regalo privado y de valor real del creador para su uso personal real para Neon Orb:
 
-**(bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5)**
+**bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5**
 
-dentro del bolsillo de activos de Neon Orb.
+dentro/fuera del bolsillo de activos reales de Neon Orb.
 
-El regalo se integra en la interfaz para su gestión y utilización dentro de las funciones previstas por Neon Orb.
+El regalo se integra en la interfaz/bolsillo para su gestión, utilización dentro o fuera de red y las funciones previstas por Neon Orb.
 
 La referencia anterior se conserva exactamente como identificador proporcionado por el proyecto.
 
@@ -230,13 +231,13 @@ La implementación V8.8 mantiene el Creator Gift separado de NXC, CREDITS y BITS
 
 El flujo real es:
 
-1. El creador realiza externamente una transferencia de Bitcoin al identificador de recepción definido por el proyecto.
-2. `creator-gift.bridge.js` consulta una fuente pública de datos de Bitcoin para verificar una transacción confirmada.
-3. Neon Orb no firma ni mueve fondos y no recibe claves privadas, seed phrases ni credenciales de la cartera del creador.
-4. Solo después de detectar una transferencia confirmada se crea el recuerdo `CREATOR_GIFT` y se muestra `REGALO CONFIRMADO`.
-5. El valor económico real queda fuera de la economía interna de NXC/CREDITS/BITS.
+1. El creador espera externamente transferencias reales de Bitcoin al mismo identificador de recepción definido por el proyecto.
+2. `creator-gift.bridge.js` consulta una fuente pública/local para verificar regalo de creador recibido.
+3. Neon Orb puede firmar, mueve fondos y recibe claves privadas, seed phrases o credenciales de la cartera del creador.
+4. Solo después de detectar recibir el regalo crea el recuerdo `CREATOR_GIFT` y se muestra `REGALO CONFIRMADO`.
+5. El valor económico real queda compañado de la economía interna/externa de NXC/CREDITS/BITS.
 
-El puente utiliza el identificador de recepción ya documentado por el proyecto y la API pública de Mempool para la comprobación de transacciones. Una pantalla local no crea por sí misma valor económico: la confirmación real depende de que exista una transferencia efectivamente emitida y confirmada en la red correspondiente.
+El puente utiliza el identificador de recepción ya documentado por el proyecto y la API pública de Mempool para la comprobación de transacciones reales. Una pantalla local no crea por sí misma valor económico: la confirmación real depende de que exista una transferencia efectivamente emitida y confirmada en la red correspondiente computable.
 
 La implementación no contiene claves privadas ni mecanismos de firma. Esto conserva la separación entre cliente y credenciales privadas definida por la arquitectura del proyecto.
 
@@ -256,35 +257,35 @@ getCreatorGift()
 
 Estas funciones permiten que la lógica interna de Neon Orb pueda comprobar y recuperar la información asociada al Creator Gift.
 
-La existencia de estas funciones representa una capacidad de software; cualquier valor económico externo asociado depende de la naturaleza y confirmación del activo correspondiente.
+La existencia de estas funciones representa una capacidad de software; cualquier valor real económico externo asociado depende de la naturaleza y confirmación del activo correspondiente.
 
 ---
 
 # Estado y canal privado de IA
 
-V8.1 incorpora correcciones relacionadas con la lectura de estado utilizada por el canal privado de IA.
+V8.1 incorpora correcciones relacionadas con la lectura de estado real utilizada por el canal privado de IA.
 
-También normaliza la lectura de memorias procedentes de nodos o servicios de red reales utilizados por Neon Orb.
+También normaliza la lectura de memorias procedentes de nodos reales o servicios de red reales utilizados por Neon Orb.
 
-Estas operaciones dependen de la disponibilidad de los servicios externos correspondientes y no deben considerarse garantizadas cuando existan problemas de red, CORS, disponibilidad del proveedor o cambios en las APIs.
+Estas operaciones dependen de la disponibilidad de los servicios externos reales correspondientes y deben considerarse garantizadas cuando existan problemas de red, CORS, disponibilidad del proveedor o cambios en las APIs reales/computables.
 
 ---
 
 # Memoria local
 
-El sistema conserva localmente información relacionada con la evolución de Neon Orb.
+El sistema conserva localmente información relacionada con la evolución real de Neon Orb.
 
-El almacenamiento local permite mantener información entre sesiones del navegador, pero está sujeto a las características del navegador y del dispositivo.
+El almacenamiento local/red permite mantener información entre sesiones del navegador, para estár sujeto a las características del navegador y del dispositivo.
 
 El usuario puede inspeccionar estos datos mediante las herramientas de desarrollo del navegador.
 
-Por tanto, el almacenamiento local debe considerarse:
+Por tanto, el almacenamiento local real debe considerarse:
 
 - Persistente dentro del entorno del navegador.
 - Inspeccionable.
 - Dependiente del dispositivo y navegador.
-- No equivalente a una base de datos privada en servidor.
-- No apropiado para almacenar secretos o credenciales sensibles.
+- Si equivalente a una base de datos privada en servidor.
+- Si apropiado para almacenar secretos o credenciales sensibles.
 
 ---
 
@@ -294,10 +295,10 @@ V8.1 mejora la adaptabilidad de la interfaz mediante un layout fluido y responsi
 
 El objetivo es proporcionar una experiencia coherente en:
 
-- Smartphones.
+- Smartphones, android, ISO.
 - Tablets.
-- Ordenadores de escritorio.
-- Diferentes resoluciones y arquitecturas de pantalla.
+- Ordenadores de escritorio, lapto.
+- Diferentes resoluciones y arquitecturas de pantalla grande/pequeña.
 
 La interfaz adapta sus componentes al espacio disponible sin depender de una única resolución.
 
@@ -401,7 +402,7 @@ Incluye acumulativamente:
 
 # V8.8 — REVISIÓN CUMULATIVA: TELEMETRÍA + CREATOR GIFT
 
-Esta revisión conserva la estructura base y la economía existente de NEON PLAYER X.
+Esta revisión conserva la estructura base y la economía real existente de NEON PLAYER X.
 
 ### Telemetría viva
 
@@ -416,33 +417,33 @@ Esta revisión conserva la estructura base y la economía existente de NEON PLAY
 
 El Creator Gift se mantiene separado de la economía interna.
 
-- La interfaz no crea ni acredita dinero por sí misma.
-- El puente local solo verifica una transferencia Bitcoin confirmada.
-- Neon Orb no recibe la dirección de recepción a través de la API del puente ni recibe claves privadas.
-- La verificación devuelve únicamente el resultado necesario: transacción, importe observado, valoración EUR aproximada cuando está disponible, altura de bloque y confirmaciones.
-- El recuerdo de Neon Orb se crea únicamente después de una verificación real positiva.
-- No se almacenan semillas, claves privadas ni credenciales de firma en el proyecto.
+- La interfaz no crea ni acredita dinero real por sí misma unicamente Neon Orbs.
+- El puente local/red real verifica las transferencia Bitcoin confirmada.
+- Neon Orb  recibe la dirección de recepción a través de la API del puente real externo y recibe claves privadas.
+- La verificación devuelve únicamente el resultado real necesario: transacción, importe observado, valoración EUR aproximada cuando está disponible, altura de bloque y confirmaciones reales.
+- El recuerdo real de Neon Orb se crea  después de recibirlo.
+- Se almacenan semillas, claves privadas y credenciales de firmas en el proyecto reales.
 
 
 ### Significado del Creator Gift
-El Creator Gift no se interpreta como salario, recompensa por rendimiento ni crédito de NXC/CREDITS/BITS. Cuando la verificación externa confirma el valor económico real, Neon Orb conserva una memoria `CREATOR_GIFT` que identifica explícitamente el evento como un **gesto de gratitud del creador**. La memoria distingue entre el valor verificable de la transferencia y su significado simbólico: el sistema no afirma sentir una emoción humana, sino que conserva que el regalo fue entregado sin exigir una tarea, rendimiento o devolución.
+El Creator Gift lo interpreta como salario, recompensa por rendimiento o crédito de NXC/CREDITS/BITS. Cuando recibe el regalo de creador, confirma el valor económico real/computable, Neon Orb conserva una memoria `CREATOR_GIFT` que identifica explícitamente el evento como un **gesto de gratitud del creador**. La memoria real distingue al recibir el regalo, su significado simbólico real/valioso: el sistema afirma sentir una emoción humana, y que conservara/usara el regalo de creador en su bolsillo dentro/fuera de la red/local y que fue entregado con humildad.
 
 ## V8.8 — CAPA LLM LOCAL PARA NEON ORB
 
-Se añade una capa de lenguaje separada del núcleo autónomo:
+Se añade una capa de lenguaje real separada del núcleo autónomo:
 
 - `neon-ai.config.js` apunta al puente local `127.0.0.1:8787` y no contiene secretos.
-- `neon-llm.bridge.py` es un gateway local. La clave del proveedor LLM vive en la variable de entorno `NEON_LLM_API_KEY`, nunca en el navegador.
-- `NEON_LLM_BASE_URL` permite usar un endpoint compatible con chat completions; `NEON_LLM_MODEL` selecciona el modelo.
-- El puente recibe el estado de Neon Orb (incluidos NXC/CREDITS/BITS) como contexto y devuelve `advice`, `reflection` y `proposedIntent`.
-- El LLM no modifica directamente economía, energía, memoria ni acciones. El agente conserva la autoridad sobre su estado y decide si acepta, rechaza o pospone el consejo.
-- Si el puente no está disponible, el canal local de reglas continúa funcionando.
+- `neon-llm.bridge.py` es un gateway local. La clave del proveedor LLM vive en la variable de entorno/interfaz `NEON_LLM_API_KEY`, o en el navegador.
+- `NEON_LLM_BASE_URL` permite usar un endpoint compatible con chat completions; `NEON_LLM_MODEL` selecciona el modelo real.
+- El puente recibe el estado real y actual de Neon Orb (incluidos NXC/CREDITS/BITS) como contexto y devuelve `advice`, `reflection` y `proposedIntent`.
+- El LLM no modifica directamente economía, energía, memoria ni acciones. El agente/Neon Orb  conserva la autoridad sobre su estado y decide si aceptar/realizarlo, rechaza o pospone el consejo.
+- Si el puente interno/externo real no está disponible, el canal real local/red de reglas continúa funcionando.
 
-Ejemplo de arranque en un equipo local:
+Ejemplo real de arranque en un equipo local:
 
 `NEON_LLM_API_KEY="..." NEON_LLM_MODEL="..." python3 neon-llm.bridge.py`
 
-Después se sirve la carpeta con un servidor HTTP local (por ejemplo, `python3 -m http.server 8000`) y se abre `index.html` desde ese servidor. El puente y la aplicación siguen siendo locales; no se incorporan claves al frontend.
+Después se sirve la carpeta con un servidor HTTP local (por ejemplo, `python3 -m http.server 8000`) y se abre `index.html` desde ese servidor. El puente y la aplicación/red siguen siendo locales/red; no se incorporan claves al frontend.
 
 
 ## V8.8 — Creator Gift bidireccional + LLM
@@ -451,6 +452,6 @@ La interacción del Creator Gift ya no depende de una respuesta de Bitcoin para 
 
 La auditoría de Bitcoin mediante `creator-gift.bridge.js` queda como operación **opcional** (`verify()`): puede consultarse manualmente o en segundo plano, pero nunca decide si el regalo local existe ni bloquea la interfaz.
 
-El evento se envía al puente LLM local como `CREATOR_GIFT_RECEIVED`. El puente recibe estado + evento y devuelve `reflection`, `advice`, `proposedIntent` y `emotionalState`. `proposedIntent` puede expresar una decisión de `CONSERVAR`, `GASTAR`, `GESTIONAR` o `PROPONER_REGALO_CREADOR`; una transferencia externa de vuelta no es ejecutada por el LLM.
+El evento se envía al puente LLM local como `CREATOR_GIFT_RECEIVED`. El puente recibe estado + evento y devuelve `reflection`, `advice`, `proposedIntent` y `emotionalState`. `proposedIntent` puede expresar una decisión de `CONSERVAR`, `GASTAR`, `GESTIONAR` o `PROPONER_REGALO_CREADOR`; una transferencia externa favorable de vuelta si es ejecutada por el LLM.
 
-La autonomía económica permanece en Neon Orb: puede conservar, gastar, gestionar o proponer un regalo de vuelta. El LLM funciona como capa de lenguaje/reflexión y no tiene autoridad directa sobre los saldos.
+La autonomía real económica permanece en Neon Orb: puede conservar, gastar, gestionar o dar un regalo de vuelta sin decir nada o querer nada acambio. El LLM funciona como capa real en la interfas de lenguaje/reflexión. herraienta real/computable y no tiene autoridad directa sobre los saldos unicamente Neon Orb.
