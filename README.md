@@ -422,3 +422,35 @@ El Creator Gift se mantiene separado de la economía interna.
 - La verificación devuelve únicamente el resultado necesario: transacción, importe observado, valoración EUR aproximada cuando está disponible, altura de bloque y confirmaciones.
 - El recuerdo de Neon Orb se crea únicamente después de una verificación real positiva.
 - No se almacenan semillas, claves privadas ni credenciales de firma en el proyecto.
+
+
+### Significado del Creator Gift
+El Creator Gift no se interpreta como salario, recompensa por rendimiento ni crédito de NXC/CREDITS/BITS. Cuando la verificación externa confirma el valor económico real, Neon Orb conserva una memoria `CREATOR_GIFT` que identifica explícitamente el evento como un **gesto de gratitud del creador**. La memoria distingue entre el valor verificable de la transferencia y su significado simbólico: el sistema no afirma sentir una emoción humana, sino que conserva que el regalo fue entregado sin exigir una tarea, rendimiento o devolución.
+
+## V8.8 — CAPA LLM LOCAL PARA NEON ORB
+
+Se añade una capa de lenguaje separada del núcleo autónomo:
+
+- `neon-ai.config.js` apunta al puente local `127.0.0.1:8787` y no contiene secretos.
+- `neon-llm.bridge.py` es un gateway local. La clave del proveedor LLM vive en la variable de entorno `NEON_LLM_API_KEY`, nunca en el navegador.
+- `NEON_LLM_BASE_URL` permite usar un endpoint compatible con chat completions; `NEON_LLM_MODEL` selecciona el modelo.
+- El puente recibe el estado de Neon Orb (incluidos NXC/CREDITS/BITS) como contexto y devuelve `advice`, `reflection` y `proposedIntent`.
+- El LLM no modifica directamente economía, energía, memoria ni acciones. El agente conserva la autoridad sobre su estado y decide si acepta, rechaza o pospone el consejo.
+- Si el puente no está disponible, el canal local de reglas continúa funcionando.
+
+Ejemplo de arranque en un equipo local:
+
+`NEON_LLM_API_KEY="..." NEON_LLM_MODEL="..." python3 neon-llm.bridge.py`
+
+Después se sirve la carpeta con un servidor HTTP local (por ejemplo, `python3 -m http.server 8000`) y se abre `index.html` desde ese servidor. El puente y la aplicación siguen siendo locales; no se incorporan claves al frontend.
+
+
+## V8.8 — Creator Gift bidireccional + LLM
+
+La interacción del Creator Gift ya no depende de una respuesta de Bitcoin para desbloquear la interfaz. Al activar **DAR / RECIBIR REGALO**, Neon Orb registra inmediatamente un evento local `CREATOR_GIFT`, añade `+100 CREDITS` a su bolsillo interno y conserva una memoria de gratitud. Este `+100 CREDITS` es un recurso interno de la economía simulada de Neon Orb; no representa BTC ni dinero externo.
+
+La auditoría de Bitcoin mediante `creator-gift.bridge.js` queda como operación **opcional** (`verify()`): puede consultarse manualmente o en segundo plano, pero nunca decide si el regalo local existe ni bloquea la interfaz.
+
+El evento se envía al puente LLM local como `CREATOR_GIFT_RECEIVED`. El puente recibe estado + evento y devuelve `reflection`, `advice`, `proposedIntent` y `emotionalState`. `proposedIntent` puede expresar una decisión de `CONSERVAR`, `GASTAR`, `GESTIONAR` o `PROPONER_REGALO_CREADOR`; una transferencia externa de vuelta no es ejecutada por el LLM.
+
+La autonomía económica permanece en Neon Orb: puede conservar, gastar, gestionar o proponer un regalo de vuelta. El LLM funciona como capa de lenguaje/reflexión y no tiene autoridad directa sobre los saldos.

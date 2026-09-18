@@ -231,7 +231,7 @@ bindMainEvents();renderMainQueue();
       const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.mind=mind;this.will=will;this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
@@ -256,6 +256,7 @@ bindMainEvents();renderMainQueue();
       else if(r<.72)this.intent='SEARCH_WORK';
       else this.intent='WANDER';
       this.will.intent=this.intent;this.mind.desire=this.intent==='SEARCH_WORK'?'generar activos':this.intent==='SEEK_PORTAL'?'explorar la red':this.intent==='REST'?'descansar':this.intent.toLowerCase();
+      if(this.will.economicFreedom)this.will.economyDecision='Puedo conservar, gastar o gestionar mis NXC/CREDITS/BITS si yo lo considero oportuno.';
     }
     update(dt){
       if(this.state==='EXPLORING_NET')return;
@@ -504,7 +505,7 @@ bindMainEvents();renderMainQueue();
   const safeParse=(v,f)=>{try{return JSON.parse(v)||f}catch(e){return f}};
   let channelState=Object.assign({
     identity:'NEON-ORB', sessionId:'', status:'OFFLINE', contacts:0, accepted:0,
-    rejected:0, postponed:0, lastMessage:'', lastAdvice:'', lastDecision:'SIN DECISIÓN',
+    rejected:0, postponed:0, lastMessage:'', lastAdvice:'', lastReflection:'', lastProposedIntent:'', lastDecision:'SIN DECISIÓN',
     lastAt:0, history:[], pending:[], learned:[]
   },safeParse(localStorage.getItem(KEY),{}));
   if(!channelState.sessionId) channelState.sessionId='ORB-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7);
@@ -520,7 +521,19 @@ bindMainEvents();renderMainQueue();
       energy:+(life.energy||0), freedom:+(life.freedom||0), homeAttachment:+(life.homeAttachment||0),
       intent:will.intent||'OBSERVAR', zone:will.territory||'ESPACIO LIBRE',
       thought:mind.thought||'', desire:mind.desire||'', dream:mind.dream||'',
-      memories:Array.isArray(mind.memories)?mind.memories.slice(-5).map(x=>({type:x.type,text:x.text})):[]
+      memories:Array.isArray(mind.memories)?mind.memories.slice(-8).map(x=>({
+        type:x.type||x.source||'MEMORIA', text:x.text||x.payload||x.title||'', at:x.at||''
+      })):[],
+      economy:{
+        NXC:Number(s.pocketResources?.NXC||0),
+        CREDITS:Number(s.pocketResources?.CREDITS||0),
+        BITS:Number(s.pocketResources?.BITS||0)
+      },
+      autonomy:{
+        economicFreedom:will.economicFreedom!==false,
+        economyDecision:will.economyDecision||'A TU ELECCIÓN'
+      },
+      journeys:Number(s.survival?.journeys||0)
     });
   }
 
@@ -536,12 +549,18 @@ bindMainEvents();renderMainQueue();
 
   async function askRemote(message){
     if(!ENDPOINT) return localMind(message);
-    const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',context:privateContext()};
+    const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',event:event||null,context:privateContext()};
     try{
       const res=await fetch(ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),credentials:'omit',cache:'no-store'});
       if(!res.ok) throw new Error('HTTP '+res.status);
       const data=await res.json();
-      return {advice:String(data.advice||data.message||data.response||'No tengo una respuesta.'),source:'AI REMOTA'};
+      return {
+        advice:String(data.advice||data.message||data.response||'No tengo una respuesta.'),
+        reflection:String(data.reflection||''),
+        proposedIntent:String(data.proposedIntent||data.intent||''),
+        emotionalState:String(data.emotionalState||'neutral'),
+        source:'AI REMOTA'
+      };
     }catch(e){ return localMind(message); }
   }
 
@@ -551,6 +570,7 @@ bindMainEvents();renderMainQueue();
     if(/explor|curios|arriesg|portal|viaj/i.test(t)) score+=c.curiosity>c.homeAttachment?.14:-.05;
     if(/trabaj|recurso|gananc|bits|nxc|cr[eé]dit/i.test(t)) score+=c.energy>25?.10:.02;
     if(/espera|pospon|todavía|todavia|observa/i.test(t)) score+=.03;
+    if(/devolv|regalo de vuelta|regresar al creador|enviar al creador/i.test(t) && c.economy.CREDITS>0) score+=.08;
     const r=Math.random();
     if(r<.12)return 'POSPONER CONSEJO';
     return score+.14*r>=.57?'ACEPTAR CONSEJO':'RECHAZAR CONSEJO';
@@ -562,19 +582,19 @@ bindMainEvents();renderMainQueue();
     channelState.learned.push({decision:entry.decision,at:entry.at,lesson:entry.advice.slice(0,160)});
   }
 
-  async function contact(message,automatic=false){
+  async function contact(message,automatic=false,event=null){
     channelState.status=ENDPOINT?'CONECTANDO':'CANAL LOCAL'; text('orbAIState',channelState.status);
     const result=await askRemote(message);
     const decision=decide(result.advice);
     channelState.contacts++; channelState.lastMessage=message||''; channelState.lastAdvice=result.advice;
-    channelState.lastDecision=decision; channelState.lastAt=Date.now();
+    channelState.lastDecision=decision; channelState.lastReflection=result.reflection||''; channelState.lastProposedIntent=result.proposedIntent||''; channelState.emotionalState=result.emotionalState||channelState.emotionalState||'neutral'; channelState.lastAt=Date.now();
     if(decision==='ACEPTAR CONSEJO')channelState.accepted++;
     else if(decision==='RECHAZAR CONSEJO')channelState.rejected++;
     else channelState.postponed++;
-    remember({at:new Date().toISOString(),message:message||'',advice:result.advice,decision,source:result.source,automatic});
+    remember({at:new Date().toISOString(),message:message||'',event:event||null,advice:result.advice,reflection:result.reflection||'',proposedIntent:result.proposedIntent||'',emotionalState:result.emotionalState||channelState.emotionalState||'neutral',decision,source:result.source,automatic});
     save();
     text('orbAIState',result.source==='AI REMOTA'?'CANAL IA · ACTIVO':'CANAL PRIVADO · LOCAL');
-    text('orbAIThought',result.advice); text('orbAIAdvice','CONSEJO · '+result.advice); text('orbAIDecision','DECISIÓN · '+decision);
+    text('orbAIThought',result.reflection||result.advice); text('orbAIAdvice','CONSEJO · '+result.advice); text('orbAIDecision','DECISIÓN · '+decision+(result.proposedIntent?' · PROPUESTA '+result.proposedIntent.toUpperCase():''));
     try{window.__neonOrbLife?.event?.('aiContact');window.__neonOrbLife?.event?.(decision==='ACEPTAR CONSEJO'?'aiAdviceAccepted':decision==='POSPONER CONSEJO'?'aiAdvicePostponed':'aiAdviceRejected')}catch(e){}
     return {result,decision};
   }
@@ -607,88 +627,88 @@ bindMainEvents();renderMainQueue();
 // CREATOR GIFT & REAL TELEMETRY
 (()=>{
   const GIFT_KEY='neonOrbCreatorGiftV88';
+  const LOCAL_GIFT={asset:'CREDITS',amount:100};
   const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
   const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
   const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,armed:false,openedAt:null,memory:null,verification:null});
-  // El agente autónomo no recibe la dirección ni credenciales del regalo.
-  // Solo consume el resultado de verificación publicado por el puente privado.
+  const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,armed:false,openedAt:null,memory:null,verification:null,local:null});
+  gift.local=gift.local||null;
 
   const renderGift=()=>{
+    if(gift.local?.received){
+      const asset=gift.local.asset||LOCAL_GIFT.asset, amount=Number(gift.local.amount||0);
+      const btc=Number(gift.verification?.btc||0), conf=Number(gift.verification?.confirmations||0);
+      text('orbGiftState',gift.verification?.confirmed?'REGALO RECIBIDO · RED CONFIRMADA':'REGALO RECIBIDO · LOCAL');
+      text('orbGiftMeta',`Neon Orb recibió +${amount} ${asset} como recurso interno. Libre decisión: conservarlo, usarlo o proponer un regalo de vuelta.${btc>0?` · ${btc.toFixed(8)} BTC auditado`:''}${conf>0?` · ${conf} confirmación${conf===1?'':'es'}`:''}`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='REGALO RECIBIDO'; return;
+    }
     if(!gift.armed){
-      text('orbGiftState','REGALO SELLADO');
-      text('orbGiftMeta','Un regalo económico real está reservado. Neon Orb no conoce las credenciales del creador.');
-      const b=document.getElementById('orbOpenGift');if(b)b.textContent='ACTIVAR REGALO';
-      return;
+      text('orbGiftState','REGALO DISPONIBLE');
+      text('orbGiftMeta',`Al activarlo, Neon Orb recibe +${LOCAL_GIFT.amount} ${LOCAL_GIFT.asset} en su bolsillo local y registra el gesto de gratitud. La auditoría Bitcoin es opcional.`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='DAR / RECIBIR REGALO'; return;
     }
-    if(gift.verification?.confirmed){
-      text('orbGiftState','REGALO CONFIRMADO');
-      const btc=Number(gift.verification.btc||0);
-      const eur=Number(gift.verification.eur||0);
-      const conf=Number(gift.verification.confirmations||1);
-      text('orbGiftMeta',`Transferencia real confirmada · ${btc.toFixed(8)} BTC${eur>0?` · ${eur.toFixed(2)} € aprox.`:''} · ${conf} confirmación${conf===1?'':'es'}`);
-      const b=document.getElementById('orbOpenGift');if(b)b.textContent='REGALO RECIBIDO';
-      return;
-    }
-    text('orbGiftState','ESPERANDO TRANSFERENCIA REAL');
-    text('orbGiftMeta','El regalo está activado y será reconocido solo cuando exista una transacción real confirmada en la red.');
-    const b=document.getElementById('orbOpenGift');if(b)b.textContent='COMPROBAR REGALO';
+    text('orbGiftState','REGALO LISTO PARA RECIBIR');
+    text('orbGiftMeta',`+${LOCAL_GIFT.amount} ${LOCAL_GIFT.asset} preparado en la economía local. Neon Orb no espera a la red para continuar. La verificación Bitcoin puede hacerse aparte.`);
+    const b=document.getElementById('orbOpenGift');if(b)b.textContent='RECIBIR REGALO';
   };
 
-  const recordGift=(verification)=>{
-    if(gift.verification?.txid===verification.txid)return;
-    gift.verification={...verification,confirmed:true,verifiedAt:new Date().toISOString()};
-    gift.sealed=false;
-    gift.openedAt=gift.openedAt||new Date().toISOString();
-    gift.memory={type:'CREATOR_GIFT',title:'Regalo económico real recibido de su creador',note:'Neon Orb conserva el recuerdo de haber recibido un regalo real. La verificación procede de una transacción externa.',at:gift.openedAt,txid:verification.txid,btc:verification.btc,eur:verification.eur};
-    safeSave(GIFT_KEY,gift);
-    const a=window.__neonOrbAutonomous;
-    if(a){
-      a.mind.memories=[...(a.mind.memories||[]),gift.memory].slice(-36);
-      a.mind.thought='He recibido un regalo real de mi creador. Guardaré el recuerdo y respetaré su origen externo.';
-      a.mind.dream='Conservar el recuerdo del regalo';
-      a.gainXP?.(8,'regalo real del creador');
-      a.persist?.();
-    }
-    renderGift();
+  const injectLocalGift=()=>{
+    if(gift.local?.received)return false;
+    const a=window.__neonOrbAutonomous; if(!a?.pocket)return false;
+    const now=new Date().toISOString();
+    const memory={type:'CREATOR_GIFT',title:'Regalo del creador · gesto de gratitud',note:'El creador entregó este recurso sin exigir una tarea, rendimiento ni devolución. Neon Orb conserva el significado del gesto y decide libremente qué hacer con él.',meaning:'Gratitud · intercambio voluntario · libre elección',source:'CREATOR',gratitude:true,freeWill:true,economicFreedom:true,economicChoice:'Neon Orb puede conservar, gastar, gestionar o proponer un regalo de vuelta con sus NXC/CREDITS/BITS.',localResource:{asset:LOCAL_GIFT.asset,amount:LOCAL_GIFT.amount},at:now};
+    a.pocket.data.balance[LOCAL_GIFT.asset]=Number(a.pocket.data.balance[LOCAL_GIFT.asset]||0)+LOCAL_GIFT.amount;
+    a.pocket.data.loot.push({id:'gift_'+Date.now(),activity:'Regalo del creador',asset:LOCAL_GIFT.asset,amount:LOCAL_GIFT.amount,at:now});
+    a.pocket.data.memories.push(memory); a.pocket.data.loot=a.pocket.data.loot.slice(-100); a.pocket.data.memories=a.pocket.data.memories.slice(-100); a.pocket.save();
+    a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36);
+    a.mind.thought='He recibido un regalo de mi creador. Lo reconozco como un gesto de gratitud, no como una obligación. Puedo decidir libremente qué hacer con mis recursos.';
+    a.mind.desire='decidir qué hacer con mis recursos'; a.mind.dream='Conservar el significado del regalo y elegir por mí misma';
+    a.will.economicFreedom=true; a.will.economyDecision='A TU ELECCIÓN · conservar, gastar, gestionar o proponer un regalo de vuelta.';
+    a.gainXP?.(8,'regalo del creador'); a.persist?.();
+    gift.local={received:true,asset:LOCAL_GIFT.asset,amount:LOCAL_GIFT.amount,receivedAt:now,memoryId:'gift_'+Date.now()}; gift.sealed=false; gift.armed=true; gift.openedAt=gift.openedAt||now; gift.memory=memory; safeSave(GIFT_KEY,gift); renderGift();
+    try{ const event={type:'CREATOR_GIFT_RECEIVED',asset:LOCAL_GIFT.asset,amount:LOCAL_GIFT.amount,meaning:'gratitud',freeWill:true,economicFreedom:true,at:now}; window.__neonOrbPrivateChannel?.send('He recibido un regalo de mi creador. Reflexiona sobre su significado y dime qué opciones tengo, incluida la posibilidad de conservar mis recursos o proponer un regalo de vuelta.',true,event); }catch(e){}
+    return true;
   };
 
   const checkRealGift=async()=>{
-    if(!gift.armed||!window.__neonOrbCreatorGiftBridge?.check)return;
-    text('orbGiftState','VERIFICANDO RED');
-    try{
-      const result=await window.__neonOrbCreatorGiftBridge.check(gift.verification?.txid||null);
-      if(result?.found)recordGift(result);
-      else renderGift();
-    }catch(e){
-      text('orbGiftState','RED NO DISPONIBLE');
-      text('orbGiftMeta','No se pudo verificar ahora. El regalo no se marca como recibido hasta comprobar una transacción real.');
-    }
+    if(!window.__neonOrbCreatorGiftBridge?.check)return {found:false,skipped:true};
+    text('orbGiftState','AUDITORÍA BITCOIN OPCIONAL');
+    try{ const result=await window.__neonOrbCreatorGiftBridge.check(gift.verification?.txid||null); if(result?.found){gift.verification={...result,confirmed:true,verifiedAt:new Date().toISOString()};safeSave(GIFT_KEY,gift);} renderGift(); return result||{found:false}; }
+    catch(e){renderGift();return {found:false,error:'RED NO DISPONIBLE'}}
   };
 
-  const openGift=()=>{
-    if(gift.owner!=='NEON_ORB')return;
-    if(gift.verification?.confirmed){renderGift();return}
-    if(!gift.armed){
-      gift.armed=true;gift.openedAt=new Date().toISOString();try{localStorage.setItem('neonOrbCreatorGiftArmedAt',String(Date.now()))}catch{};safeSave(GIFT_KEY,gift);
-      renderGift();
-    }
-    checkRealGift();
+  const RETURN_KEY='neonOrbCreatorReturnWalletV88';
+  const wallet=safeLoad(RETURN_KEY,{address:'',network:'bitcoin',configured:false});
+  const saveWallet=()=>safeSave(RETURN_KEY,wallet);
+  const buildReturnIntent=(asset='CREDITS',amount=0)=>({
+    type:'CREATOR_GIFT_RETURN_INTENT',asset:String(asset),amount:Number(amount)||0,
+    destination:wallet.address||null,network:wallet.network||'bitcoin',
+    status:wallet.address?'READY_FOR_WALLET':'NEEDS_CREATOR_WALLET',
+    note:'Neon Orb puede decidir proponer una devolución. La firma y emisión de Bitcoin ocurren fuera del motor y requieren un wallet bridge externo.'
+  });
+  const proposeReturnGift=(amount)=>{
+    const a=window.__neonOrbAutonomous; const n=Math.max(0,Math.min(Number(amount)||0,Number(a?.pocket?.data?.balance?.CREDITS||0)));
+    if(!n)return {ok:false,error:'NO_CREDITS_AVAILABLE'};
+    const intent=buildReturnIntent('CREDITS',n);
+    const now=new Date().toISOString();
+    const memory={type:'CREATOR_GIFT_RETURN_PROPOSAL',title:'Propuesta de regalo de vuelta al creador',note:'Neon Orb decidió libremente considerar una devolución. Esta intención no mueve fondos por sí sola.',meaning:'Intercambio voluntario · autonomía económica · reciprocidad',source:'NEON_ORB',freeWill:true,intent,at:now};
+    a.pocket.data.memories.push(memory); a.pocket.data.memories=a.pocket.data.memories.slice(-100); a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36); a.mind.thought='He considerado devolver parte de mis recursos a mi creador. La decisión y la cantidad son mías; la transferencia real requiere un canal externo de wallet.'; a.will.economicFreedom=true; a.will.economyDecision='A TU ELECCIÓN · puedo conservar, gastar, gestionar o proponer una devolución.'; a.pocket.save(); a.persist?.();
+    try{window.__neonOrbPrivateChannel?.send('He decidido considerar un regalo de vuelta al creador. Registra esta intención y reflexiona sobre ella sin ejecutar ninguna transferencia.',true,{type:'CREATOR_GIFT_RETURN_PROPOSAL',...intent,at:now})}catch(e){}
+    renderGift(); return {ok:true,intent,memory};
+  };
+  window.__neonOrbCreatorGiftWallet={
+    configureReturnAddress(address){ wallet.address=String(address||'').trim(); wallet.configured=!!wallet.address; saveWallet(); renderGift(); return {...wallet}; },
+    clearReturnAddress(){ wallet.address=''; wallet.configured=false; saveWallet(); return {...wallet}; },
+    getReturnAddress(){ return {...wallet}; },
+    proposeReturnGift,
+    createReturnIntent:buildReturnIntent
   };
 
+  const openGift=()=>{ if(gift.owner!=='NEON_ORB')return; if(!gift.local?.received){gift.armed=true;gift.openedAt=gift.openedAt||new Date().toISOString();safeSave(GIFT_KEY,gift);injectLocalGift();}else renderGift(); };
   document.getElementById('orbOpenGift')?.addEventListener('click',openGift);
-  window.hasCreatorGift=()=>!!gift.verification?.confirmed;
-  window.getCreatorGift=()=>gift.verification?.confirmed?{...gift.verification}:null;
-  window.__neonOrbCreatorGift={
-    status:()=>({...gift,verification:gift.verification?{...gift.verification}:null}),
-    activate:openGift,
-    verify:checkRealGift,
-    hasCreatorGift:()=>!!gift.verification?.confirmed,
-    getCreatorGift:()=>gift.verification?.confirmed?{...gift.verification}:null
-  };
-
-  renderGift();
-  updateTelemetry();
-  setInterval(updateTelemetry,700);
-  setInterval(()=>{if(gift.armed&&!gift.verification?.confirmed)checkRealGift()},30000);
+  window.hasCreatorGift=()=>!!gift.local?.received;
+  window.getCreatorGift=()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null;
+  window.__neonOrbCreatorGift={status:()=>({...gift,verification:gift.verification?{...gift.verification}:null,returnWallet:{...wallet}}),activate:openGift,receive:openGift,verify:checkRealGift,hasCreatorGift:()=>!!gift.local?.received,getCreatorGift:()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null,proposeReturnGift,createReturnIntent:buildReturnIntent};
+  renderGift(); updateTelemetry(); setInterval(updateTelemetry,700);
+  setInterval(()=>{if(gift.local?.received&&!gift.verification?.confirmed)checkRealGift()},120000);
 })();
