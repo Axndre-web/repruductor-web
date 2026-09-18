@@ -380,5 +380,3 @@ Incluye acumulativamente:
 - Service Worker V8.1.
 - Precache.
 - Fallback offline.
-
----
