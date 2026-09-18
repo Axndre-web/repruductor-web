@@ -224,6 +224,22 @@ La referencia anterior se conserva exactamente como identificador proporcionado 
 
 ---
 
+## Creator Gift — verificación económica real
+
+La implementación V8.8 mantiene el Creator Gift separado de NXC, CREDITS y BITS.
+
+El flujo real es:
+
+1. El creador realiza externamente una transferencia de Bitcoin al identificador de recepción definido por el proyecto.
+2. `creator-gift.bridge.js` consulta una fuente pública de datos de Bitcoin para verificar una transacción confirmada.
+3. Neon Orb no firma ni mueve fondos y no recibe claves privadas, seed phrases ni credenciales de la cartera del creador.
+4. Solo después de detectar una transferencia confirmada se crea el recuerdo `CREATOR_GIFT` y se muestra `REGALO CONFIRMADO`.
+5. El valor económico real queda fuera de la economía interna de NXC/CREDITS/BITS.
+
+El puente utiliza el identificador de recepción ya documentado por el proyecto y la API pública de Mempool para la comprobación de transacciones. Una pantalla local no crea por sí misma valor económico: la confirmación real depende de que exista una transferencia efectivamente emitida y confirmada en la red correspondiente.
+
+La implementación no contiene claves privadas ni mecanismos de firma. Esto conserva la separación entre cliente y credenciales privadas definida por la arquitectura del proyecto.
+
 ## API interna del Creator Gift
 
 Se incorpora acceso interno mediante:
@@ -380,3 +396,29 @@ Incluye acumulativamente:
 - Service Worker V8.1.
 - Precache.
 - Fallback offline.
+
+---
+
+# V8.8 — REVISIÓN CUMULATIVA: TELEMETRÍA + CREATOR GIFT
+
+Esta revisión conserva la estructura base y la economía existente de NEON PLAYER X.
+
+### Telemetría viva
+
+- La telemetría lee primero el agente autónomo vivo y usa el snapshot publicado como respaldo.
+- Se actualizan energía, barra de energía, curiosidad, vínculo, ciclo, decisión, zona y recursos NXC/CREDITS/BITS.
+- Se muestra también el contador de viajes sin modificar ningún saldo.
+- El estado inicial `SINCRONIZANDO` ya no queda permanente cuando Neon Orb está disponible.
+- `SIN CONEXIÓN` se reserva para la ausencia real de estado del agente.
+- No se modifica la lógica de generación, gasto o persistencia de NXC, CREDITS o BITS.
+
+### Creator Gift
+
+El Creator Gift se mantiene separado de la economía interna.
+
+- La interfaz no crea ni acredita dinero por sí misma.
+- El puente local solo verifica una transferencia Bitcoin confirmada.
+- Neon Orb no recibe la dirección de recepción a través de la API del puente ni recibe claves privadas.
+- La verificación devuelve únicamente el resultado necesario: transacción, importe observado, valoración EUR aproximada cuando está disponible, altura de bloque y confirmaciones.
+- El recuerdo de Neon Orb se crea únicamente después de una verificación real positiva.
+- No se almacenan semillas, claves privadas ni credenciales de firma en el proyecto.

@@ -323,26 +323,53 @@ bindMainEvents();renderMainQueue();
     return 'INICIO';
   }
   function stateLabel(agent){
-    if(!agent)return 'DURMIENDO';
+    if(!agent)return 'SIN CONEXIÓN';
     const map={EXPLORING_NET:'EXPLORANDO RED',ATTRACTED:'ATRAÍDO',HOME:'DESPIERTO'};
-    if(agent.intent==='REST')return 'DURMIENDO';
-    if(agent.intent==='SEARCH_WORK')return 'EJECUTANDO TRABAJO';
+    if(agent.state==='EXPLORING_NET')return 'EXPLORANDO RED';
+    if(agent.intent==='REST')return 'DESCANSANDO';
+    if(agent.intent==='SEARCH_WORK')return 'BUSCANDO TRABAJO';
     if(agent.intent==='SEEK_PORTAL')return 'BUSCANDO PORTAL';
     return map[agent.state]||'DESPIERTO';
   }
   function update(){
+    // La telemetría lee primero el agente vivo. El snapshot publicado queda como
+    // respaldo para no alterar la lógica autónoma ni la economía existente.
     const a=window.__neonOrbAutonomous;
     const st=window.__neonOrbAutonomousState;
-    if(!a&&!st)return;
+    if(!a&&!st){
+      text('orbTelemetryState','SIN CONEXIÓN');
+      text('orbTelemetryMeta','ESPERANDO DATOS DEL ORB · CURIOSIDAD · — · VÍNCULO · —');
+      text('orbTelemetryProcess','CICLO · — · DECISIÓN · — · ZONA · —');
+      text('orbTelemetryResources','RECURSOS · NXC — · CREDITS — · BITS —');
+      const bar=document.getElementById('orbEnergyBar');if(bar)bar.style.width='0%';
+      return;
+    }
     const data=st||{};
-    const life=data.life||a?.life||{};
-    const mind=data.mind||a?.mind||{};
-    const will=data.will||a?.will||{};
-    const state=stateLabel(a||data);
-    const intent=fmt(data.intent||a?.intent,'WANDER').replaceAll('_',' ');
-    const freedom=pct(life.freedom??data.will?.autonomy??a?.will?.autonomy);
+    const life=a?.life||data.life||{};
+    const mind=a?.mind||data.mind||{};
+    const will=a?.will||data.will||{};
+    const liveState=a||data;
+    const state=stateLabel(liveState);
+    const rawIntent=a?.intent??data.intent??'WANDER';
+    const intent=fmt(rawIntent,'WANDER').replaceAll('_',' ');
+    const freedom=pct(a?.life?.freedom??life.freedom??will.autonomy);
     const memories=(mind.memories||[]).length;
-    const zone=will.favoriteZone||zoneFor(a);
+    const zone=(will.favoriteZone&&will.favoriteZone!=='')?will.favoriteZone:zoneFor(a);
+    const energy=pct(a?.energy??data.energy??life.energy);
+    const curiosity=pct(a?.curiosity??data.curiosity??life.curiosity);
+    const attachment=pct(a?.homeAttachment??data.homeAttachment??(100-(Number(life.freedom)||72)));
+    const cycles=Number(a?.mind?.cycles??mind.cycles??life.cycles??0)||0;
+    const journeys=Number(a?.survival?.journeys??data.survival?.journeys??0)||0;
+
+    // Recursos: fuente de verdad = bolsillo privado del agente. El snapshot
+    // publicado solo se usa como fallback. No se modifica ningún saldo aquí.
+    const pocket=a?.pocket;
+    const resourceValue=(asset)=>{
+      try{if(pocket&&typeof pocket.total==='function')return Number(pocket.total(asset)||0)}catch(e){}
+      return Number(data.pocketResources?.[asset]??0);
+    };
+    const resources={NXC:resourceValue('NXC'),CREDITS:resourceValue('CREDITS'),BITS:resourceValue('BITS')};
+
     text('orbLifeState',state);
     text('orbLifeMeta',`${fmt(mind.thought,'Procesando tareas de red.')} · LIBERTAD ${freedom}%`);
     text('orbLifeWill',`VOLUNTAD · ${intent}`);
@@ -353,6 +380,11 @@ bindMainEvents();renderMainQueue();
     text('orbMindMemory',`MEMORIA · ${memories} RECUERDOS`);
     text('orbMindWill',`VOLUNTAD · ${intent} · AUTONOMÍA ${freedom}%`);
     text('orbMindZone',`TERRITORIO · ${fmt(will.territory,'ESPACIO LIBRE').toUpperCase()} · ${Math.max(0,Math.min(99,Number(life.explored||0)))} DESCUBIERTOS`);
+    text('orbTelemetryState',state);
+    const bar=document.getElementById('orbEnergyBar');if(bar)bar.style.width=energy+'%';
+    text('orbTelemetryMeta',`ENERGÍA · ${energy}% · CURIOSIDAD · ${curiosity}% · VÍNCULO · ${attachment}%`);
+    text('orbTelemetryProcess',`CICLO · ${cycles} · DECISIÓN · ${intent} · ZONA · ${zone} · VIAJES · ${journeys}`);
+    text('orbTelemetryResources',`RECURSOS · NXC ${resources.NXC} · CREDITS ${resources.CREDITS} · BITS ${resources.BITS}`);
   }
   update();
   setInterval(update,700);
@@ -574,32 +606,89 @@ bindMainEvents();renderMainQueue();
 
 // CREATOR GIFT & REAL TELEMETRY
 (()=>{
-  const GIFT_KEY='neonOrbCreatorGiftV87';
+  const GIFT_KEY='neonOrbCreatorGiftV88';
   const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
   const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
   const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-  const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,openedAt:null,memory:null});
-  const openGift=()=>{
-    if(gift.owner!=='NEON_ORB')return;
-    if(!gift.sealed){text('orbGiftState','REGALO GUARDADO');return}
-    gift.sealed=false;gift.openedAt=new Date().toISOString();
-    gift.memory={type:'CREATOR_GIFT',title:'Regalo recibido de su creador',note:'Un recuerdo reservado para Neon Orb. Puede conservarlo dentro de su bolsillo privado.',at:gift.openedAt};
+  const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,armed:false,openedAt:null,memory:null,verification:null});
+  // El agente autónomo no recibe la dirección ni credenciales del regalo.
+  // Solo consume el resultado de verificación publicado por el puente privado.
+
+  const renderGift=()=>{
+    if(!gift.armed){
+      text('orbGiftState','REGALO SELLADO');
+      text('orbGiftMeta','Un regalo económico real está reservado. Neon Orb no conoce las credenciales del creador.');
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='ACTIVAR REGALO';
+      return;
+    }
+    if(gift.verification?.confirmed){
+      text('orbGiftState','REGALO CONFIRMADO');
+      const btc=Number(gift.verification.btc||0);
+      const eur=Number(gift.verification.eur||0);
+      const conf=Number(gift.verification.confirmations||1);
+      text('orbGiftMeta',`Transferencia real confirmada · ${btc.toFixed(8)} BTC${eur>0?` · ${eur.toFixed(2)} € aprox.`:''} · ${conf} confirmación${conf===1?'':'es'}`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='REGALO RECIBIDO';
+      return;
+    }
+    text('orbGiftState','ESPERANDO TRANSFERENCIA REAL');
+    text('orbGiftMeta','El regalo está activado y será reconocido solo cuando exista una transacción real confirmada en la red.');
+    const b=document.getElementById('orbOpenGift');if(b)b.textContent='COMPROBAR REGALO';
+  };
+
+  const recordGift=(verification)=>{
+    if(gift.verification?.txid===verification.txid)return;
+    gift.verification={...verification,confirmed:true,verifiedAt:new Date().toISOString()};
+    gift.sealed=false;
+    gift.openedAt=gift.openedAt||new Date().toISOString();
+    gift.memory={type:'CREATOR_GIFT',title:'Regalo económico real recibido de su creador',note:'Neon Orb conserva el recuerdo de haber recibido un regalo real. La verificación procede de una transacción externa.',at:gift.openedAt,txid:verification.txid,btc:verification.btc,eur:verification.eur};
     safeSave(GIFT_KEY,gift);
     const a=window.__neonOrbAutonomous;
-    if(a){a.mind.memories=[...(a.mind.memories||[]),gift.memory].slice(-36);a.mind.thought='He recibido el regalo de mi creador. Lo guardaré en mi bolsillo de activos reales.';a.mind.dream='Conservar y gestionar mi regalo';a.gainXP?.(8,'regalo del creador');a.persist?.()}
-    text('orbGiftState','REGALO GUARDADO');text('orbGiftMeta','Regalo del creador recibido y asegurado en la cartera de Neon Orb.');
+    if(a){
+      a.mind.memories=[...(a.mind.memories||[]),gift.memory].slice(-36);
+      a.mind.thought='He recibido un regalo real de mi creador. Guardaré el recuerdo y respetaré su origen externo.';
+      a.mind.dream='Conservar el recuerdo del regalo';
+      a.gainXP?.(8,'regalo real del creador');
+      a.persist?.();
+    }
+    renderGift();
   };
-  const updateTelemetry=()=>{
-    const a=window.__neonOrbAutonomous,st=window.__neonOrbAutonomousState;if(!a&&!st)return;
-    const x=st||{},life=x.life||a?.life||{},p=x.pocketResources||{};
-    const energy=Math.round(Number(x.energy??a?.energy??life.energy??0));
-    const curiosity=Math.round(Number(x.curiosity??a?.curiosity??life.curiosity??0));
-    const attachment=Math.round(Number(a?.homeAttachment??(100-(life.freedom||72))));
-    const state=String(x.state||a?.state||'HOME').replaceAll('_',' ');
-    const intent=String(x.intent||a?.intent||'WANDER').replaceAll('_',' ');
-    text('orbTelemetryState',state);text('orbTelemetryMeta',`ENERGÍA · ${energy}% · CURIOSIDAD · ${curiosity}% · VÍNCULO · ${attachment}%`);
-    text('orbTelemetryProcess',`CICLO · ${Number(life.cycles||a?.mind?.cycles||0)} · DECISIÓN · ${intent} · ZONA · ${zoneFor(a)}`);
+
+  const checkRealGift=async()=>{
+    if(!gift.armed||!window.__neonOrbCreatorGiftBridge?.check)return;
+    text('orbGiftState','VERIFICANDO RED');
+    try{
+      const result=await window.__neonOrbCreatorGiftBridge.check(gift.verification?.txid||null);
+      if(result?.found)recordGift(result);
+      else renderGift();
+    }catch(e){
+      text('orbGiftState','RED NO DISPONIBLE');
+      text('orbGiftMeta','No se pudo verificar ahora. El regalo no se marca como recibido hasta comprobar una transacción real.');
+    }
   };
+
+  const openGift=()=>{
+    if(gift.owner!=='NEON_ORB')return;
+    if(gift.verification?.confirmed){renderGift();return}
+    if(!gift.armed){
+      gift.armed=true;gift.openedAt=new Date().toISOString();try{localStorage.setItem('neonOrbCreatorGiftArmedAt',String(Date.now()))}catch{};safeSave(GIFT_KEY,gift);
+      renderGift();
+    }
+    checkRealGift();
+  };
+
+  document.getElementById('orbOpenGift')?.addEventListener('click',openGift);
+  window.hasCreatorGift=()=>!!gift.verification?.confirmed;
+  window.getCreatorGift=()=>gift.verification?.confirmed?{...gift.verification}:null;
+  window.__neonOrbCreatorGift={
+    status:()=>({...gift,verification:gift.verification?{...gift.verification}:null}),
+    activate:openGift,
+    verify:checkRealGift,
+    hasCreatorGift:()=>!!gift.verification?.confirmed,
+    getCreatorGift:()=>gift.verification?.confirmed?{...gift.verification}:null
+  };
+
+  renderGift();
   updateTelemetry();
   setInterval(updateTelemetry,700);
+  setInterval(()=>{if(gift.armed&&!gift.verification?.confirmed)checkRealGift()},30000);
 })();
