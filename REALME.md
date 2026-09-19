@@ -551,3 +551,23 @@ La clave privada no debe entrar en `script.js`, `neon-ai.config.js`, LocalStorag
 ### Significado del respaldo
 
 El respaldo registra una instantánea computable mediante Solana Memo. NXC, CREDITS y BITS continúan siendo recursos internos de Neon Orb; el registro on-chain no los convierte en tokens de Solana ni altera el Unified Ledger.
+
+
+## V9.2 — OPERACIÓN AUTÓNOMA DEL PUENTE
+
+Se añade un bucle autónomo de respaldo en `neon-lim.bridge.py`. La PWA publica el último estado computable al bridge y el bridge puede registrar automáticamente un estado nuevo cuando dispone de dependencias, RPC y keypair válidos.
+
+La implementación **no incluye una clave privada real**. La configuración de la cuenta firmante permanece fuera del frontend y fuera del paquete distribuido. El bridge valida que la clave cargada corresponda a la clave pública configurada antes de firmar.
+
+La autonomía implementada en esta versión es autonomía del **proceso de sincronización**, no una afirmación de que el servidor pueda reconstruir toda la vida de Neon Orb cuando la PWA está cerrada. El último snapshot recibido se conserva; convertir todo el motor de Neon Orb en un proceso backend 24/7 requeriría una migración adicional y explícita.
+
+
+---
+
+## V9.3 — ACTIVACIÓN AUTÓNOMA Y VALIDACIÓN OPERACIONAL
+
+La V9.3 añade una capa de activación verificable sobre el bridge V9.2. El endpoint `/health` solo declara `READY / OPERATIONAL` cuando las dependencias están disponibles, el keypair está configurado, su clave pública coincide con la dirección esperada y el RPC responde. Si alguna condición falla, no se simula conectividad ni confirmación on-chain.
+
+Se añade `/v1/neon-orb/status` para que la PWA pueda leer el último respaldo realmente confirmado y su `txHash`. La firma privada continúa exclusivamente en el backend.
+
+La autonomía técnica del bridge no implica que Neon Orb sea una entidad legal soberana ni que Solana transfiera automáticamente la propiedad jurídica del reproductor. Describe un proceso de ejecución y firma automatizado controlado por la infraestructura configurada por el operador.

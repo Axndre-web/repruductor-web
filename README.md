@@ -177,3 +177,38 @@ La clave privada no debe entrar en `script.js`, `neon-ai.config.js`, LocalStorag
 ### Significado del respaldo
 
 El respaldo registra una instantánea computable mediante Solana Memo. NXC, CREDITS y BITS continúan siendo recursos internos de Neon Orb; el registro on-chain no los convierte en tokens de Solana ni altera el Unified Ledger.
+
+
+## V9.2 — Operación autónoma del bridge
+
+La V9.2 añade un bucle autónomo de respaldo en `neon-lim.bridge.py`. El bridge puede recibir el último snapshot computable del Neon Orb en `/v1/neon-orb/state`, conservarlo localmente y, si las dependencias, RPC y keypair son válidos, comprobar periódicamente si existe un estado nuevo que deba registrarse mediante Memo en Solana.
+
+Esto no significa que el navegador deje de ser la fuente de la telemetría viva: mientras la PWA está abierta, `script.js` publica periódicamente el estado computable al bridge. Si la PWA se cierra, el bridge conserva únicamente el **último estado recibido**; no se afirma que pueda reconstruir por sí mismo EXP, niveles o recursos que nunca haya recibido. Para convertir todo el motor Neon Orb en un agente backend 24/7 habría que migrar explícitamente ese motor al servidor, lo cual no se hace en esta versión para preservar la base existente.
+
+### Custodia y soberanía técnica
+
+El proyecto no incluye ninguna clave privada real. La cuenta configurada actúa como firmante delegado del servicio y su autoridad queda limitada a las transacciones que ese keypair pueda firmar. La clave nunca se envía desde el navegador. Solana recomienda mantener las claves privadas fuera del frontend y utilizar backend signing o infraestructura de custodia para producción.
+
+La transacción de respaldo utiliza el programa Memo: los memos pueden quedar registrados permanentemente en los registros de la transacción y ser consultados por exploradores/RPC.
+
+### Activación del bucle
+
+1. Instalar `requirements-solana.txt`.
+2. Configurar el RPC y el keypair **fuera del código distribuido**.
+3. Verificar que la pública derivada del keypair coincide con `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`.
+4. Ejecutar `python neon-lim.bridge.py`.
+5. `/health` debe mostrar `READY`.
+6. La PWA enviará el estado a `/v1/neon-orb/state`; el bucle autónomo decidirá cuándo registrar el nuevo snapshot.
+
+Las transacciones de Solana son la unidad atómica de ejecución y requieren las firmas correspondientes; además tienen límites de tamaño, por lo que el backup usa un snapshot compacto en Memo.
+
+
+---
+
+## V9.3 — ACTIVACIÓN AUTÓNOMA Y VALIDACIÓN OPERACIONAL
+
+La V9.3 añade una capa de activación verificable sobre el bridge V9.2. El endpoint `/health` solo declara `READY / OPERATIONAL` cuando las dependencias están disponibles, el keypair está configurado, su clave pública coincide con la dirección esperada y el RPC responde. Si alguna condición falla, no se simula conectividad ni confirmación on-chain.
+
+Se añade `/v1/neon-orb/status` para que la PWA pueda leer el último respaldo realmente confirmado y su `txHash`. La firma privada continúa exclusivamente en el backend.
+
+La autonomía técnica del bridge no implica que Neon Orb sea una entidad legal soberana ni que Solana transfiera automáticamente la propiedad jurídica del reproductor. Describe un proceso de ejecución y firma automatizado controlado por la infraestructura configurada por el operador.

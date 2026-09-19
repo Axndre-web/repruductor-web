@@ -762,14 +762,23 @@ bindMainEvents();renderMainQueue();
     };
   };
   async function checkOnChainBridge(){
-    const endpoint=ONCHAIN.bridgeEndpoint||'http://127.0.0.1:8788/v1/neon-orb/onchain-backup';
-    const health=endpoint.replace(/\/v1\/neon-orb\/onchain-backup$/, '/health');
+    const health=ONCHAIN.bridgeHealthEndpoint||'http://127.0.0.1:8788/health';
     try{
       const res=await fetch(health,{method:'GET',credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
       return !!res.ok&&data.ok===true;
     }catch{return false;}
   }
+  async function publishOrbState(){
+    const endpoint=ONCHAIN.stateEndpoint||'http://127.0.0.1:8788/v1/neon-orb/state';
+    const snapshot=getOrbSnapshot();
+    try{
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      return !!res.ok&&data.ok===true;
+    }catch{return false;}
+  }
+
   async function executeOnChainBackup(manual=false){
     ensurePanel();
     const snapshot=getOrbSnapshot();
@@ -795,12 +804,32 @@ bindMainEvents();renderMainQueue();
   }
   onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
   renderOnChainTx(onChainState.lastTxHash);
-  window.__neonOrbOnChainBackup={executeOnChainBackup,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge};
-  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,getState:()=>({...state,...onChainState})};
+  async function syncBridgeStatus(){
+    const endpoint=ONCHAIN.statusEndpoint||'http://127.0.0.1:8788/v1/neon-orb/status';
+    try{
+      const res=await fetch(endpoint,{method:'GET',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok||!data.ok)throw new Error(data.error||`Bridge HTTP ${res.status}`);
+      const last=data.lastBackup||{};
+      if(last.txHash){
+        onChainState.lastTxHash=last.txHash;
+        onChainState.lastSnapshotHash=last.snapshotSha256||onChainState.lastSnapshotHash;
+        onChainState.lastAt=last.confirmedAt?new Date(last.confirmedAt).toISOString():onChainState.lastAt;
+        onChainState.status=last.status==='CONFIRMED'?'CONFIRMED':onChainState.status;
+        saveOnChainState(); renderOnChainTx(last.txHash);
+      }
+      if(data.latestStateAvailable && last.status==='CONFIRMED')onChainText('neonOnChainState','SYNC ON-CHAIN ACTIVE · CONFIRMADA');
+      return data;
+    }catch(e){return {ok:false,error:String(e?.message||e)}}
+  }
+  window.__neonOrbOnChainBackup={executeOnChainBackup,publishOrbState,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge,syncBridgeStatus};
+  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,publishOrbState,getState:()=>({...state,...onChainState})};
   ensurePanel();
   onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
   renderOnChainTx(onChainState.lastTxHash);
-  refresh(false); setInterval(()=>refresh(false),30000);
+  refresh(false); publishOrbState(); syncBridgeStatus(); setInterval(()=>refresh(false),30000);
+  setInterval(()=>syncBridgeStatus(),30000);
+  setInterval(()=>publishOrbState(),30000);
   setInterval(()=>executeOnChainBackup(false),Number(ONCHAIN.autoSaveInterval)||300000);
 })();
 

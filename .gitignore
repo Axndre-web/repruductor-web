@@ -1,0 +1,6 @@
+# Neon Orb secrets / runtime state
+*.env
+keypair.json
+*.keypair.json
+.neon-orb-state.json
+.neon-orb-state.json.tmp

@@ -19,6 +19,8 @@ import asyncio
 import hashlib
 import json
 import os
+import threading
+import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
@@ -32,6 +34,13 @@ EXPECTED_PUBLIC_KEY = os.getenv(
 KEYPAIR_PATH = os.getenv('NEON_SOLANA_KEYPAIR_PATH', '')
 MAX_BODY = 16_384
 MAX_MEMO = 500
+AGENT_LOOP_INTERVAL = max(30, int(os.getenv('NEON_AGENT_LOOP_INTERVAL', '300')))
+STATE_FILE = os.getenv('NEON_ORB_STATE_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-state.json'))
+state_lock = threading.Lock()
+backup_lock = threading.Lock()
+last_backup_lock = threading.Lock()
+last_backup = {'status': 'NONE', 'txHash': None, 'snapshotSha256': None, 'confirmedAt': None, 'error': None}
+
 ALLOWED_ORIGINS = {
     'http://127.0.0.1',
     'http://localhost',
@@ -128,6 +137,89 @@ def memo_for(snapshot):
     return fallback, digest
 
 
+def save_latest_state(snapshot):
+    directory = os.path.dirname(os.path.abspath(STATE_FILE))
+    os.makedirs(directory, exist_ok=True)
+    tmp = STATE_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as fh:
+        json.dump({'snapshot': snapshot, 'receivedAt': int(time.time() * 1000)}, fh, ensure_ascii=False, separators=(',', ':'))
+    os.replace(tmp, STATE_FILE)
+
+
+def load_latest_state():
+    try:
+        with open(STATE_FILE, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+        return data.get('snapshot') if isinstance(data, dict) else None
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return None
+
+
+def snapshot_digest(snapshot):
+    compact = json.dumps(snapshot, ensure_ascii=False, separators=(',', ':'))
+    return hashlib.sha256(compact.encode('utf-8')).hexdigest()
+
+
+def record_backup_result(result):
+    with last_backup_lock:
+        last_backup.update({
+            'status': result.get('status', 'ERROR'),
+            'txHash': result.get('txHash'),
+            'snapshotSha256': result.get('snapshotSha256'),
+            'confirmedAt': int(time.time() * 1000) if result.get('ok') and result.get('txHash') else None,
+            'error': result.get('error')
+        })
+
+def rpc_reachable():
+    if AsyncClient is None:
+        return False
+    async def probe():
+        async with AsyncClient(RPC) as client:
+            response = await client.get_health()
+            return str(getattr(response, 'value', response)).lower() in ('ok', 'healthy')
+    try:
+        return bool(asyncio.run(probe()))
+    except Exception:
+        return False
+
+def keypair_ready():
+    try:
+        load_keypair()
+        return True
+    except Exception:
+        return False
+
+def autonomous_backup_loop():
+    last_submitted = None
+    print(f'[NEON AGENT LOOP] activo · intervalo {AGENT_LOOP_INTERVAL}s · estado={STATE_FILE}')
+    while True:
+        time.sleep(AGENT_LOOP_INTERVAL)
+        snapshot = load_latest_state()
+        if not snapshot:
+            continue
+        digest = snapshot_digest(snapshot)
+        if digest == last_submitted:
+            continue
+        if not (Keypair and AsyncClient and MessageV0 and VersionedTransaction and create_memo):
+            continue
+        if not KEYPAIR_PATH:
+            continue
+        if not backup_lock.acquire(blocking=False):
+            continue
+        try:
+            result = asyncio.run(backup(snapshot))
+            record_backup_result(result)
+            if result.get('ok') and result.get('txHash'):
+                last_submitted = digest
+                with state_lock:
+                    save_latest_state(snapshot)
+                print(f'[NEON AGENT LOOP] backup confirmado · {result["txHash"]}')
+        except Exception as exc:
+            print(f'[NEON AGENT LOOP] pendiente · {exc}')
+        finally:
+            backup_lock.release()
+
+
 async def backup(snapshot):
     kp = load_keypair()
     memo_text, digest = memo_for(snapshot)
@@ -162,24 +254,59 @@ class Handler(BaseHTTPRequestHandler):
         json_response(self, 204, {})
 
     def do_GET(self):
-        if urlparse(self.path).path == '/health':
+        path = urlparse(self.path).path
+        if path == '/health':
             deps_ok = Keypair is not None and AsyncClient is not None and MessageV0 is not None and VersionedTransaction is not None and create_memo is not None
             keypair_configured = bool(KEYPAIR_PATH)
+            keypair_matches = keypair_ready() if deps_ok and keypair_configured else False
+            rpc_ok = rpc_reachable() if deps_ok else False
+            operational = deps_ok and keypair_configured and keypair_matches and rpc_ok
+            with last_backup_lock:
+                backup_state = dict(last_backup)
             json_response(self, 200, {
                 'ok': True,
                 'service': 'NEON ORB Solana bridge',
-                'status': 'READY' if deps_ok and keypair_configured else 'CONFIG_REQUIRED',
+                'status': 'READY / OPERATIONAL' if operational else ('CONFIG_REQUIRED' if not keypair_configured or not deps_ok or not keypair_matches else 'RPC_UNAVAILABLE'),
                 'dependenciesReady': deps_ok,
                 'keypairConfigured': keypair_configured,
+                'keypairMatchesPublicKey': keypair_matches,
+                'rpcReachable': rpc_ok,
+                'autonomousLoop': True,
+                'agentLoopIntervalSeconds': AGENT_LOOP_INTERVAL,
+                'latestStateAvailable': load_latest_state() is not None,
                 'publicKey': EXPECTED_PUBLIC_KEY,
                 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
                 'rpc': RPC,
+                'lastBackup': backup_state,
             })
+            return
+        if path == '/v1/neon-orb/state':
+            snapshot = load_latest_state()
+            json_response(self, 200, {'ok': True, 'snapshot': snapshot, 'autonomousLoop': True})
+            return
+        if path == '/v1/neon-orb/status':
+            with last_backup_lock:
+                backup_state = dict(last_backup)
+            json_response(self, 200, {'ok': True, 'publicKey': EXPECTED_PUBLIC_KEY, 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'), 'lastBackup': backup_state, 'latestStateAvailable': load_latest_state() is not None})
             return
         json_response(self, 404, {'ok': False, 'error': 'not found'})
 
     def do_POST(self):
-        if urlparse(self.path).path != '/v1/neon-orb/onchain-backup':
+        path = urlparse(self.path).path
+        if path == '/v1/neon-orb/state':
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if length <= 0 or length > MAX_BODY:
+                    raise ValueError('payload inválido o demasiado grande')
+                body = json.loads(self.rfile.read(length).decode('utf-8'))
+                snapshot = normalize_snapshot(body.get('snapshot'))
+                with state_lock:
+                    save_latest_state(snapshot)
+                json_response(self, 200, {'ok': True, 'status': 'STATE_ACCEPTED', 'snapshotSha256': snapshot_digest(snapshot), 'autonomousLoop': True})
+            except Exception as exc:
+                json_response(self, 400, {'ok': False, 'status': 'STATE_REJECTED', 'error': str(exc)})
+            return
+        if path != '/v1/neon-orb/onchain-backup':
             json_response(self, 404, {'ok': False, 'error': 'not found'})
             return
         try:
@@ -188,7 +315,13 @@ class Handler(BaseHTTPRequestHandler):
                 raise ValueError('payload inválido o demasiado grande')
             body = json.loads(self.rfile.read(length).decode('utf-8'))
             snapshot = normalize_snapshot(body.get('snapshot'))
-            result = asyncio.run(backup(snapshot))
+            if not backup_lock.acquire(blocking=False):
+                raise RuntimeError('otra firma on-chain está en curso')
+            try:
+                result = asyncio.run(backup(snapshot))
+                record_backup_result(result)
+            finally:
+                backup_lock.release()
             json_response(self, 200, result)
         except Exception as exc:
             json_response(self, 503, {
@@ -206,4 +339,5 @@ if __name__ == '__main__':
     print(f'NEON ORB Solana bridge: http://{HOST}:{PORT}/v1/neon-orb/onchain-backup')
     print(f'RPC: {RPC}')
     print('Firma autónoma: configurada solo si NEON_SOLANA_KEYPAIR_PATH apunta a un keypair válido.')
+    threading.Thread(target=autonomous_backup_loop, name='neon-orb-agent-loop', daemon=True).start()
     ThreadingHTTPServer((HOST, PORT), Handler).serve_forever()
