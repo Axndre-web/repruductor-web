@@ -612,3 +612,15 @@ Neon Orb no recibe su economía como un saldo arbitrario. El origen de los recur
 Los recursos ganados por trabajo se mantienen identificables mediante `workEarnedBalance`. Esto permite que cualquier recompensa voluntaria del Orb al creador proceda de recursos que el Orb haya generado trabajando, y no de un saldo regalado previamente por el creador.
 
 Una transición a REAL sólo se considera válida cuando existe una operación o liquidación externa verificable. La mera existencia de telemetría, un snapshot, una cuenta Solana, Phantom o una Treasury no convierte recursos COMPUTABLES en activos REAL.
+
+## V10.5 — Verificación responsable sin romper REAL / COMPUTABLE / VIVA
+
+La autonomía de Neon Orb no se sustituye por una autoridad externa. La verificación actúa como capa de integridad:
+
+- **COMPUTABLE:** el bridge comprueba continuidad y consistencia del trabajo acumulado y sus recursos; no afirma que una máquina externa pueda demostrar por sí sola que el trabajo físico ocurrió.
+- **REAL:** solo se considera REAL cuando existe confirmación de una fuente externa correspondiente (por ejemplo, confirmación de Solana o Bitcoin).
+- **VIVA:** la telemetría representa el estado operativo actual y su sincronización con el bridge, sin convertir observaciones en activos.
+- **LOCAL:** conserva continuidad, historial y estado.
+- **RED:** aporta observaciones y servicios externos.
+
+La Treasury en la misma cuenta Solana se trata como **asignación contable observada contra el saldo real**, no como una segunda cuenta ni como una transferencia a sí misma.

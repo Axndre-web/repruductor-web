@@ -45,6 +45,9 @@ backup_lock = threading.Lock()
 last_backup_lock = threading.Lock()
 last_backup = {'status': 'NONE', 'txHash': None, 'snapshotSha256': None, 'confirmedAt': None, 'error': None}
 last_treasury = {'status': 'NOT_CONFIGURED', 'txHash': None, 'lamports': 0, 'destination': TREASURY_DESTINATION or None, 'confirmedAt': None, 'error': None, 'mode': 'UNSET', 'balanceLamports': None, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'shareBps': TREASURY_SHARE_BPS}
+verification_lock = threading.Lock()
+last_work_verification = {'status': 'NOT_VERIFIED', 'acceptedAt': None, 'workCompleted': 0, 'workResources': {'NXC':0,'CREDITS':0,'BITS':0}, 'reason': None}
+VERIFICATION_FILE = os.getenv('NEON_ORB_VERIFICATION_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-verification-state.json'))
 
 def load_treasury_state():
     try:
@@ -147,6 +150,11 @@ def normalize_snapshot(snapshot):
     out['economy'] = economy if isinstance(economy, dict) else {}
     layers = snapshot.get('layers', {})
     out['layers'] = layers if isinstance(layers, dict) else {}
+    out['verification'] = {
+        'computable': 'continuity-checked-by-local-bridge',
+        'real': 'external-source-confirmation-required',
+        'live': 'current-snapshot-observation'
+    }
     out['at'] = int(snapshot.get('at', 0))
     return out
 
@@ -225,6 +233,59 @@ def keypair_ready():
         return False
 
 
+def load_verification_state():
+    try:
+        with open(VERIFICATION_FILE, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+        return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+
+
+def save_verification_state(data):
+    directory = os.path.dirname(os.path.abspath(VERIFICATION_FILE))
+    os.makedirs(directory, exist_ok=True)
+    tmp = VERIFICATION_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as fh:
+        json.dump(data, fh, ensure_ascii=False, separators=(',', ':'))
+    os.replace(tmp, VERIFICATION_FILE)
+
+
+def verify_computable_continuity(snapshot):
+    """Verify internal consistency/continuity, not the truth of browser work itself.
+
+    The bridge cannot independently prove that a browser job physically happened.
+    It can prove that the submitted COMPUTABLE ledger is well-formed and does not
+    silently decrease between accepted snapshots. REAL remains external-proof-only.
+    """
+    global last_work_verification
+    previous = load_verification_state()
+    current_count = int(snapshot.get('workCompleted', 0))
+    current_resources = {k: float(snapshot.get('workResources', {}).get(k, 0) or 0) for k in ('NXC','CREDITS','BITS')}
+    prev_count = int(previous.get('workCompleted', 0) or 0)
+    prev_resources = {k: float(previous.get('workResources', {}).get(k, 0) or 0) for k in ('NXC','CREDITS','BITS')}
+    if current_count < prev_count:
+        return {'ok': False, 'status': 'COMPUTABLE_CONTINUITY_REJECTED', 'reason': 'workCompleted decreased', 'previous': prev_count, 'current': current_count}
+    for k in current_resources:
+        if current_resources[k] < prev_resources[k]:
+            return {'ok': False, 'status': 'COMPUTABLE_CONTINUITY_REJECTED', 'reason': f'{k} workResources decreased', 'previous': prev_resources[k], 'current': current_resources[k]}
+    digest = snapshot_digest(snapshot)
+    accepted = {'workCompleted': current_count, 'workResources': current_resources, 'snapshotSha256': digest, 'acceptedAt': int(time.time()*1000)}
+    save_verification_state(accepted)
+    result = {
+        'ok': True,
+        'status': 'COMPUTABLE_CONTINUITY_VERIFIED',
+        'scope': 'COMPUTABLE',
+        'workCompleted': current_count,
+        'workResources': current_resources,
+        'snapshotSha256': digest,
+        'note': 'Continuidad y consistencia verificadas por el bridge; no constituye prueba independiente del trabajo físico.'
+    }
+    with verification_lock:
+        last_work_verification = result
+    return result
+
+
 def treasury_destination_ready(kp):
     if not TREASURY_DESTINATION:
         return False, 'NEON_TREASURY_DESTINATION no configurado'
@@ -271,7 +332,7 @@ async def treasury_sweep():
             save_treasury_state(state)
             return {
                 'ok': True,
-                'status': 'TREASURY_SAME_ACCOUNT_ALLOCATED',
+                'status': 'TREASURY_SAME_ACCOUNT_OBSERVED',
                 'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE',
                 'txHash': None,
                 'lamports': reserve,
@@ -283,7 +344,7 @@ async def treasury_sweep():
                 'publicKey': str(kp.pubkey()),
                 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
                 'verifiedAt': now,
-                'note': 'Reserva lógica dentro de la misma cuenta on-chain; no se ejecuta una transferencia a sí misma.',
+                'note': 'Asignación contable observada contra el saldo real de la misma cuenta; no es un saldo Solana separado ni se ejecuta una transferencia a sí misma.',
             }
 
         if reserve <= 0:
@@ -403,6 +464,7 @@ class Handler(BaseHTTPRequestHandler):
                 'rpc': RPC,
                 'lastBackup': backup_state,
                 'treasury': {'configured': bool(TREASURY_DESTINATION), 'destination': TREASURY_DESTINATION or None, 'sameAccount': TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY, 'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER', 'shareBps': TREASURY_SHARE_BPS, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'lastTransfer': dict(last_treasury)},
+                'verification': dict(last_work_verification),
             })
             return
         if path == '/v1/neon-orb/state':

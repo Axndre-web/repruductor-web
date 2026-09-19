@@ -776,6 +776,8 @@ bindMainEvents();renderMainQueue();
       liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length},
       economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedAvailable:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0}},
       provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
+      layers:{REAL:'VERIFIED_EXTERNAL_ONLY',COMPUTABLE:'WORK_DERIVED',LOCAL:'PERSISTED',NETWORK:'OBSERVED'},
+      verification:{computable:'LOCAL_WORK_DERIVED',real:'EXTERNAL_CONFIRMATION_REQUIRED',live:'CURRENT_TELEMETRY_SNAPSHOT'},
       at:Date.now()
     };
   };
@@ -794,7 +796,7 @@ bindMainEvents();renderMainQueue();
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
       const ok=!!res.ok&&data.ok===true;
-      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
+      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',verification:data.verification?.status||'ACCEPTED',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
       else{window.__neonTelemetrySync={status:'BRIDGE_REJECTED',at:new Date().toISOString()};}
       return ok;
     }catch(e){window.__neonTelemetrySync={status:'BRIDGE_UNAVAILABLE',at:new Date().toISOString()};return false;}
@@ -809,9 +811,9 @@ bindMainEvents();renderMainQueue();
     try{
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
-      if(data.status==='TREASURY_SAME_ACCOUNT_ALLOCATED'){
+      if(data.status==='TREASURY_SAME_ACCOUNT_OBSERVED'){
         onChainState.lastTreasuryTxHash=null; onChainState.treasuryReservedLamports=Number(data.reservedLamports||data.lamports||0); onChainState.treasuryBalanceLamports=Number(data.balanceLamports||0); onChainState.treasuryVerifiedAt=data.verifiedAt||new Date().toISOString(); saveOnChainState();
-        text('neonOnChainActivity',`Reserva lógica verificada · ${data.sol??(Number(data.reservedLamports||data.lamports||0)/1000000000)} SOL · misma cuenta`);
+        text('neonOnChainActivity',`Asignación Treasury observada · ${data.sol??(Number(data.reservedLamports||data.lamports||0)/1000000000)} SOL · misma cuenta`);
       } else if(data.txHash){
         onChainState.lastTreasuryTxHash=data.txHash; saveOnChainState();
         text('neonOnChainActivity',`Reserva transferida y confirmada · ${data.sol??(Number(data.lamports||0)/1000000000)} SOL`);

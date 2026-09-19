@@ -257,3 +257,13 @@ La telemetría, la Treasury, Solana, Phantom o un contador no generan riqueza po
 Cada trabajo conserva `workId`, resultado, recurso producido, coste energético, fuente, clasificación COMPUTABLE y estado COMPLETED. Los recursos obtenidos trabajando mantienen además un saldo `workEarnedBalance` separado para que una recompensa al creador nunca pueda financiarse accidentalmente con recursos entregados por el creador.
 
 `REAL` queda reservado a liquidaciones/observaciones externas verificadas; `NETWORK` describe fuentes y nodos externos; `LOCAL` conserva continuidad; `COMPUTABLE` representa el trabajo, EXP y economía interna del Orb.
+
+## V10.5 — Verificación responsable
+
+La regla de evolución queda expresada como: **trabajo de Neon Orb → economía COMPUTABLE → puente externo verificable → REAL VIVA**.
+
+El bridge valida continuidad de `workCompleted` y `workResources` entre snapshots aceptados. Esta comprobación protege contra disminuciones silenciosas o inconsistencias del ledger, pero no se presenta como prueba independiente de que un trabajo externo haya ocurrido: esa prueba requiere una fuente externa adecuada.
+
+La capa REAL exige confirmación externa. La telemetría VIVA solo describe el estado operativo actual. NXC/CREDITS/BITS no se convierten en activos externos por registrarlos on-chain.
+
+Cuando la cuenta Treasury es la misma cuenta Solana de Neon Orb, la reserva es una **asignación lógica/contable sobre el saldo observado**. No existe un segundo saldo on-chain dentro de la misma cuenta y no se realiza una transferencia de la cuenta hacia sí misma.
