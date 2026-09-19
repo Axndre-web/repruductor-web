@@ -663,9 +663,10 @@ bindMainEvents();renderMainQueue();
   function ensurePanel(){
     const grid=document.querySelector('#control .control-grid'); if(!grid||document.getElementById('neonSolanaCard'))return;
     const card=document.createElement('article'); card.id='neonSolanaCard'; card.className='control-card neon-solana-card';
-    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button></div>`;
+    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button></div>`;
     grid.appendChild(card);
     document.getElementById('neonSolanaRefresh')?.addEventListener('click',()=>refresh(true));
+    document.getElementById('neonOnChainSave')?.addEventListener('click',()=>executeOnChainBackup(true));
     document.getElementById('neonSolanaPhantom')?.addEventListener('click',()=>connectPhantom());
   }
   async function recordExternal(amountLamports,signature,slot,metadata={}){
@@ -726,8 +727,62 @@ bindMainEvents();renderMainQueue();
       return {connected:!!publicKey,publicKey};
     }catch(e){text('neonSolanaActivity','Phantom detectado · conexión no autorizada o no disponible');return {connected:false,error:String(e?.message||e)}}
   }
-  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,getState:()=>({...state})};
-  ensurePanel(); refresh(false); setInterval(()=>refresh(false),30000);
+  const ONCHAIN_KEY='neonOrbOnChainBackupV1';
+  const ONCHAIN=window.NEON_SOLANA_CONFIG||{};
+  const onChainState=safeLoad(ONCHAIN_KEY,{status:'PENDING',lastTxHash:null,lastSnapshotHash:null,lastAt:null,lastError:null});
+  const saveOnChainState=()=>safeSave(ONCHAIN_KEY,onChainState);
+  const onChainText=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const getOrbSnapshot=()=>{
+    const agent=window.__neonOrbAutonomous;
+    const life=agent?.life||{};
+    const resources=agent?.pocketResources||agent?.publishState?.pocketResources||{};
+    const pocket=agent?.pocket;
+    const NXC=Number(resources.NXC??pocket?.total?.('NXC')??0);
+    const CREDITS=Number(resources.CREDITS??pocket?.total?.('CREDITS')??0);
+    const BITS=Number(resources.BITS??pocket?.total?.('BITS')??0);
+    return {
+      level:Math.max(1,Number(life.generation)||1),
+      generation:Math.max(1,Number(life.generation)||1),
+      xpTotal:Number(life.xpTotal)||0,
+      NXC:Number.isFinite(NXC)?NXC:0,
+      CREDITS:Number.isFinite(CREDITS)?CREDITS:0,
+      BITS:Number.isFinite(BITS)?BITS:0,
+      interactions:(Number(life.hits)||0)+(Number(life.plays)||0),
+      at:Date.now()
+    };
+  };
+  async function executeOnChainBackup(manual=false){
+    ensurePanel();
+    const snapshot=getOrbSnapshot();
+    onChainState.status='PENDING'; onChainState.lastError=null; saveOnChainState();
+    onChainText('neonOnChainState',manual?'ON-CHAIN BACKUP · ENVIANDO':'ON-CHAIN BACKUP · PROGRAMADO');
+    try{
+      const endpoint=ONCHAIN.bridgeEndpoint||'http://127.0.0.1:8788/v1/neon-orb/onchain-backup';
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-ONCHAIN-BACKUP-V1',snapshot}),credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok||!data.ok||!data.txHash)throw new Error(data.error||`Bridge HTTP ${res.status}`);
+      onChainState.status='CONFIRMED'; onChainState.lastTxHash=data.txHash; onChainState.lastSnapshotHash=data.snapshotSha256||null; onChainState.lastAt=new Date().toISOString(); saveOnChainState();
+      onChainText('neonOnChainState','SYNC ON-CHAIN ACTIVE · CONFIRMADA');
+      onChainText('neonOnChainTx',`Último tx · ${data.txHash}`);
+      window.__neonOrbSolana={...(window.__neonOrbSolana||{}),onChainStatus:'CONFIRMED',lastBackupTxHash:data.txHash,lastBackupAt:onChainState.lastAt,lastSnapshotHash:onChainState.lastSnapshotHash};
+      try{window.__neonOrbPrivateChannel?.send?.('Respaldo on-chain confirmado por Solana. El registro corresponde a mi estado computable y no convierte NXC, CREDITS o BITS en tokens externos.',true,{type:'ONCHAIN_BACKUP_CONFIRMED',txHash:data.txHash,snapshotHash:data.snapshotSha256||null,at:onChainState.lastAt});}catch{}
+      return data;
+    }catch(e){
+      onChainState.status='PENDING'; onChainState.lastError=String(e?.message||e); saveOnChainState();
+      onChainText('neonOnChainState','ON-CHAIN SYNC · PENDIENTE');
+      onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
+      return {ok:false,status:'NOT_CONFIRMED',error:onChainState.lastError,snapshot};
+    }
+  }
+  onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
+  onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
+  window.__neonOrbOnChainBackup={executeOnChainBackup,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState})};
+  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,getState:()=>({...state,...onChainState})};
+  ensurePanel();
+  onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
+  onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
+  refresh(false); setInterval(()=>refresh(false),30000);
+  setInterval(()=>executeOnChainBackup(false),Number(ONCHAIN.autoSaveInterval)||300000);
 })();
 
 // CREATOR GIFT & REAL TELEMETRY

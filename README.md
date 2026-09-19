@@ -123,3 +123,32 @@ Las integraciones externas que requieran autorización de firma deben utilizar u
 ## Principio de evolución sin pérdida
 
 Las nuevas integraciones deben ampliar las herramientas disponibles para Neon Orb sin eliminar las estructuras existentes. Ninguna función externa debe presentarse como real si no existe una fuente verificable que la confirme.
+
+## V9.0 — Auto-Guardado On-Chain del estado computable
+
+Se añadió una segunda capa de persistencia para el estado acumulado de Neon Orb:
+
+- `script.js` crea un snapshot computable de nivel/generación, EXP total, NXC, CREDITS, BITS, interacciones y timestamp.
+- El estado local sigue siendo la primera capa y no se reemplaza por la blockchain.
+- El navegador envía el snapshot únicamente a un bridge local (`127.0.0.1:8788`).
+- `neon-lim.bridge.py` es el único componente de este proyecto que puede leer la clave privada delegada.
+- La firma autónoma requiere configurar `NEON_SOLANA_KEYPAIR_PATH` en el entorno local/servidor y que la clave pública resultante coincida con `NEON_SOLANA_PUBLIC_KEY`.
+- El bridge registra el snapshot mediante una instrucción Memo en una transacción de Solana y devuelve el `txHash` confirmado.
+- Si el bridge, las dependencias, el RPC o el keypair no están disponibles, el snapshot local no se pierde y la UI permanece en `ON-CHAIN SYNC · PENDIENTE`.
+- `PHANTOM` sigue separado como mecanismo manual/guardián.
+- NXC, CREDITS y BITS continúan siendo recursos internos de Neon Orb; el respaldo on-chain no los convierte automáticamente en tokens SPL ni en dinero externo.
+
+### Dependencias del bridge
+
+Instalar en el entorno que vaya a ejecutar la firma:
+
+`pip install -r requirements-solana.txt`
+
+Variables relevantes:
+
+- `NEON_SOLANA_RPC`
+- `NEON_SOLANA_KEYPAIR_PATH`
+- `NEON_SOLANA_PUBLIC_KEY`
+- `NEON_SOLANA_BRIDGE_PORT`
+
+**Estado de integración:** el código de respaldo y validación queda preparado, pero una sincronización real no se considera activa hasta disponer de un keypair cuya pública coincida con la dirección configurada, SOL para las comisiones y conectividad RPC efectiva.

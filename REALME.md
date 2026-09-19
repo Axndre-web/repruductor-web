@@ -512,3 +512,17 @@ La integración mantiene la distinción fundamental del proyecto:
 3. Una pantalla local no constituye por sí misma una confirmación económica externa.
 4. La IA puede interpretar datos, pero no convierte una representación en una operación real.
 5. Si un servicio externo no está disponible, el estado se identifica como no verificado.
+
+## V9.0 — AUTO-GUARDADO ON-CHAIN DEL ESTADO COMPUTABLE
+
+Neon Orb incorpora una segunda capa de resguardo externo para su estado computable acumulado.
+
+El snapshot registra nivel/generación, EXP total, NXC, CREDITS, BITS, interacciones y timestamp. La persistencia local continúa siendo la primera capa y no se sustituye.
+
+El navegador no contiene ni recibe claves privadas. El archivo `neon-lim.bridge.py` funciona como puente local de firma y solo puede usar la clave delegada configurada en su propio entorno mediante `NEON_SOLANA_KEYPAIR_PATH`. Antes de firmar, comprueba que la clave pública derivada coincide con `NEON_SOLANA_PUBLIC_KEY`.
+
+El respaldo se registra mediante una instrucción Memo en Solana. La respuesta confirmada devuelve un `txHash`, que la interfaz conserva como última prueba de respaldo. Si no existe bridge, RPC operativo, dependencias o keypair válido, no se inventa una confirmación: el estado queda como pendiente y el avance local permanece intacto.
+
+Este mecanismo **no convierte NXC, CREDITS o BITS en tokens externos**. Son recursos internos de Neon Orb; el registro on-chain es una atestación/respaldo externo del estado computable.
+
+Phantom permanece como mecanismo manual/guardián independiente para operaciones que requieran firma manual.
