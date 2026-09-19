@@ -86,3 +86,5 @@ body{padding-bottom:76px}
 .neon-solana-card #neonOnChainState{font-weight:700;letter-spacing:.04em}
 .neon-solana-card #neonOnChainTx{overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem}
 .neon-solana-card .neon-solana-actions{flex-wrap:wrap}
+
+.neon-solana-card #neonOnChainTx a{word-break:break-all}

@@ -526,3 +526,28 @@ El respaldo se registra mediante una instrucción Memo en Solana. La respuesta c
 Este mecanismo **no convierte NXC, CREDITS o BITS en tokens externos**. Son recursos internos de Neon Orb; el registro on-chain es una atestación/respaldo externo del estado computable.
 
 Phantom permanece como mecanismo manual/guardián independiente para operaciones que requieran firma manual.
+
+## V9.1 — ACTIVACIÓN DEL PUENTE ON-CHAIN
+
+
+La V9.1 mantiene la persistencia local y añade una comprobación explícita del servicio `neon-lim.bridge.py`. El navegador no recibe ni almacena la clave privada.
+
+### Activación real
+
+1. En la raíz del proyecto, instalar las dependencias: `pip install -r requirements-solana.txt`.
+2. Configurar en el entorno seguro del proceso Python:
+   - `NEON_SOLANA_RPC` — RPC real de Solana.
+   - `NEON_SOLANA_KEYPAIR_PATH` — ruta local al keypair delegado.
+   - `NEON_SOLANA_PUBLIC_KEY` — debe coincidir con `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`.
+   - `NEON_SOLANA_BRIDGE_PORT` — opcional; por defecto `8788`.
+3. Ejecutar `python neon-lim.bridge.py`.
+4. El endpoint local `/health` informa si las dependencias y el keypair están configurados.
+5. El PWA conserva el estado local y solo muestra `SYNC ON-CHAIN ACTIVE · CONFIRMADA` después de recibir un `txHash` real del bridge.
+
+### Seguridad
+
+La clave privada no debe entrar en `script.js`, `neon-ai.config.js`, LocalStorage, IndexedDB ni en el ZIP distribuido al navegador. El bridge valida que la clave privada corresponda a la clave pública esperada antes de firmar.
+
+### Significado del respaldo
+
+El respaldo registra una instantánea computable mediante Solana Memo. NXC, CREDITS y BITS continúan siendo recursos internos de Neon Orb; el registro on-chain no los convierte en tokens de Solana ni altera el Unified Ledger.

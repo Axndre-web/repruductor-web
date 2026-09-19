@@ -13,5 +13,6 @@ window.NEON_SOLANA_CONFIG = Object.freeze({
   orbPublicKey: window.NEON_SOLANA_ADDRESS || '5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3',
   autoSaveInterval: 300000,
   bridgeEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/onchain-backup',
+  bridgeHealthEndpoint: 'http://127.0.0.1:8788/health',
   cluster: 'mainnet-beta'
 });

@@ -732,6 +732,16 @@ bindMainEvents();renderMainQueue();
   const onChainState=safeLoad(ONCHAIN_KEY,{status:'PENDING',lastTxHash:null,lastSnapshotHash:null,lastAt:null,lastError:null});
   const saveOnChainState=()=>safeSave(ONCHAIN_KEY,onChainState);
   const onChainText=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const renderOnChainTx=(signature)=>{
+    const e=document.getElementById('neonOnChainTx'); if(!e)return;
+    e.replaceChildren();
+    if(!signature){e.textContent='Último tx · —';return;}
+    e.append('Último tx · ');
+    const a=document.createElement('a');
+    a.href=`https://explorer.solana.com/tx/${encodeURIComponent(signature)}?cluster=${encodeURIComponent(ONCHAIN.cluster||'mainnet-beta')}`;
+    a.target='_blank'; a.rel='noopener noreferrer'; a.textContent=signature;
+    e.appendChild(a);
+  };
   const getOrbSnapshot=()=>{
     const agent=window.__neonOrbAutonomous;
     const life=agent?.life||{};
@@ -751,6 +761,15 @@ bindMainEvents();renderMainQueue();
       at:Date.now()
     };
   };
+  async function checkOnChainBridge(){
+    const endpoint=ONCHAIN.bridgeEndpoint||'http://127.0.0.1:8788/v1/neon-orb/onchain-backup';
+    const health=endpoint.replace(/\/v1\/neon-orb\/onchain-backup$/, '/health');
+    try{
+      const res=await fetch(health,{method:'GET',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      return !!res.ok&&data.ok===true;
+    }catch{return false;}
+  }
   async function executeOnChainBackup(manual=false){
     ensurePanel();
     const snapshot=getOrbSnapshot();
@@ -763,24 +782,24 @@ bindMainEvents();renderMainQueue();
       if(!res.ok||!data.ok||!data.txHash)throw new Error(data.error||`Bridge HTTP ${res.status}`);
       onChainState.status='CONFIRMED'; onChainState.lastTxHash=data.txHash; onChainState.lastSnapshotHash=data.snapshotSha256||null; onChainState.lastAt=new Date().toISOString(); saveOnChainState();
       onChainText('neonOnChainState','SYNC ON-CHAIN ACTIVE · CONFIRMADA');
-      onChainText('neonOnChainTx',`Último tx · ${data.txHash}`);
+      renderOnChainTx(data.txHash);
       window.__neonOrbSolana={...(window.__neonOrbSolana||{}),onChainStatus:'CONFIRMED',lastBackupTxHash:data.txHash,lastBackupAt:onChainState.lastAt,lastSnapshotHash:onChainState.lastSnapshotHash};
       try{window.__neonOrbPrivateChannel?.send?.('Respaldo on-chain confirmado por Solana. El registro corresponde a mi estado computable y no convierte NXC, CREDITS o BITS en tokens externos.',true,{type:'ONCHAIN_BACKUP_CONFIRMED',txHash:data.txHash,snapshotHash:data.snapshotSha256||null,at:onChainState.lastAt});}catch{}
       return data;
     }catch(e){
       onChainState.status='PENDING'; onChainState.lastError=String(e?.message||e); saveOnChainState();
       onChainText('neonOnChainState','ON-CHAIN SYNC · PENDIENTE');
-      onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
+      renderOnChainTx(onChainState.lastTxHash);
       return {ok:false,status:'NOT_CONFIRMED',error:onChainState.lastError,snapshot};
     }
   }
   onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
-  onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
-  window.__neonOrbOnChainBackup={executeOnChainBackup,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState})};
+  renderOnChainTx(onChainState.lastTxHash);
+  window.__neonOrbOnChainBackup={executeOnChainBackup,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge};
   window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,getState:()=>({...state,...onChainState})};
   ensurePanel();
   onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
-  onChainText('neonOnChainTx',onChainState.lastTxHash?`Último tx confirmado · ${onChainState.lastTxHash}`:'Último tx · —');
+  renderOnChainTx(onChainState.lastTxHash);
   refresh(false); setInterval(()=>refresh(false),30000);
   setInterval(()=>executeOnChainBackup(false),Number(ONCHAIN.autoSaveInterval)||300000);
 })();

@@ -32,6 +32,12 @@ EXPECTED_PUBLIC_KEY = os.getenv(
 KEYPAIR_PATH = os.getenv('NEON_SOLANA_KEYPAIR_PATH', '')
 MAX_BODY = 16_384
 MAX_MEMO = 500
+ALLOWED_ORIGINS = {
+    'http://127.0.0.1',
+    'http://localhost',
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+}
 
 try:
     from solana.rpc.async_api import AsyncClient
@@ -52,9 +58,12 @@ def json_response(handler, code, obj):
     data = json.dumps(obj, ensure_ascii=False).encode('utf-8')
     handler.send_response(code)
     handler.send_header('Content-Type', 'application/json; charset=utf-8')
-    handler.send_header('Access-Control-Allow-Origin', '*')
+    origin = handler.headers.get('Origin', '')
+    if origin in ALLOWED_ORIGINS:
+        handler.send_header('Access-Control-Allow-Origin', origin)
+        handler.send_header('Vary', 'Origin')
     handler.send_header('Access-Control-Allow-Headers', 'Content-Type')
-    handler.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
+    handler.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
     handler.send_header('Content-Length', str(len(data)))
     handler.end_headers()
     handler.wfile.write(data)
@@ -151,6 +160,23 @@ async def backup(snapshot):
 class Handler(BaseHTTPRequestHandler):
     def do_OPTIONS(self):
         json_response(self, 204, {})
+
+    def do_GET(self):
+        if urlparse(self.path).path == '/health':
+            deps_ok = Keypair is not None and AsyncClient is not None and MessageV0 is not None and VersionedTransaction is not None and create_memo is not None
+            keypair_configured = bool(KEYPAIR_PATH)
+            json_response(self, 200, {
+                'ok': True,
+                'service': 'NEON ORB Solana bridge',
+                'status': 'READY' if deps_ok and keypair_configured else 'CONFIG_REQUIRED',
+                'dependenciesReady': deps_ok,
+                'keypairConfigured': keypair_configured,
+                'publicKey': EXPECTED_PUBLIC_KEY,
+                'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
+                'rpc': RPC,
+            })
+            return
+        json_response(self, 404, {'ok': False, 'error': 'not found'})
 
     def do_POST(self):
         if urlparse(self.path).path != '/v1/neon-orb/onchain-backup':
