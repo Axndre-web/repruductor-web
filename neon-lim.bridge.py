@@ -136,6 +136,7 @@ def normalize_snapshot(snapshot):
     out['generation'] = int(snapshot.get('generation', out['level']))
     out['interactions'] = int(snapshot.get('interactions', 0))
     out['workResources'] = {k: max(0, float((snapshot.get('workResources') or {}).get(k, 0) or 0)) for k in ('NXC','CREDITS','BITS')}
+    out['workEarnedBalance'] = {k: max(0, float((snapshot.get('workEarnedBalance') or {}).get(k, 0) or 0)) for k in ('NXC','CREDITS','BITS')}
     recent = snapshot.get('recentWork', [])
     out['recentWork'] = recent[-12:] if isinstance(recent, list) else []
     provenance = snapshot.get('provenance', {})
@@ -163,7 +164,7 @@ def memo_for(snapshot):
         'xpTotal': snapshot['xpTotal'], 'NXC': snapshot['NXC'],
         'CREDITS': snapshot['CREDITS'], 'BITS': snapshot['BITS'],
         'generation': snapshot['generation'], 'interactions': snapshot['interactions'],
-        'workCompleted': snapshot['workCompleted'], 'workResources': snapshot['workResources'],
+        'workCompleted': snapshot['workCompleted'], 'workResources': snapshot['workResources'], 'workEarnedBalance': snapshot.get('workEarnedBalance', {}),
         'recentWork': snapshot.get('recentWork', [])[-4:], 'at': snapshot['at'], 'sha256': digest
     }, ensure_ascii=False, separators=(',', ':'))
     if len(fallback.encode('utf-8')) > MAX_MEMO:

@@ -245,3 +245,15 @@ La telemetría viva se incluye en los snapshots enviados al bridge para conserva
 La radio externa no se procesa mediante Web Audio para evitar que las restricciones CORS de algunos streams silencien la reproducción en equipos de escritorio; el ecualizador visual puede seguir representándose sin tocar la ruta de audio.
 
 Neon Orb también puede reservar una pequeña recompensa en CREDITS obtenidos por su propio trabajo. Es una recompensa computable/local, no SOL ni BTC y no implica una transferencia financiera externa.
+
+## V10.4 — Regla de causalidad económica del Neon Orb
+
+La economía del Orb tiene una regla de origen explícita:
+
+**trabajo del Neon Orb → resultado verificable/computable → recursos COMPUTABLES → evolución → puente REAL solamente cuando existe verificación externa real.**
+
+La telemetría, la Treasury, Solana, Phantom o un contador no generan riqueza por sí mismos.
+
+Cada trabajo conserva `workId`, resultado, recurso producido, coste energético, fuente, clasificación COMPUTABLE y estado COMPLETED. Los recursos obtenidos trabajando mantienen además un saldo `workEarnedBalance` separado para que una recompensa al creador nunca pueda financiarse accidentalmente con recursos entregados por el creador.
+
+`REAL` queda reservado a liquidaciones/observaciones externas verificadas; `NETWORK` describe fuentes y nodos externos; `LOCAL` conserva continuidad; `COMPUTABLE` representa el trabajo, EXP y economía interna del Orb.

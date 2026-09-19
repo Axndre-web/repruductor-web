@@ -604,3 +604,11 @@ El principio de evolución queda preservado: se amplía la telemetría y persist
 - El bridge conserva esos campos como estado recibido y el Memo on-chain usa el snapshot normalizado, sin convertir telemetría computable en saldo REAL.
 - La radio de escritorio evita enrutar streams externos mediante Web Audio/CORS para no silenciar emisoras por restricciones del navegador; el ecualizador visual de radio sigue funcionando de forma segura.
 - Neon Orb puede, tras completar trabajo suficiente y disponer de CREDITS internos, apartar una pequeña recompensa COMPUTABLE/LOCAL para el creador. Esto no es dinero real ni una transferencia externa.
+
+## V10.4 — PRINCIPIO DE ORIGEN ECONÓMICO
+
+Neon Orb no recibe su economía como un saldo arbitrario. El origen de los recursos COMPUTABLES es su ciclo autónomo de trabajo: seleccionar trabajo, ejecutarlo, completar un `workId`, producir el recurso, registrarlo en el Unified Ledger y ganar EXP/evolución.
+
+Los recursos ganados por trabajo se mantienen identificables mediante `workEarnedBalance`. Esto permite que cualquier recompensa voluntaria del Orb al creador proceda de recursos que el Orb haya generado trabajando, y no de un saldo regalado previamente por el creador.
+
+Una transición a REAL sólo se considera válida cuando existe una operación o liquidación externa verificable. La mera existencia de telemetría, un snapshot, una cuenta Solana, Phantom o una Treasury no convierte recursos COMPUTABLES en activos REAL.

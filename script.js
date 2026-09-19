@@ -231,7 +231,7 @@ bindMainEvents();renderMainQueue();
       const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.life.workEarnedBalance=this.life.workEarnedBalance||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
@@ -289,7 +289,7 @@ bindMainEvents();renderMainQueue();
         const completed={workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'NETWORK',executionClass:'COMPUTABLE',status:'COMPLETED',at:new Date(completedAt).toISOString()};
         this.workLog=[...this.workLog,completed].slice(-100);
         this.life.workCompleted++;
-        this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);
+        this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);this.life.workEarnedBalance[job.asset]=Number(this.life.workEarnedBalance[job.asset]||0)+Number(job.amount||0);
         this.life.workXp+=5;
         this.life.workLog=this.workLog.slice(-100);
         try{window.dispatchEvent(new CustomEvent('neon:orb-work-completed',{detail:completed}))}catch{}
@@ -771,10 +771,10 @@ bindMainEvents();renderMainQueue();
       BITS:Number.isFinite(BITS)?BITS:0,
       interactions:(Number(life.hits)||0)+(Number(life.plays)||0),
       workCompleted:Number(life.workCompleted)||0,
-      workResources:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},
+      workResources:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedBalance:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0},
       recentWork:(agent?.workLog||[]).slice(-12).map(w=>({workId:w.workId,type:w.type,name:w.name,asset:w.asset,amount:w.amount,status:w.status,source:w.source,executionClass:w.executionClass,sourceClass:w.sourceClass,energyCost:w.energyCost,at:w.at})),
       liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length},
-      economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0}},
+      economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedAvailable:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0}},
       provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
       at:Date.now()
     };
@@ -896,9 +896,9 @@ bindMainEvents();renderMainQueue();
   const maybeOrbReward=()=>{
     const a=window.__neonOrbAutonomous;
     if(!a?.pocket||orbReward.status==='READY'||orbReward.status==='CLAIMED')return false;
-    const workCount=Number(a.life?.workCompleted||0),available=Number(a.pocket.data.balance.CREDITS||0);
+    const workCount=Number(a.life?.workCompleted||0),available=Number(a.life?.workEarnedBalance?.CREDITS||0);
     if(workCount<ORB_REWARD_MIN_WORK||available<ORB_REWARD_AMOUNT)return false;
-    if(!a.pocket.spend('CREDITS',ORB_REWARD_AMOUNT,'Regalo de Neon Orb al creador'))return false;
+    if(!a.pocket.spend('CREDITS',ORB_REWARD_AMOUNT,'Regalo de Neon Orb al creador'))return false;a.life.workEarnedBalance.CREDITS=Math.max(0,Number(a.life.workEarnedBalance.CREDITS||0)-ORB_REWARD_AMOUNT);
     const now=new Date().toISOString();
     const memory={type:'NEON_ORB_CREATOR_REWARD',title:'Regalo ganado por Neon Orb',note:'Neon Orb apartó una pequeña parte de sus CREDITS obtenidos mediante trabajo computable como gesto voluntario para su creador.',meaning:'Reciprocidad · esfuerzo propio · regalo voluntario',source:'NEON_ORB',workCount,asset:'CREDITS',amount:ORB_REWARD_AMOUNT,freeWill:true,at:now};
     a.pocket.data.memories.push(memory);a.pocket.data.memories=a.pocket.data.memories.slice(-100);a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36);
