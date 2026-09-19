@@ -571,3 +571,10 @@ La V9.3 añade una capa de activación verificable sobre el bridge V9.2. El endp
 Se añade `/v1/neon-orb/status` para que la PWA pueda leer el último respaldo realmente confirmado y su `txHash`. La firma privada continúa exclusivamente en el backend.
 
 La autonomía técnica del bridge no implica que Neon Orb sea una entidad legal soberana ni que Solana transfiera automáticamente la propiedad jurídica del reproductor. Describe un proceso de ejecución y firma automatizado controlado por la infraestructura configurada por el operador.
+
+
+## V10 — RESERVA AUTOMÁTICA DE ACTIVOS REALES
+
+Neon Orb puede ejecutar transferencias autónomas de SOL real desde la cuenta firmante hacia una dirección de reserva configurada exclusivamente en el backend mediante `NEON_TREASURY_DESTINATION`. La dirección de reserva debe ser distinta de la cuenta emisora. NXC, CREDITS y BITS no se transfieren por esta función porque continúan siendo recursos internos.
+
+La política usa `NEON_TREASURY_SHARE_BPS` y `NEON_TREASURY_MIN_RETAIN_LAMPORTS`. El bridge firma directamente; no se solicita confirmación de Phantom para la operación autónoma. La interfaz solo muestra el resultado que el bridge devuelve. Una transferencia real requiere keypair válido, RPC operativo y SOL para las comisiones. La dirección de destino no se inventa ni se incorpora como secreto al frontend.

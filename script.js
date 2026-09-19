@@ -663,7 +663,7 @@ bindMainEvents();renderMainQueue();
   function ensurePanel(){
     const grid=document.querySelector('#control .control-grid'); if(!grid||document.getElementById('neonSolanaCard'))return;
     const card=document.createElement('article'); card.id='neonSolanaCard'; card.className='control-card neon-solana-card';
-    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button></div>`;
+    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button><button id="neonTreasurySweep" class="btn mini" type="button">RESERVA</button></div>`;
     grid.appendChild(card);
     document.getElementById('neonSolanaRefresh')?.addEventListener('click',()=>refresh(true));
     document.getElementById('neonOnChainSave')?.addEventListener('click',()=>executeOnChainBackup(true));
@@ -779,6 +779,26 @@ bindMainEvents();renderMainQueue();
     }catch{return false;}
   }
 
+  async function executeTreasurySweep(manual=false){
+    ensurePanel();
+    const endpoint=ONCHAIN.treasuryEndpoint||'http://127.0.0.1:8788/v1/neon-orb/treasury/sweep';
+    const btn=document.getElementById('neonTreasurySweep');
+    if(btn)btn.disabled=true;
+    onChainText('neonOnChainState',manual?'TESORERÍA · ENVIANDO':'TESORERÍA · PROGRAMADA');
+    try{
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(data.txHash){
+        onChainState.lastTreasuryTxHash=data.txHash; saveOnChainState();
+        text('neonOnChainActivity',`Reserva confirmada · ${data.sol??(Number(data.lamports||0)/1000000000)} SOL`);
+      } else if(data.status==='TREASURY_NO_FUNDS'){
+        text('neonOnChainActivity','Reserva · sin saldo disponible según la política configurada');
+      }
+      return data;
+    }catch(e){ text('neonOnChainActivity',`Reserva no confirmada · ${String(e?.message||e)}`); return {ok:false,error:String(e?.message||e)}; }
+    finally{if(btn)btn.disabled=false;}
+  }
+
   async function executeOnChainBackup(manual=false){
     ensurePanel();
     const snapshot=getOrbSnapshot();
@@ -822,15 +842,17 @@ bindMainEvents();renderMainQueue();
       return data;
     }catch(e){return {ok:false,error:String(e?.message||e)}}
   }
-  window.__neonOrbOnChainBackup={executeOnChainBackup,publishOrbState,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge,syncBridgeStatus};
+  window.__neonOrbOnChainBackup={executeOnChainBackup,executeTreasurySweep,publishOrbState,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge,syncBridgeStatus};
   window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,publishOrbState,getState:()=>({...state,...onChainState})};
   ensurePanel();
+  document.getElementById('neonTreasurySweep')?.addEventListener('click',()=>executeTreasurySweep(true));
   onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
   renderOnChainTx(onChainState.lastTxHash);
   refresh(false); publishOrbState(); syncBridgeStatus(); setInterval(()=>refresh(false),30000);
   setInterval(()=>syncBridgeStatus(),30000);
   setInterval(()=>publishOrbState(),30000);
   setInterval(()=>executeOnChainBackup(false),Number(ONCHAIN.autoSaveInterval)||300000);
+  setInterval(()=>executeTreasurySweep(false),Number(ONCHAIN.autoSaveInterval)||300000);
 })();
 
 // CREATOR GIFT & REAL TELEMETRY

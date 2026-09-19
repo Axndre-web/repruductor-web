@@ -35,11 +35,15 @@ KEYPAIR_PATH = os.getenv('NEON_SOLANA_KEYPAIR_PATH', '')
 MAX_BODY = 16_384
 MAX_MEMO = 500
 AGENT_LOOP_INTERVAL = max(30, int(os.getenv('NEON_AGENT_LOOP_INTERVAL', '300')))
+TREASURY_DESTINATION = os.getenv('NEON_TREASURY_DESTINATION', '').strip()
+TREASURY_SHARE_BPS = max(0, min(10000, int(os.getenv('NEON_TREASURY_SHARE_BPS', '2000'))))
+TREASURY_MIN_RETAIN_LAMPORTS = max(0, int(os.getenv('NEON_TREASURY_MIN_RETAIN_LAMPORTS', '0')))
 STATE_FILE = os.getenv('NEON_ORB_STATE_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-state.json'))
 state_lock = threading.Lock()
 backup_lock = threading.Lock()
 last_backup_lock = threading.Lock()
 last_backup = {'status': 'NONE', 'txHash': None, 'snapshotSha256': None, 'confirmedAt': None, 'error': None}
+last_treasury = {'status': 'NOT_CONFIGURED', 'txHash': None, 'lamports': 0, 'destination': TREASURY_DESTINATION or None, 'confirmedAt': None, 'error': None}
 
 ALLOWED_ORIGINS = {
     'http://127.0.0.1',
@@ -52,12 +56,13 @@ try:
     from solana.rpc.async_api import AsyncClient
     from solders.keypair import Keypair
     from solders.message import MessageV0
-    from solders.transaction import VersionedTransaction
+    from solders.transaction import VersionedTransaction, Transaction
+    from solders.system_program import transfer, TransferParams
     from spl.memo.instructions import create_memo
     from spl.memo.models import MemoParams
 except ImportError as exc:
     AsyncClient = Keypair = MessageV0 = VersionedTransaction = None
-    create_memo = MemoParams = None
+    create_memo = MemoParams = transfer = TransferParams = Transaction = None
     IMPORT_ERROR = str(exc)
 else:
     IMPORT_ERROR = ''
@@ -189,6 +194,48 @@ def keypair_ready():
     except Exception:
         return False
 
+
+def treasury_destination_ready(kp):
+    if not TREASURY_DESTINATION:
+        return False, 'NEON_TREASURY_DESTINATION no configurado'
+    if TREASURY_DESTINATION == str(kp.pubkey()):
+        return False, 'La dirección de reserva no puede ser la misma que la cuenta emisora'
+    try:
+        from solders.pubkey import Pubkey
+        Pubkey.from_string(TREASURY_DESTINATION)
+    except Exception:
+        return False, 'NEON_TREASURY_DESTINATION no es una dirección Solana válida'
+    return True, None
+
+
+async def treasury_sweep():
+    kp = load_keypair()
+    ready, reason = treasury_destination_ready(kp)
+    if not ready:
+        return {'ok': False, 'status': 'TREASURY_NOT_CONFIGURED', 'error': reason}
+    from solders.pubkey import Pubkey
+    destination = Pubkey.from_string(TREASURY_DESTINATION)
+    async with AsyncClient(RPC) as client:
+        balance_response = await client.get_balance(kp.pubkey(), commitment='confirmed')
+        balance = int(balance_response.value)
+        available = max(0, balance - TREASURY_MIN_RETAIN_LAMPORTS)
+        amount = (available * TREASURY_SHARE_BPS) // 10000
+        if amount <= 0:
+            return {'ok': True, 'status': 'TREASURY_NO_FUNDS', 'lamports': 0, 'balanceLamports': balance, 'destination': TREASURY_DESTINATION}
+        latest = await client.get_latest_blockhash()
+        instruction = transfer(TransferParams(from_pubkey=kp.pubkey(), to_pubkey=destination, lamports=amount))
+        tx = Transaction.new_signed_with_payer([instruction], kp.pubkey(), [kp], latest.value.blockhash)
+        sent = await client.send_transaction(tx)
+        signature = str(sent.value)
+        await client.confirm_transaction(sent.value, commitment='confirmed')
+        return {'ok': True, 'status': 'CONFIRMED', 'txHash': signature, 'lamports': amount, 'sol': amount / 1_000_000_000, 'destination': TREASURY_DESTINATION, 'publicKey': str(kp.pubkey()), 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom')}
+
+
+def record_treasury_result(result):
+    with last_backup_lock:
+        last_treasury.update({'status': result.get('status', 'ERROR'), 'txHash': result.get('txHash'), 'lamports': int(result.get('lamports', 0) or 0), 'destination': result.get('destination') or TREASURY_DESTINATION or None, 'confirmedAt': int(time.time()*1000) if result.get('ok') and result.get('txHash') else None, 'error': result.get('error')})
+
+
 def autonomous_backup_loop():
     last_submitted = None
     print(f'[NEON AGENT LOOP] activo · intervalo {AGENT_LOOP_INTERVAL}s · estado={STATE_FILE}')
@@ -215,9 +262,21 @@ def autonomous_backup_loop():
                     save_latest_state(snapshot)
                 print(f'[NEON AGENT LOOP] backup confirmado · {result["txHash"]}')
         except Exception as exc:
-            print(f'[NEON AGENT LOOP] pendiente · {exc}')
+            print(f'[NEON AGENT LOOP] backup pendiente · {exc}')
         finally:
             backup_lock.release()
+        if TREASURY_DESTINATION and Keypair and AsyncClient and Transaction and transfer:
+            if backup_lock.acquire(blocking=False):
+                try:
+                    treasury = asyncio.run(treasury_sweep())
+                    record_treasury_result(treasury)
+                    if treasury.get('txHash'):
+                        print(f'[NEON TREASURY] reserva confirmada · {treasury["lamports"]} lamports · {treasury["txHash"]}')
+                except Exception as exc:
+                    record_treasury_result({'status':'ERROR','error':str(exc)})
+                    print(f'[NEON TREASURY] pendiente · {exc}')
+                finally:
+                    backup_lock.release()
 
 
 async def backup(snapshot):
@@ -278,6 +337,7 @@ class Handler(BaseHTTPRequestHandler):
                 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
                 'rpc': RPC,
                 'lastBackup': backup_state,
+                'treasury': {'configured': bool(TREASURY_DESTINATION), 'destination': TREASURY_DESTINATION or None, 'shareBps': TREASURY_SHARE_BPS, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'lastTransfer': dict(last_treasury)},
             })
             return
         if path == '/v1/neon-orb/state':
@@ -287,7 +347,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/v1/neon-orb/status':
             with last_backup_lock:
                 backup_state = dict(last_backup)
-            json_response(self, 200, {'ok': True, 'publicKey': EXPECTED_PUBLIC_KEY, 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'), 'lastBackup': backup_state, 'latestStateAvailable': load_latest_state() is not None})
+            json_response(self, 200, {'ok': True, 'publicKey': EXPECTED_PUBLIC_KEY, 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'), 'lastBackup': backup_state, 'treasury': dict(last_treasury), 'treasuryDestination': TREASURY_DESTINATION or None, 'latestStateAvailable': load_latest_state() is not None})
             return
         json_response(self, 404, {'ok': False, 'error': 'not found'})
 
@@ -305,6 +365,22 @@ class Handler(BaseHTTPRequestHandler):
                 json_response(self, 200, {'ok': True, 'status': 'STATE_ACCEPTED', 'snapshotSha256': snapshot_digest(snapshot), 'autonomousLoop': True})
             except Exception as exc:
                 json_response(self, 400, {'ok': False, 'status': 'STATE_REJECTED', 'error': str(exc)})
+            return
+        if path == '/v1/neon-orb/treasury/sweep':
+            try:
+                if not (Keypair and AsyncClient and Transaction and transfer):
+                    raise RuntimeError('Dependencias Solana no instaladas')
+                if not backup_lock.acquire(blocking=False):
+                    raise RuntimeError('otra firma on-chain está en curso')
+                try:
+                    result = asyncio.run(treasury_sweep())
+                    record_treasury_result(result)
+                finally:
+                    backup_lock.release()
+                json_response(self, 200 if result.get('ok') else 503, result)
+            except Exception as exc:
+                record_treasury_result({'status':'ERROR','error':str(exc)})
+                json_response(self, 503, {'ok':False,'status':'TREASURY_NOT_CONFIRMED','error':str(exc)})
             return
         if path != '/v1/neon-orb/onchain-backup':
             json_response(self, 404, {'ok': False, 'error': 'not found'})

@@ -16,5 +16,7 @@ window.NEON_SOLANA_CONFIG = Object.freeze({
   bridgeHealthEndpoint: 'http://127.0.0.1:8788/health',
   stateEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/state',
   statusEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/status',
+  treasuryEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/treasury/sweep',
+  treasuryDestination: '',
   cluster: 'mainnet-beta'
 });
