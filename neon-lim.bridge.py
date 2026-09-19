@@ -120,7 +120,7 @@ def load_keypair():
 def normalize_snapshot(snapshot):
     if not isinstance(snapshot, dict):
         raise ValueError('snapshot inválido')
-    required = ('level', 'xpTotal', 'NXC', 'CREDITS', 'BITS')
+    required = ('level', 'xpTotal', 'NXC', 'CREDITS', 'BITS', 'workCompleted')
     out = {'protocol': 'NEON-ORB-ONCHAIN-BACKUP-V1'}
     for key in required:
         value = snapshot.get(key)
@@ -135,6 +135,17 @@ def normalize_snapshot(snapshot):
         out[key] = int(n) if n.is_integer() else round(n, 6)
     out['generation'] = int(snapshot.get('generation', out['level']))
     out['interactions'] = int(snapshot.get('interactions', 0))
+    out['workResources'] = {k: max(0, float((snapshot.get('workResources') or {}).get(k, 0) or 0)) for k in ('NXC','CREDITS','BITS')}
+    recent = snapshot.get('recentWork', [])
+    out['recentWork'] = recent[-12:] if isinstance(recent, list) else []
+    provenance = snapshot.get('provenance', {})
+    out['provenance'] = {k: str(provenance.get(k, '')) for k in ('REAL','COMPUTABLE','LOCAL','NETWORK')}
+    live = snapshot.get('liveTelemetry', {})
+    out['liveTelemetry'] = live if isinstance(live, dict) else {}
+    economy = snapshot.get('economy', {})
+    out['economy'] = economy if isinstance(economy, dict) else {}
+    layers = snapshot.get('layers', {})
+    out['layers'] = layers if isinstance(layers, dict) else {}
     out['at'] = int(snapshot.get('at', 0))
     return out
 
@@ -152,7 +163,8 @@ def memo_for(snapshot):
         'xpTotal': snapshot['xpTotal'], 'NXC': snapshot['NXC'],
         'CREDITS': snapshot['CREDITS'], 'BITS': snapshot['BITS'],
         'generation': snapshot['generation'], 'interactions': snapshot['interactions'],
-        'at': snapshot['at'], 'sha256': digest
+        'workCompleted': snapshot['workCompleted'], 'workResources': snapshot['workResources'],
+        'recentWork': snapshot.get('recentWork', [])[-4:], 'at': snapshot['at'], 'sha256': digest
     }, ensure_ascii=False, separators=(',', ':'))
     if len(fallback.encode('utf-8')) > MAX_MEMO:
         raise ValueError('snapshot demasiado grande para el Memo de Solana')

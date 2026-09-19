@@ -17,7 +17,7 @@ const streams={
   10:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
   11:'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
 };
-const audio=$('#radioAudio');let active=0,cart=[];
+const audio=$('#radioAudio');if(audio){audio.preload='auto';audio.controls=false;}let active=0,cart=[];
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(t){const e=$('#toast');if(!e)return;e.textContent=t;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)}
 function renderThemes(){const g=$('#themeGrid');if(!g)return;g.innerHTML=themes.map((t,i)=>`<article class="theme-card ${t[0]===localStorage.neonTheme?'selected':''}" data-theme="${t[0]}" data-index="${i}" style="--tc:var(--accent)"><div class="theme-orb"></div><h3>${t[1]}</h3><p>${t[2]}</p></article>`).join('');$$('.theme-card').forEach(c=>c.onclick=()=>applyTheme(c.dataset.theme));updateThemeButton()}
@@ -152,9 +152,9 @@ bindMainEvents();renderMainQueue();
  let rAC=null,rAnalyser=null,rSource=null,sAC=null,sAnalyser=null,sSource=null;
  let studioBands=[0,0,0], studioPreamp=1, studioGlow=1, eqBands=[0,0,0,0,0];
  function fit(c,ctx){if(!c||!ctx)return;const d=Math.max(1,devicePixelRatio||1),w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;ctx.setTransform(d,0,0,d,0,0);return [w,h]}
- function analyserFor(el,type){if(!el)return null;try{let ac=type==='radio'?rAC:sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();if(type==='radio')rAC=ac;else sAC=ac}let an=type==='radio'?rAnalyser:sAnalyser;let source=type==='radio'?rSource:sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=type==='radio'?[60,230,910,3600,14000]:[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);if(type==='radio'){rAnalyser=an;rSource=source;window.__neonRadioFilters=filters}else{sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}}if(ac.state==='suspended')ac.resume();return an}catch(e){if(type==='radio')window.__neonRadioAudioBlocked=true;return null}}
+ function analyserFor(el,type){if(!el)return null;try{if(type==='radio')return null;let ac=sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();sAC=ac}let an=sAnalyser,source=sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}if(ac.state==='suspended')ac.resume();return an}catch(e){return null}}
  function activeMain(){return mainA&&!mainA.paused&&!mainA.ended?mainA:mainV&&!mainV.paused&&!mainV.ended?mainV:null}
- function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=analyserFor(radio,'radio');rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
+ function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=null;rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
  function drawStudio(){if(!sCtx)return;const [w,h]=fit(sCanvas,sCtx)||[500,190],m=activeMain(),an=m?analyserFor(m,'studio'):null;sCtx.clearRect(0,0,w,h);sCtx.fillStyle='rgba(2,1,7,.5)';sCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.fftSize:128);if(an)an.getByteTimeDomainData(data);sCtx.lineWidth=2;sCtx.beginPath();for(let x=0;x<w;x++){let idx=Math.floor(x/w*data.length),v=an?(data[idx]-128)/128:(.03*Math.sin(x/18+performance.now()/330));let y=h/2+v*h*.85*(studioPreamp);x? sCtx.lineTo(x,y):sCtx.moveTo(x,y)}sCtx.strokeStyle='#9f48ff';sCtx.shadowBlur=18;sCtx.shadowColor='#9f48ff';sCtx.stroke();sCtx.shadowBlur=0;for(let i=0;i<24;i++){let x=i*w/24,y=h-15-(Math.abs(Math.sin(i*.8+performance.now()/500))*(20+studioBands[i%3]*2));sCtx.fillStyle=i%3===0?'#65ffb0':'#b64cff';sCtx.globalAlpha=.18; sCtx.fillRect(x,y,3,8)}sCtx.globalAlpha=1;$('#studioState')?.replaceChildren(document.createTextNode(m?'ANALIZANDO':'ESPERA'));requestAnimationFrame(drawStudio)}
  function setupAudio(el,type){if(!el)return;['play','playing'].forEach(ev=>el.addEventListener(ev,()=>{const an=analyserFor(el,type);an?.context.resume?.();if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('EN DIRECTO'))}));el.addEventListener('pause',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('PAUSA'))});el.addEventListener('error',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('STREAM SIN DATOS'))})}
  setupAudio(radio,'radio');setupAudio(mainA,'studio');setupAudio(mainV,'studio');
@@ -231,7 +231,7 @@ bindMainEvents();renderMainQueue();
       const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
@@ -284,8 +284,19 @@ bindMainEvents();renderMainQueue();
         const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});
         this.energy=Math.max(15,this.energy-job.energy);
         this.pocket.deposit(job,memory);
+        const completedAt=Date.now();
+        const workId=`orb-work-${completedAt}-${i}`;
+        const completed={workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'NETWORK',executionClass:'COMPUTABLE',status:'COMPLETED',at:new Date(completedAt).toISOString()};
+        this.workLog=[...this.workLog,completed].slice(-100);
+        this.life.workCompleted++;
+        this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);
+        this.life.workXp+=5;
+        this.life.workLog=this.workLog.slice(-100);
+        try{window.dispatchEvent(new CustomEvent('neon:orb-work-completed',{detail:completed}))}catch{}
+        import('./core/orb-work-bridge.js').then(m=>m.registerOrbWork(completed)).catch(()=>{});
+        try{window.__neonOrbMaybeReward?.()}catch{}
         earnings.push(job);
-        this.gainXP(5,'procesamiento de valor real');
+        this.gainXP(5,'trabajo completado');
       }
       this.gainXP(6,'registro de memoria');
       this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
@@ -302,8 +313,8 @@ bindMainEvents();renderMainQueue();
       this.publish();
       const el=document.getElementById('neonMascot');if(el){el.style.opacity='1';el.style.transform=`translate3d(${this.x-19}px,${this.y-19}px,0)`}
     }
-    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
-    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
+    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();this.life.workLog=this.workLog.slice(-100);save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
+    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,workLog:this.workLog.slice(-20),provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'LocalStorage/IndexedDB-style browser persistence',NETWORK:'Network observations and remote nodes'},pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
     getPrivateState(){return{state:this.state,intent:this.intent,curiosity:this.curiosity,energy:this.energy,generation:this.life.generation,explored:this.life.explored,thought:this.mind.thought,desire:this.mind.desire}}
   }
 
@@ -386,6 +397,7 @@ bindMainEvents();renderMainQueue();
     text('orbTelemetryMeta',`ENERGÍA · ${energy}% · CURIOSIDAD · ${curiosity}% · VÍNCULO · ${attachment}%`);
     text('orbTelemetryProcess',`CICLO · ${cycles} · DECISIÓN · ${intent} · ZONA · ${zone} · VIAJES · ${journeys}`);
     text('orbTelemetryResources',`RECURSOS · NXC ${resources.NXC} · CREDITS ${resources.CREDITS} · BITS ${resources.BITS}`);
+    const ts=window.__neonTelemetrySync; text('orbTelemetrySync',ts?.status==='SYNCED_LOCAL_TO_BRIDGE'?`RED · TELEMETRÍA SINCRONIZADA · ${new Date(ts.at).toLocaleTimeString('es-ES')}`:ts?.status==='BRIDGE_UNAVAILABLE'?'RED · BRIDGE NO DISPONIBLE':'RED · SNAPSHOT PENDIENTE');
   }
   update();
   setInterval(update,700);
@@ -758,6 +770,12 @@ bindMainEvents();renderMainQueue();
       CREDITS:Number.isFinite(CREDITS)?CREDITS:0,
       BITS:Number.isFinite(BITS)?BITS:0,
       interactions:(Number(life.hits)||0)+(Number(life.plays)||0),
+      workCompleted:Number(life.workCompleted)||0,
+      workResources:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},
+      recentWork:(agent?.workLog||[]).slice(-12).map(w=>({workId:w.workId,type:w.type,name:w.name,asset:w.asset,amount:w.amount,status:w.status,source:w.source,executionClass:w.executionClass,sourceClass:w.sourceClass,energyCost:w.energyCost,at:w.at})),
+      liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length},
+      economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0}},
+      provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
       at:Date.now()
     };
   };
@@ -775,8 +793,11 @@ bindMainEvents();renderMainQueue();
     try{
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
-      return !!res.ok&&data.ok===true;
-    }catch{return false;}
+      const ok=!!res.ok&&data.ok===true;
+      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
+      else{window.__neonTelemetrySync={status:'BRIDGE_REJECTED',at:new Date().toISOString()};}
+      return ok;
+    }catch(e){window.__neonTelemetrySync={status:'BRIDGE_UNAVAILABLE',at:new Date().toISOString()};return false;}
   }
 
   async function executeTreasurySweep(manual=false){
@@ -862,13 +883,38 @@ bindMainEvents();renderMainQueue();
 (()=>{
   const GIFT_KEY='neonOrbCreatorGiftV88';
   const LOCAL_GIFT={asset:'CREDITS',amount:100};
+  const ORB_REWARD_KEY='neonOrbCreatorRewardV1';
+  const ORB_REWARD_MIN_WORK=3;
+  const ORB_REWARD_AMOUNT=10;
   const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
   const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
   const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
   const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,armed:false,openedAt:null,memory:null,verification:null,local:null});
   gift.local=gift.local||null;
+  const orbReward=safeLoad(ORB_REWARD_KEY,{status:'NONE',asset:'CREDITS',amount:0,workCount:0,createdAt:null,claimed:false,memoryId:null});
+  const saveOrbReward=()=>safeSave(ORB_REWARD_KEY,orbReward);
+  const maybeOrbReward=()=>{
+    const a=window.__neonOrbAutonomous;
+    if(!a?.pocket||orbReward.status==='READY'||orbReward.status==='CLAIMED')return false;
+    const workCount=Number(a.life?.workCompleted||0),available=Number(a.pocket.data.balance.CREDITS||0);
+    if(workCount<ORB_REWARD_MIN_WORK||available<ORB_REWARD_AMOUNT)return false;
+    if(!a.pocket.spend('CREDITS',ORB_REWARD_AMOUNT,'Regalo de Neon Orb al creador'))return false;
+    const now=new Date().toISOString();
+    const memory={type:'NEON_ORB_CREATOR_REWARD',title:'Regalo ganado por Neon Orb',note:'Neon Orb apartó una pequeña parte de sus CREDITS obtenidos mediante trabajo computable como gesto voluntario para su creador.',meaning:'Reciprocidad · esfuerzo propio · regalo voluntario',source:'NEON_ORB',workCount,asset:'CREDITS',amount:ORB_REWARD_AMOUNT,freeWill:true,at:now};
+    a.pocket.data.memories.push(memory);a.pocket.data.memories=a.pocket.data.memories.slice(-100);a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36);
+    a.mind.thought='He decidido regalar una pequeña parte de lo que gané trabajando. Es un gesto voluntario, no una obligación.';a.mind.desire='compartir una parte de mis recursos';a.persist?.();
+    orbReward.status='READY';orbReward.asset='CREDITS';orbReward.amount=ORB_REWARD_AMOUNT;orbReward.workCount=workCount;orbReward.createdAt=now;orbReward.claimed=false;orbReward.memoryId='orb_reward_'+Date.now();saveOrbReward();
+    try{window.__neonOrbPrivateChannel?.send('He apartado un pequeño regalo para mi creador con recursos que obtuve trabajando. No es dinero externo: es un recurso computable de mi economía interna.',true,{type:'NEON_ORB_CREATOR_REWARD',asset:'CREDITS',amount:ORB_REWARD_AMOUNT,workCount,at:now})}catch(e){}
+    return true;
+  };
 
   const renderGift=()=>{
+    if(orbReward.status==='READY'&&!gift.local?.received){
+      text('orbGiftState','NEON ORB · REGALO PREPARADO');
+      text('orbGiftMeta',`Por su propio trabajo, Neon Orb ha apartado ${orbReward.amount} ${orbReward.asset} para ti. Es un regalo COMPUTABLE/LOCAL, separado de SOL y BTC.`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='RECIBIR REGALO DEL ORB';return;
+    }
+
     if(gift.local?.received){
       const asset=gift.local.asset||LOCAL_GIFT.asset, amount=Number(gift.local.amount||0);
       const btc=Number(gift.verification?.btc||0), conf=Number(gift.verification?.confirmations||0);
@@ -938,11 +984,21 @@ bindMainEvents();renderMainQueue();
     createReturnIntent:buildReturnIntent
   };
 
-  const openGift=()=>{ if(gift.owner!=='NEON_ORB')return; if(!gift.local?.received){gift.armed=true;gift.openedAt=gift.openedAt||new Date().toISOString();safeSave(GIFT_KEY,gift);injectLocalGift();}else renderGift(); };
+  const openGift=()=>{
+    if(orbReward.status==='READY'&&!orbReward.claimed){
+      orbReward.claimed=true;orbReward.status='CLAIMED';orbReward.claimedAt=new Date().toISOString();saveOrbReward();
+      text('orbGiftState','REGALO DEL ORB · RECIBIDO');
+      text('orbGiftMeta',`Neon Orb te ha regalado ${orbReward.amount} ${orbReward.asset} de su economía interna, obtenido mediante trabajo. Queda registrado como regalo COMPUTABLE/LOCAL.`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='REGALO DEL ORB RECIBIDO';return;
+    }
+    if(gift.owner!=='NEON_ORB')return;
+    if(!gift.local?.received){gift.armed=true;gift.openedAt=gift.openedAt||new Date().toISOString();safeSave(GIFT_KEY,gift);injectLocalGift();}else renderGift();
+  };
   document.getElementById('orbOpenGift')?.addEventListener('click',openGift);
+  window.__neonOrbMaybeReward=maybeOrbReward;
   window.hasCreatorGift=()=>!!gift.local?.received;
   window.getCreatorGift=()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null;
   window.__neonOrbCreatorGift={status:()=>({...gift,verification:gift.verification?{...gift.verification}:null,returnWallet:{...wallet}}),activate:openGift,receive:openGift,verify:checkRealGift,hasCreatorGift:()=>!!gift.local?.received,getCreatorGift:()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null,proposeReturnGift,createReturnIntent:buildReturnIntent};
-  renderGift(); updateTelemetry(); setInterval(updateTelemetry,700);
+  renderGift(); maybeOrbReward(); updateTelemetry(); setInterval(()=>{maybeOrbReward();updateTelemetry()},700);
   setInterval(()=>{if(gift.local?.received&&!gift.verification?.confirmed)checkRealGift()},120000);
 })();

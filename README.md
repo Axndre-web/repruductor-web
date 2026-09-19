@@ -221,3 +221,27 @@ Neon Orb usa la misma dirección pública Solana `5ifQth8MCG9LgnuxJaTaNcRgfmpxhs
 Cuando `NEON_TREASURY_DESTINATION` coincide con la cuenta emisora, el bridge **no realiza una transferencia a sí mismo**: técnicamente no separaría fondos y consumiría comisión. En su lugar, consulta el saldo real con confirmación `confirmed` y calcula una **reserva lógica/contable** según `NEON_TREASURY_SHARE_BPS`, respetando `NEON_TREASURY_MIN_RETAIN_LAMPORTS`. El resultado queda persistido localmente como asignación de Treasury, con saldo observado y hora de verificación, sin inventar un `txHash`.
 
 Si en el futuro se configura una dirección Solana diferente, la misma función puede operar en modo `TRANSFER` y enviar SOL reales tras firma y confirmación on-chain. NXC, CREDITS y BITS siguen siendo recursos internos y no se convierten por esta función. Phantom continúa como interfaz/guardián externo de la misma cuenta Solana; no recibe ni comparte secretos privados.
+
+## V10.2 — CONTINUIDAD DEL TRABAJO DEL NEON ORB Y CAPAS REAL/COMPUTABLE/LOCAL/RED
+
+La Treasury no sustituye el trabajo del Orb. El motor autónomo conserva su ciclo de exploración, selección de trabajo, ejecución, recompensa interna, EXP, memoria y persistencia. Cada trabajo completado genera un registro `workId`, recurso producido, coste energético, fuente de red, clasificación `COMPUTABLE`, estado `COMPLETED` y marca temporal.
+
+El respaldo on-chain incorpora ahora esos datos computables junto con nivel, EXP y saldos internos. Esto permite auditar qué trabajo había completado Neon Orb cuando se tomó cada snapshot, sin presentar los NXC/CREDITS/BITS como activos reales de Solana.
+
+### Capas estrictas
+- **REAL:** liquidaciones externas realmente verificadas (por ejemplo, SOL confirmado por RPC o BTC verificado).
+- **COMPUTABLE:** trabajo ejecutado por el motor del Orb, EXP, niveles y economía interna.
+- **LOCAL:** estado persistido en el dispositivo/bridge local.
+- **RED:** observaciones, nodos y datos obtenidos de servicios externos; no se convierten automáticamente en ingresos reales.
+
+La Treasury en la misma cuenta `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3` continúa siendo una **reserva lógica/contable**, porque una cuenta no puede separarse físicamente en dos balances sin crear otra cuenta. Los fondos SOL reales permanecen verificables on-chain; la asignación Treasury se calcula sin transferir SOL a la propia cuenta.
+
+El principio de evolución queda preservado: se amplía la telemetría y persistencia del trabajo existente; no se reemplaza el motor, no se reinician saldos y no se eliminan estructuras previas.
+
+## V10.3 — sincronización viva y recompensa del Orb
+
+La telemetría viva se incluye en los snapshots enviados al bridge para conservar estado e intención del Orb junto con trabajo, EXP y economía interna. La separación REAL / COMPUTABLE / LOCAL / NETWORK se mantiene.
+
+La radio externa no se procesa mediante Web Audio para evitar que las restricciones CORS de algunos streams silencien la reproducción en equipos de escritorio; el ecualizador visual puede seguir representándose sin tocar la ruta de audio.
+
+Neon Orb también puede reservar una pequeña recompensa en CREDITS obtenidos por su propio trabajo. Es una recompensa computable/local, no SOL ni BTC y no implica una transferencia financiera externa.
