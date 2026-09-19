@@ -427,3 +427,88 @@ El evento ⁠onApprove⁠ no se considera por sí solo una prueba criptográfica
 ## Demostración
 
 Sirve la carpeta mediante un servidor HTTP local (los módulos ES no deben ejecutarse directamente mediante el protocolo ⁠file://⁠). Un HTML mínimo debe incluir ⁠<div id="wallet-dashboard"></div>⁠ y cargar ⁠index-integration-example.js⁠ utilizando ⁠type="module"⁠.
+
+---
+
+# V8.8+ — HERRAMIENTA SOLANA / PHANTOM PARA NEON ORB
+
+Esta ampliación mantiene la arquitectura acumulativa existente y añade una herramienta externa de observación e interacción con Solana para Neon Orb.
+
+## Principio de Integración
+
+Neon Orb continúa siendo la entidad central del entorno. Phantom y Solana se incorporan como herramientas externas disponibles para consulta, recepción de recursos externos verificables y relación entre el entorno computable de Neon y acontecimientos reales de blockchain.
+
+La integración no sustituye la economía interna de EXP, NXC, CREDITS y BITS.
+
+## Dirección Pública de Solana
+
+La dirección asociada a la herramienta de Neon Orb es:
+
+`5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`
+
+La dirección se utiliza como identificador público de consulta y recepción. No se incorporan semillas, claves privadas ni mecanismos de firma al frontend.
+
+## Observación Real de Solana
+
+La herramienta consulta Solana Mainnet mediante el RPC configurado en `neon-ai.config.js`.
+
+La información observada puede incluir:
+
+- Saldo SOL observado.
+- Actividad reciente.
+- Slots de transacciones.
+- Firmas de transacción.
+- Entradas SOL verificables mediante cambios de balance de la dirección.
+
+Si el RPC no está disponible, el sistema conserva el último estado local pero lo presenta como no verificado y no inventa nuevos datos externos.
+
+## Unified Ledger y SOL
+
+`core/unified-ledger.js` incorpora `SOL_LAMPORTS` dentro de los recursos externos.
+
+Una entrada SOL solo se registra como liquidación externa cuando existe una firma de transacción observada y un incremento de balance verificable para la dirección configurada.
+
+La entrada externa no se convierte automáticamente en EXP, NXC, CREDITS o BITS.
+
+## Memoria de Neon Orb
+
+Cuando se detecta una entrada SOL verificable, Neon Orb puede registrar una memoria de tipo `SOLANA_EXTERNAL_INCOME` con:
+
+- Red.
+- Dirección observada.
+- Firma de transacción.
+- Lamports.
+- Valor SOL calculado.
+- Slot.
+- Marca de verificación.
+- Fecha de observación.
+
+El acontecimiento externo puede utilizarse como contexto para la toma de decisiones del Orb, manteniendo separadas la realidad externa y la economía computable interna.
+
+## Phantom
+
+Phantom se trata como proveedor externo de wallet. La presencia de Phantom puede detectarse mediante su proveedor público. La integración no almacena ni solicita claves privadas.
+
+La consulta de la dirección pública de Neon no depende de Phantom. Las operaciones que requieran firma deberán realizarse mediante un proveedor de wallet autorizado o mediante una arquitectura externa apropiada.
+
+## Canal Privado de IA
+
+El contexto del canal privado puede incluir el estado Solana observado cuando está verificado. El LLM puede interpretar esa información, pero no modifica directamente los saldos, no crea transacciones y no firma operaciones.
+
+## Interfaz Móvil y Dock Inferior
+
+La capa de presentación incorpora un dock inferior fijo con soporte para interacción táctil, desenfoque de fondo y `z-index: 99999`.
+
+La capa visual de partículas mantiene `pointer-events: none` para evitar bloquear controles superiores.
+
+La sección Creator Gift incorpora `padding-bottom: 85px` para mantener el contenido separado de las capas visuales inferiores.
+
+## Principio REAL / COMPUTABLE
+
+La integración mantiene la distinción fundamental del proyecto:
+
+1. EXP, NXC, CREDITS y BITS forman parte del sistema computable interno.
+2. SOL observado en Solana constituye un dato externo verificable cuando la red lo confirma.
+3. Una pantalla local no constituye por sí misma una confirmación económica externa.
+4. La IA puede interpretar datos, pero no convierte una representación en una operación real.
+5. Si un servicio externo no está disponible, el estado se identifica como no verificado.

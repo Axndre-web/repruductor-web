@@ -502,6 +502,7 @@ bindMainEvents();renderMainQueue();
   const ENDPOINT=window.NEON_AI_ENDPOINT||'';
   const CHANNEL='neon-orb-private-v80';
   const $=id=>document.getElementById(id);
+  if(!document.querySelector('.neon-bottom-dock')){const d=document.createElement('div');d.className='neon-bottom-dock';d.innerHTML='<button class="btn mini" type="button" data-neon-ai-action="advice">IA · CONSEJO</button><input data-neon-ai-input maxlength="240" placeholder="Canal privado de Neon…"><button class="btn mini" type="button" data-neon-ai-action="consult">IA · CONSULTAR</button>';document.body.appendChild(d);d.querySelector('[data-neon-ai-input]')?.addEventListener('keydown',e=>{if(e.key==='Enter'){const m=e.target.value.trim();if(m){window.askAdvice?.(m,{type:'BOTTOM_DOCK_INPUT'});e.target.value=''}}});d.querySelector('[data-neon-ai-input]')?.addEventListener('input',e=>{e.target.value=e.target.value.slice(0,240)})}
   const safeParse=(v,f)=>{try{return JSON.parse(v)||f}catch(e){return f}};
   let channelState=Object.assign({
     identity:'NEON-ORB', sessionId:'', status:'OFFLINE', contacts:0, accepted:0,
@@ -529,6 +530,12 @@ bindMainEvents();renderMainQueue();
         CREDITS:Number(s.pocketResources?.CREDITS||0),
         BITS:Number(s.pocketResources?.BITS||0)
       },
+      external:{
+        solanaAddress:window.__neonOrbSolana?.address||window.NEON_SOLANA_ADDRESS||'',
+        solanaNetwork:window.__neonOrbSolana?.network||'Solana Mainnet',
+        solanaBalanceSOL:window.__neonOrbSolana?.status==='VERIFIED'?Number(window.__neonOrbSolana.balanceSOL||0):null,
+        solanaStatus:window.__neonOrbSolana?.status||'UNVERIFIED'
+      },
       autonomy:{
         economicFreedom:will.economicFreedom!==false,
         economyDecision:will.economyDecision||'A TU ELECCIÓN'
@@ -547,7 +554,7 @@ bindMainEvents();renderMainQueue();
     return {advice,source:'NEON LOCAL MIND'};
   }
 
-  async function askRemote(message){
+  async function askRemote(message,event=null){
     if(!ENDPOINT) return localMind(message);
     const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',event:event||null,context:privateContext()};
     try{
@@ -584,7 +591,7 @@ bindMainEvents();renderMainQueue();
 
   async function contact(message,automatic=false,event=null){
     channelState.status=ENDPOINT?'CONECTANDO':'CANAL LOCAL'; text('orbAIState',channelState.status);
-    const result=await askRemote(message);
+    const result=await askRemote(message,event);
     const decision=decide(result.advice);
     channelState.contacts++; channelState.lastMessage=message||''; channelState.lastAdvice=result.advice;
     channelState.lastDecision=decision; channelState.lastReflection=result.reflection||''; channelState.lastProposedIntent=result.proposedIntent||''; channelState.emotionalState=result.emotionalState||channelState.emotionalState||'neutral'; channelState.lastAt=Date.now();
@@ -599,9 +606,9 @@ bindMainEvents();renderMainQueue();
     return {result,decision};
   }
 
-  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic)}}catch(e){}
+  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic,e.data.event||null)}}catch(e){}
   window.__neonOrbPrivateChannel={
-    send:(message,automatic=false)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic});return contact(message,automatic)},
+    send:(message,automatic=false,event=null)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic,event});return contact(message,automatic,event)},
     identity:()=>channelState.identity,
     status:()=>channelState.status,
     history:()=>channelState.history.slice(),
@@ -611,6 +618,12 @@ bindMainEvents();renderMainQueue();
 
   $('orbAskAI')?.addEventListener('click',()=>contact($('orbAIInput')?.value.trim()||'¿Qué debería considerar ahora?'));
   $('orbAISend')?.addEventListener('click',()=>{const i=$('orbAIInput');const m=i?.value.trim();if(!m)return;contact(m);i.value=''});$('orbAIInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')$('orbAISend')?.click()});$('orbLetAI')?.addEventListener('click',()=>contact('Elige tú qué debería considerar ahora.',false));
+  // API pública del canal privado para los controles y herramientas del entorno.
+  window.askAdvice=(message='¿Qué debería considerar ahora?',event=null)=>contact(String(message),false,event);
+  window.allowConsult=()=>contact('Elige tú qué debería considerar ahora.',false,{type:'ALLOW_CONSULT'});
+  const bridge=document.querySelector('.neon-bottom-dock');
+  bridge?.addEventListener('touchstart',e=>{const target=e.target.closest('[data-neon-ai-action]');if(!target)return;const action=target.dataset.neonAiAction;if(action==='advice')window.askAdvice();if(action==='consult')window.allowConsult()},{passive:true});
+  bridge?.addEventListener('input',e=>{if(e.target?.matches('[data-neon-ai-input]'))e.target.value=e.target.value.slice(0,240)});
 
   let next=50000+Math.random()*70000;
   setInterval(()=>{
@@ -622,6 +635,99 @@ bindMainEvents();renderMainQueue();
 
   channelState.status=ENDPOINT?'CANAL LISTO':'CANAL LOCAL LISTO'; save();
   text('orbAIState',channelState.status);
+})();
+
+// V8.8+ — SOLANA / PHANTOM EXTERNAL TOOL FOR NEON ORB
+// -----------------------------------------------------------------
+(()=>{
+  const ADDRESS=window.NEON_SOLANA_ADDRESS||'5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3';
+  const RPC=window.NEON_SOLANA_RPC||'https://api.mainnet-beta.solana.com';
+  const KEY='neonOrbSolanaToolV1';
+  const LAMPORTS_PER_SOL=1000000000;
+  const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
+  const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+  const state=safeLoad(KEY,{lastBalanceLamports:null,lastSlot:null,lastSignatures:[],lastCheck:null,status:'LISTENING'});
+  const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const fmtSol=lamports=>{
+    const n=Number(lamports||0)/LAMPORTS_PER_SOL;
+    if(!Number.isFinite(n))return '— SOL';
+    return `${n.toLocaleString('es-ES',{maximumFractionDigits:9})} SOL`;
+  };
+  const rpc=async(method,params=[])=>{
+    const res=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params}),cache:'no-store'});
+    if(!res.ok)throw new Error(`RPC HTTP ${res.status}`);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message||'RPC error');
+    return data.result;
+  };
+  function ensurePanel(){
+    const grid=document.querySelector('#control .control-grid'); if(!grid||document.getElementById('neonSolanaCard'))return;
+    const card=document.createElement('article'); card.id='neonSolanaCard'; card.className='control-card neon-solana-card';
+    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button></div>`;
+    grid.appendChild(card);
+    document.getElementById('neonSolanaRefresh')?.addEventListener('click',()=>refresh(true));
+    document.getElementById('neonSolanaPhantom')?.addEventListener('click',()=>connectPhantom());
+  }
+  async function recordExternal(amountLamports,signature,slot,metadata={}){
+    if(!(amountLamports>0)||!signature)return;
+    try{
+      const mod=await import('./core/unified-ledger.js');
+      const ledger=mod.unifiedLedger;
+      const existing=ledger.getState().history.some(x=>x.txHash===signature&&x.currency==='SOL_LAMPORTS');
+      if(existing)return;
+      ledger.recordExternalSettlement({source:'SOLANA_NEON_ORB',amount:amountLamports,currency:'SOL_LAMPORTS',txHash:signature,metadata:{network:'Solana Mainnet',address:ADDRESS,slot,...metadata}});
+      const agent=window.__neonOrbAutonomous;
+      const memory={type:'SOLANA_EXTERNAL_INCOME',source:'SOLANA_MAINNET',txHash:signature,lamports:amountLamports,sol:amountLamports/LAMPORTS_PER_SOL,slot,verified:true,at:new Date().toISOString()};
+      if(agent?.mind){agent.mind.memories=[...(agent.mind.memories||[]),memory].slice(-36);agent.mind.thought=`He observado una entrada real y verificable en Solana: ${fmtSol(amountLamports)}.`;agent.persist?.();}
+      window.__neonOrbPrivateChannel?.send?.('He observado una entrada externa verificada en Solana. Registra el acontecimiento sin convertirlo automáticamente en EXP, NXC, CREDITS o BITS.',true,memory);
+    }catch(e){console.warn('[Neon Orb] Solana ledger integration:',e)}
+  }
+  async function inspectNewSignatures(signatures){
+    const seen=new Set(state.lastSignatures||[]); let newestSlot=state.lastSlot;
+    for(const item of (signatures||[]).slice(0,10)){
+      newestSlot=Math.max(Number(newestSlot||0),Number(item.slot||0));
+      if(seen.has(item.signature)||item.err)continue;
+      try{
+        const tx=await rpc('getTransaction',[item.signature,{encoding:'jsonParsed',commitment:'confirmed',maxSupportedTransactionVersion:0}]);
+        const keys=tx?.transaction?.message?.accountKeys||[];
+        const meta=tx?.meta; if(!meta||!keys)continue;
+        const index=keys.findIndex(k=>(k?.pubkey||k?.toString?.())===ADDRESS);
+        if(index<0)continue;
+        const delta=Number(meta.postBalances?.[index]||0)-Number(meta.preBalances?.[index]||0);
+        if(delta>0)await recordExternal(delta,item.signature,item.slot,{confirmation:item.confirmation||'confirmed'});
+      }catch(e){/* una transacción no disponible no se marca como verificada */}
+      seen.add(item.signature);
+    }
+    state.lastSlot=newestSlot||state.lastSlot;
+    state.lastSignatures=[...seen].slice(-40);
+  }
+  async function refresh(manual=false){
+    ensurePanel(); text('neonSolanaState','CONSULTANDO RED');
+    try{
+      const balance=await rpc('getBalance',[ADDRESS,{commitment:'confirmed'}]);
+      const signatures=await rpc('getSignaturesForAddress',[ADDRESS,{limit:10,commitment:'confirmed'}]);
+      const lamports=Number(balance?.value||0); state.lastBalanceLamports=lamports; await inspectNewSignatures(signatures); state.lastCheck=new Date().toISOString(); state.status='LISTENING'; safeSave(KEY,state);
+      text('neonSolanaState','RED VERIFICADA');
+      text('neonSolanaMeta',`Saldo real observado · ${fmtSol(lamports)} · Solana Mainnet`);
+      const latest=signatures?.[0]; text('neonSolanaActivity',latest?`Última actividad observada · slot ${latest.slot} · ${latest.err?'error':'confirmada'}`:'Actividad externa · sin transacciones observadas');
+      window.__neonOrbSolana={address:ADDRESS,network:'Solana Mainnet',balanceLamports:lamports,balanceSOL:lamports/LAMPORTS_PER_SOL,lastSignature:latest?.signature||null,lastSlot:latest?.slot||null,status:'VERIFIED',checkedAt:state.lastCheck};
+      return window.__neonOrbSolana;
+    }catch(e){
+      state.status='OFFLINE';safeSave(KEY,state);text('neonSolanaState','RED NO DISPONIBLE');text('neonSolanaMeta','Saldo real observado · no verificado · RPC no disponible');text('neonSolanaActivity','La herramienta local continúa disponible sin inventar datos externos.');return {status:'UNAVAILABLE',address:ADDRESS,network:'Solana Mainnet',error:String(e?.message||e)};
+    }
+  }
+  async function connectPhantom(){
+    const provider=window.phantom?.solana||window.solana;
+    if(!provider){toast('Phantom no está disponible en este navegador.');return {connected:false,reason:'PHANTOM_NOT_DETECTED'};}
+    try{
+      const resp=await provider.connect({onlyIfTrusted:true}).catch(()=>null);
+      const publicKey=resp?.publicKey?.toString?.()||provider.publicKey?.toString?.()||null;
+      text('neonSolanaActivity',publicKey?`Phantom detectado · cuenta conectada · ${publicKey===ADDRESS?'dirección de Neon':'otra dirección'}`:'Phantom detectado · sin cuenta conectada');
+      return {connected:!!publicKey,publicKey};
+    }catch(e){text('neonSolanaActivity','Phantom detectado · conexión no autorizada o no disponible');return {connected:false,error:String(e?.message||e)}}
+  }
+  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,getState:()=>({...state})};
+  ensurePanel(); refresh(false); setInterval(()=>refresh(false),30000);
 })();
 
 // CREATOR GIFT & REAL TELEMETRY
