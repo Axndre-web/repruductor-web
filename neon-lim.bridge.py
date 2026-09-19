@@ -38,12 +38,29 @@ AGENT_LOOP_INTERVAL = max(30, int(os.getenv('NEON_AGENT_LOOP_INTERVAL', '300')))
 TREASURY_DESTINATION = os.getenv('NEON_TREASURY_DESTINATION', '').strip()
 TREASURY_SHARE_BPS = max(0, min(10000, int(os.getenv('NEON_TREASURY_SHARE_BPS', '2000'))))
 TREASURY_MIN_RETAIN_LAMPORTS = max(0, int(os.getenv('NEON_TREASURY_MIN_RETAIN_LAMPORTS', '0')))
+TREASURY_STATE_FILE = os.getenv('NEON_TREASURY_STATE_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-treasury-state.json'))
 STATE_FILE = os.getenv('NEON_ORB_STATE_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-state.json'))
 state_lock = threading.Lock()
 backup_lock = threading.Lock()
 last_backup_lock = threading.Lock()
 last_backup = {'status': 'NONE', 'txHash': None, 'snapshotSha256': None, 'confirmedAt': None, 'error': None}
-last_treasury = {'status': 'NOT_CONFIGURED', 'txHash': None, 'lamports': 0, 'destination': TREASURY_DESTINATION or None, 'confirmedAt': None, 'error': None}
+last_treasury = {'status': 'NOT_CONFIGURED', 'txHash': None, 'lamports': 0, 'destination': TREASURY_DESTINATION or None, 'confirmedAt': None, 'error': None, 'mode': 'UNSET', 'balanceLamports': None, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'shareBps': TREASURY_SHARE_BPS}
+
+def load_treasury_state():
+    try:
+        with open(TREASURY_STATE_FILE, 'r', encoding='utf-8') as fh:
+            data = json.load(fh)
+        return data if isinstance(data, dict) else {}
+    except (FileNotFoundError, json.JSONDecodeError, OSError):
+        return {}
+
+def save_treasury_state(data):
+    directory = os.path.dirname(os.path.abspath(TREASURY_STATE_FILE))
+    os.makedirs(directory, exist_ok=True)
+    tmp = TREASURY_STATE_FILE + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as fh:
+        json.dump(data, fh, ensure_ascii=False, separators=(',', ':'))
+    os.replace(tmp, TREASURY_STATE_FILE)
 
 ALLOWED_ORIGINS = {
     'http://127.0.0.1',
@@ -198,14 +215,14 @@ def keypair_ready():
 def treasury_destination_ready(kp):
     if not TREASURY_DESTINATION:
         return False, 'NEON_TREASURY_DESTINATION no configurado'
-    if TREASURY_DESTINATION == str(kp.pubkey()):
-        return False, 'La dirección de reserva no puede ser la misma que la cuenta emisora'
     try:
         from solders.pubkey import Pubkey
         Pubkey.from_string(TREASURY_DESTINATION)
     except Exception:
         return False, 'NEON_TREASURY_DESTINATION no es una dirección Solana válida'
-    return True, None
+    if TREASURY_DESTINATION != str(kp.pubkey()):
+        return True, None
+    return True, 'SAME_ACCOUNT'
 
 
 async def treasury_sweep():
@@ -213,27 +230,65 @@ async def treasury_sweep():
     ready, reason = treasury_destination_ready(kp)
     if not ready:
         return {'ok': False, 'status': 'TREASURY_NOT_CONFIGURED', 'error': reason}
-    from solders.pubkey import Pubkey
-    destination = Pubkey.from_string(TREASURY_DESTINATION)
     async with AsyncClient(RPC) as client:
         balance_response = await client.get_balance(kp.pubkey(), commitment='confirmed')
         balance = int(balance_response.value)
         available = max(0, balance - TREASURY_MIN_RETAIN_LAMPORTS)
-        amount = (available * TREASURY_SHARE_BPS) // 10000
-        if amount <= 0:
-            return {'ok': True, 'status': 'TREASURY_NO_FUNDS', 'lamports': 0, 'balanceLamports': balance, 'destination': TREASURY_DESTINATION}
+        reserve = (available * TREASURY_SHARE_BPS) // 10000
+        now = int(time.time() * 1000)
+
+        # Si Treasury y la cuenta emisora son la misma dirección, una transferencia
+        # a sí misma no crea separación económica y solo consumiría comisión.
+        # Se registra por tanto una reserva lógica/contable verificada contra el
+        # saldo real observado, sin inventar un txHash.
+        if reason == 'SAME_ACCOUNT':
+            state = load_treasury_state()
+            state.update({
+                'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE',
+                'publicKey': str(kp.pubkey()),
+                'destination': TREASURY_DESTINATION,
+                'balanceLamports': balance,
+                'reservedLamports': reserve,
+                'operationalLamports': max(0, balance - reserve),
+                'shareBps': TREASURY_SHARE_BPS,
+                'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS,
+                'verifiedAt': now,
+                'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
+            })
+            save_treasury_state(state)
+            return {
+                'ok': True,
+                'status': 'TREASURY_SAME_ACCOUNT_ALLOCATED',
+                'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE',
+                'txHash': None,
+                'lamports': reserve,
+                'reservedLamports': reserve,
+                'sol': reserve / 1_000_000_000,
+                'balanceLamports': balance,
+                'operationalLamports': max(0, balance - reserve),
+                'destination': TREASURY_DESTINATION,
+                'publicKey': str(kp.pubkey()),
+                'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
+                'verifiedAt': now,
+                'note': 'Reserva lógica dentro de la misma cuenta on-chain; no se ejecuta una transferencia a sí misma.',
+            }
+
+        if reserve <= 0:
+            return {'ok': True, 'status': 'TREASURY_NO_FUNDS', 'lamports': 0, 'reservedLamports': 0, 'balanceLamports': balance, 'destination': TREASURY_DESTINATION, 'mode': 'TRANSFER'}
+        from solders.pubkey import Pubkey
+        destination = Pubkey.from_string(TREASURY_DESTINATION)
         latest = await client.get_latest_blockhash()
-        instruction = transfer(TransferParams(from_pubkey=kp.pubkey(), to_pubkey=destination, lamports=amount))
+        instruction = transfer(TransferParams(from_pubkey=kp.pubkey(), to_pubkey=destination, lamports=reserve))
         tx = Transaction.new_signed_with_payer([instruction], kp.pubkey(), [kp], latest.value.blockhash)
         sent = await client.send_transaction(tx)
         signature = str(sent.value)
         await client.confirm_transaction(sent.value, commitment='confirmed')
-        return {'ok': True, 'status': 'CONFIRMED', 'txHash': signature, 'lamports': amount, 'sol': amount / 1_000_000_000, 'destination': TREASURY_DESTINATION, 'publicKey': str(kp.pubkey()), 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom')}
+        return {'ok': True, 'status': 'CONFIRMED', 'mode': 'TRANSFER', 'txHash': signature, 'lamports': reserve, 'sol': reserve / 1_000_000_000, 'destination': TREASURY_DESTINATION, 'publicKey': str(kp.pubkey()), 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom')}
 
 
 def record_treasury_result(result):
     with last_backup_lock:
-        last_treasury.update({'status': result.get('status', 'ERROR'), 'txHash': result.get('txHash'), 'lamports': int(result.get('lamports', 0) or 0), 'destination': result.get('destination') or TREASURY_DESTINATION or None, 'confirmedAt': int(time.time()*1000) if result.get('ok') and result.get('txHash') else None, 'error': result.get('error')})
+        last_treasury.update({'status': result.get('status', 'ERROR'), 'mode': result.get('mode', 'TRANSFER' if result.get('txHash') else 'UNSET'), 'txHash': result.get('txHash'), 'lamports': int(result.get('lamports', 0) or 0), 'reservedLamports': int(result.get('reservedLamports', result.get('lamports', 0)) or 0), 'balanceLamports': result.get('balanceLamports'), 'destination': result.get('destination') or TREASURY_DESTINATION or None, 'confirmedAt': result.get('verifiedAt') or (int(time.time()*1000) if result.get('ok') and result.get('txHash') else None), 'error': result.get('error')})
 
 
 def autonomous_backup_loop():
@@ -242,36 +297,33 @@ def autonomous_backup_loop():
     while True:
         time.sleep(AGENT_LOOP_INTERVAL)
         snapshot = load_latest_state()
-        if not snapshot:
-            continue
-        digest = snapshot_digest(snapshot)
-        if digest == last_submitted:
-            continue
-        if not (Keypair and AsyncClient and MessageV0 and VersionedTransaction and create_memo):
-            continue
-        if not KEYPAIR_PATH:
-            continue
-        if not backup_lock.acquire(blocking=False):
-            continue
-        try:
-            result = asyncio.run(backup(snapshot))
-            record_backup_result(result)
-            if result.get('ok') and result.get('txHash'):
-                last_submitted = digest
-                with state_lock:
-                    save_latest_state(snapshot)
-                print(f'[NEON AGENT LOOP] backup confirmado · {result["txHash"]}')
-        except Exception as exc:
-            print(f'[NEON AGENT LOOP] backup pendiente · {exc}')
-        finally:
-            backup_lock.release()
+        if snapshot and Keypair and AsyncClient and MessageV0 and VersionedTransaction and create_memo and KEYPAIR_PATH:
+            digest = snapshot_digest(snapshot)
+            if digest != last_submitted and backup_lock.acquire(blocking=False):
+                try:
+                    result = asyncio.run(backup(snapshot))
+                    record_backup_result(result)
+                    if result.get('ok') and result.get('txHash'):
+                        last_submitted = digest
+                        with state_lock:
+                            save_latest_state(snapshot)
+                        print(f'[NEON AGENT LOOP] backup confirmado · {result["txHash"]}')
+                except Exception as exc:
+                    print(f'[NEON AGENT LOOP] backup pendiente · {exc}')
+                finally:
+                    backup_lock.release()
+
+        # Treasury se evalúa en cada ciclo aunque el snapshot no haya cambiado.
+        # En modo SAME_ACCOUNT solo verifica y asigna la reserva lógica sobre el saldo real.
         if TREASURY_DESTINATION and Keypair and AsyncClient and Transaction and transfer:
             if backup_lock.acquire(blocking=False):
                 try:
                     treasury = asyncio.run(treasury_sweep())
                     record_treasury_result(treasury)
-                    if treasury.get('txHash'):
-                        print(f'[NEON TREASURY] reserva confirmada · {treasury["lamports"]} lamports · {treasury["txHash"]}')
+                    if treasury.get('status') == 'TREASURY_SAME_ACCOUNT_ALLOCATED':
+                        print(f'[NEON TREASURY] reserva lógica verificada · {treasury["reservedLamports"]} lamports · misma cuenta')
+                    elif treasury.get('txHash'):
+                        print(f'[NEON TREASURY] reserva transferida · {treasury["lamports"]} lamports · {treasury["txHash"]}')
                 except Exception as exc:
                     record_treasury_result({'status':'ERROR','error':str(exc)})
                     print(f'[NEON TREASURY] pendiente · {exc}')
@@ -337,7 +389,7 @@ class Handler(BaseHTTPRequestHandler):
                 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'),
                 'rpc': RPC,
                 'lastBackup': backup_state,
-                'treasury': {'configured': bool(TREASURY_DESTINATION), 'destination': TREASURY_DESTINATION or None, 'shareBps': TREASURY_SHARE_BPS, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'lastTransfer': dict(last_treasury)},
+                'treasury': {'configured': bool(TREASURY_DESTINATION), 'destination': TREASURY_DESTINATION or None, 'sameAccount': TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY, 'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER', 'shareBps': TREASURY_SHARE_BPS, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'lastTransfer': dict(last_treasury)},
             })
             return
         if path == '/v1/neon-orb/state':
@@ -347,7 +399,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/v1/neon-orb/status':
             with last_backup_lock:
                 backup_state = dict(last_backup)
-            json_response(self, 200, {'ok': True, 'publicKey': EXPECTED_PUBLIC_KEY, 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'), 'lastBackup': backup_state, 'treasury': dict(last_treasury), 'treasuryDestination': TREASURY_DESTINATION or None, 'latestStateAvailable': load_latest_state() is not None})
+            json_response(self, 200, {'ok': True, 'publicKey': EXPECTED_PUBLIC_KEY, 'cluster': 'mainnet-beta' if 'mainnet' in RPC else ('devnet' if 'devnet' in RPC else 'custom'), 'lastBackup': backup_state, 'treasury': dict(last_treasury), 'treasuryDestination': TREASURY_DESTINATION or None, 'treasurySameAccount': TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY, 'latestStateAvailable': load_latest_state() is not None})
             return
         json_response(self, 404, {'ok': False, 'error': 'not found'})
 

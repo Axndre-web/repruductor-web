@@ -788,9 +788,12 @@ bindMainEvents();renderMainQueue();
     try{
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
-      if(data.txHash){
+      if(data.status==='TREASURY_SAME_ACCOUNT_ALLOCATED'){
+        onChainState.lastTreasuryTxHash=null; onChainState.treasuryReservedLamports=Number(data.reservedLamports||data.lamports||0); onChainState.treasuryBalanceLamports=Number(data.balanceLamports||0); onChainState.treasuryVerifiedAt=data.verifiedAt||new Date().toISOString(); saveOnChainState();
+        text('neonOnChainActivity',`Reserva lógica verificada · ${data.sol??(Number(data.reservedLamports||data.lamports||0)/1000000000)} SOL · misma cuenta`);
+      } else if(data.txHash){
         onChainState.lastTreasuryTxHash=data.txHash; saveOnChainState();
-        text('neonOnChainActivity',`Reserva confirmada · ${data.sol??(Number(data.lamports||0)/1000000000)} SOL`);
+        text('neonOnChainActivity',`Reserva transferida y confirmada · ${data.sol??(Number(data.lamports||0)/1000000000)} SOL`);
       } else if(data.status==='TREASURY_NO_FUNDS'){
         text('neonOnChainActivity','Reserva · sin saldo disponible según la política configurada');
       }

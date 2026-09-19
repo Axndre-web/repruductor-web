@@ -575,6 +575,8 @@ La autonomía técnica del bridge no implica que Neon Orb sea una entidad legal 
 
 ## V10 — RESERVA AUTOMÁTICA DE ACTIVOS REALES
 
-Neon Orb puede ejecutar transferencias autónomas de SOL real desde la cuenta firmante hacia una dirección de reserva configurada exclusivamente en el backend mediante `NEON_TREASURY_DESTINATION`. La dirección de reserva debe ser distinta de la cuenta emisora. NXC, CREDITS y BITS no se transfieren por esta función porque continúan siendo recursos internos.
+Neon Orb usa la misma dirección pública Solana `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3` como **cuenta operativa y Treasury**. Esto preserva una única identidad on-chain y evita crear una segunda cuenta artificial.
 
-La política usa `NEON_TREASURY_SHARE_BPS` y `NEON_TREASURY_MIN_RETAIN_LAMPORTS`. El bridge firma directamente; no se solicita confirmación de Phantom para la operación autónoma. La interfaz solo muestra el resultado que el bridge devuelve. Una transferencia real requiere keypair válido, RPC operativo y SOL para las comisiones. La dirección de destino no se inventa ni se incorpora como secreto al frontend.
+Cuando `NEON_TREASURY_DESTINATION` coincide con la cuenta emisora, el bridge **no realiza una transferencia a sí mismo**: técnicamente no separaría fondos y consumiría comisión. En su lugar, consulta el saldo real con confirmación `confirmed` y calcula una **reserva lógica/contable** según `NEON_TREASURY_SHARE_BPS`, respetando `NEON_TREASURY_MIN_RETAIN_LAMPORTS`. El resultado queda persistido localmente como asignación de Treasury, con saldo observado y hora de verificación, sin inventar un `txHash`.
+
+Si en el futuro se configura una dirección Solana diferente, la misma función puede operar en modo `TRANSFER` y enviar SOL reales tras firma y confirmación on-chain. NXC, CREDITS y BITS siguen siendo recursos internos y no se convierten por esta función. Phantom continúa como interfaz/guardián externo de la misma cuenta Solana; no recibe ni comparte secretos privados.

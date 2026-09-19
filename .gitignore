@@ -4,3 +4,5 @@ keypair.json
 *.keypair.json
 .neon-orb-state.json
 .neon-orb-state.json.tmp
+.neon-orb-treasury-state.json
+.neon-orb-treasury-state.json.tmp

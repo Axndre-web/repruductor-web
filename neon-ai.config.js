@@ -17,6 +17,7 @@ window.NEON_SOLANA_CONFIG = Object.freeze({
   stateEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/state',
   statusEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/status',
   treasuryEndpoint: 'http://127.0.0.1:8788/v1/neon-orb/treasury/sweep',
-  treasuryDestination: '',
+  // Misma cuenta Solana de Neon Orb: reserva lógica/contable dentro de la misma cuenta on-chain.
+  treasuryDestination: window.NEON_SOLANA_ADDRESS || '5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3',
   cluster: 'mainnet-beta'
 });
