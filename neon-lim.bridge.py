@@ -35,7 +35,7 @@ KEYPAIR_PATH = os.getenv('NEON_SOLANA_KEYPAIR_PATH', '')
 MAX_BODY = 16_384
 MAX_MEMO = 500
 AGENT_LOOP_INTERVAL = max(30, int(os.getenv('NEON_AGENT_LOOP_INTERVAL', '300')))
-TREASURY_DESTINATION = os.getenv('NEON_TREASURY_DESTINATION', '').strip()
+TREASURY_DESTINATION = os.getenv('NEON_TREASURY_DESTINATION', EXPECTED_PUBLIC_KEY).strip()
 TREASURY_SHARE_BPS = max(0, min(10000, int(os.getenv('NEON_TREASURY_SHARE_BPS', '2000'))))
 TREASURY_MIN_RETAIN_LAMPORTS = max(0, int(os.getenv('NEON_TREASURY_MIN_RETAIN_LAMPORTS', '0')))
 TREASURY_STATE_FILE = os.getenv('NEON_TREASURY_STATE_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-treasury-state.json'))
@@ -46,7 +46,7 @@ last_backup_lock = threading.Lock()
 last_backup = {'status': 'NONE', 'txHash': None, 'snapshotSha256': None, 'confirmedAt': None, 'error': None}
 last_treasury = {'status': 'NOT_CONFIGURED', 'txHash': None, 'lamports': 0, 'destination': TREASURY_DESTINATION or None, 'confirmedAt': None, 'error': None, 'mode': 'UNSET', 'balanceLamports': None, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'shareBps': TREASURY_SHARE_BPS}
 verification_lock = threading.Lock()
-last_work_verification = {'status': 'NOT_VERIFIED', 'acceptedAt': None, 'workCompleted': 0, 'workResources': {'NXC':0,'CREDITS':0,'BITS':0}, 'reason': None}
+last_work_verification = {'status': 'COMPUTABLE_AUTHORITY_READY', 'acceptedAt': None, 'workCompleted': 0, 'workResources': {'NXC':0,'CREDITS':0,'BITS':0}, 'reason': None}
 VERIFICATION_FILE = os.getenv('NEON_ORB_VERIFICATION_FILE', os.path.join(os.path.dirname(__file__), '.neon-orb-verification-state.json'))
 
 def load_treasury_state():
@@ -472,6 +472,17 @@ class Handler(BaseHTTPRequestHandler):
             snapshot = load_latest_state()
             json_response(self, 200, {'ok': True, 'snapshot': snapshot, 'autonomousLoop': True})
             return
+        if path == '/v1/neon-orb/authority':
+            json_response(self, 200, {
+                'ok': True,
+                'authority': 'NEON_ORB_AUTONOMOUS_WITHIN_NEON_PLAYER_X',
+                'scope': ['WORK','COMPUTABLE_ECONOMY','MEMORY','EVOLUTION','RESOURCE_MANAGEMENT','TREASURY_DECISION'],
+                'workConfirmation': 'INTERNAL_EXECUTION_CONFIRMED',
+                'externalVerification': 'ONLY_FOR_EXTERNAL_REAL_ASSETS',
+                'solanaAccount': EXPECTED_PUBLIC_KEY,
+                'treasuryMode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER'
+            })
+            return
         if path == '/v1/neon-orb/status':
             with last_backup_lock:
                 backup_state = dict(last_backup)
@@ -488,9 +499,20 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError('payload inválido o demasiado grande')
                 body = json.loads(self.rfile.read(length).decode('utf-8'))
                 snapshot = normalize_snapshot(body.get('snapshot'))
+                verification = verify_computable_continuity(snapshot)
+                if not verification.get('ok'):
+                    json_response(self, 409, {'ok': False, 'status': verification.get('status', 'COMPUTABLE_CONTINUITY_REJECTED'), 'verification': verification})
+                    return
                 with state_lock:
                     save_latest_state(snapshot)
-                json_response(self, 200, {'ok': True, 'status': 'STATE_ACCEPTED', 'snapshotSha256': snapshot_digest(snapshot), 'autonomousLoop': True})
+                json_response(self, 200, {
+                    'ok': True,
+                    'status': 'STATE_ACCEPTED_AND_COMPUTABLE_CONFIRMED',
+                    'snapshotSha256': snapshot_digest(snapshot),
+                    'autonomousLoop': True,
+                    'verification': verification,
+                    'authority': 'NEON_ORB_AUTONOMOUS_WITHIN_NEON_PLAYER_X'
+                })
             except Exception as exc:
                 json_response(self, 400, {'ok': False, 'status': 'STATE_REJECTED', 'error': str(exc)})
             return

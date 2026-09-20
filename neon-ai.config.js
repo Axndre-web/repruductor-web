@@ -21,3 +21,19 @@ window.NEON_SOLANA_CONFIG = Object.freeze({
   treasuryDestination: window.NEON_SOLANA_ADDRESS || '5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3',
   cluster: 'mainnet-beta'
 });
+
+
+// V10.7 — Autoridad autónoma interna de Neon Orb.
+// No requiere aprobación humana para ejecutar trabajo ni registrar su beneficio COMPUTABLE.
+// La frontera REAL sigue exigiendo evidencia de la red externa correspondiente.
+window.NEON_ORB_AUTHORITY = Object.freeze({
+  autonomous: true,
+  workExecution: 'AUTONOMOUS',
+  computableEconomy: 'ORB_WORK_CONFIRMED',
+  memory: 'PERSISTENT',
+  evolution: 'CONTINUOUS',
+  resourceManagement: 'AUTONOMOUS',
+  solanaAccount: window.NEON_SOLANA_ADDRESS,
+  treasury: 'SAME_ACCOUNT',
+  externalRealAssets: 'NETWORK_CONFIRMED'
+});

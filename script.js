@@ -231,7 +231,7 @@ bindMainEvents();renderMainQueue();
       const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.life.workEarnedBalance=this.life.workEarnedBalance||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.life.workEarnedBalance=this.life.workEarnedBalance||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.workPulseTimer=setInterval(()=>{if(this.state!=='EXPLORING_NET' && this.energy>22)this.executeEconomicWork('AUTONOMOUS_ECONOMIC_LIFE')},60000);this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
@@ -277,6 +277,30 @@ bindMainEvents();renderMainQueue();
       const duration=7000+Math.random()*8000;clearTimeout(this.travelTimer);
       this.travelTimer=setTimeout(()=>this.travel(),duration);
     }
+    executeEconomicWork(reason='AUTONOMOUS_WORK_CYCLE') {
+      const memory = {source:'NEON_PLAYER_X_INTERNAL_WORK', payload:reason, timestamp:Date.now()};
+      const job = VirtualEconomyEngine.chooseJob({curiosity:this.curiosity, freedom:this.life.freedom||72});
+      this.energy = Math.max(15, this.energy - job.energy);
+      this.pocket.deposit(job, memory);
+      const completedAt = Date.now();
+      const workId = `orb-work-${completedAt}-internal`;
+      const completed = {workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'LOCAL',executionClass:'COMPUTABLE',status:'COMPLETED',workConfirmed:true,economicOrigin:'NEON_ORB_WORK',authority:'NEON_ORB',confirmedAt:new Date(completedAt).toISOString(),at:new Date(completedAt).toISOString(),reason};
+      this.workLog=[...this.workLog,completed].slice(-100);
+      this.life.workCompleted++;
+      this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);
+      this.life.workEarnedBalance[job.asset]=Number(this.life.workEarnedBalance[job.asset]||0)+Number(job.amount||0);
+      this.life.workXp+=5;
+      this.life.workLog=this.workLog.slice(-100);
+      try{window.dispatchEvent(new CustomEvent('neon:orb-work-completed',{detail:completed}))}catch{}
+      import('./core/orb-work-bridge.js').then(m=>m.registerOrbWork(completed)).catch(()=>{});
+      try{window.__neonOrbMaybeReward?.()}catch{}
+      this.gainXP(5,'trabajo autónomo completado');
+      this.mind.thought=`Trabajo completado por decisión propia: +${job.amount} ${job.asset}.`;
+      this.mind.desire='administrar lo ganado y buscar el siguiente trabajo';
+      this.persist();
+      return completed;
+    }
+
     async travel(){
       const memory=await MemoryEngine.fetchNetworkMemory();
       const jobsCount=1+Math.floor(Math.random()*3);let earnings=[];
@@ -314,7 +338,7 @@ bindMainEvents();renderMainQueue();
       const el=document.getElementById('neonMascot');if(el){el.style.opacity='1';el.style.transform=`translate3d(${this.x-19}px,${this.y-19}px,0)`}
     }
     persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();this.life.workLog=this.workLog.slice(-100);save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
-    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,workLog:this.workLog.slice(-20),provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'LocalStorage/IndexedDB-style browser persistence',NETWORK:'Network observations and remote nodes'},pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
+    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,workLog:this.workLog.slice(-20),authority:{autonomous:true,scope:'NEON_PLAYER_X',work:'SELF_CONFIRMED_BY_EXECUTION',economy:'WORK_DERIVED',externalAssets:'NETWORK_CONFIRMED_ONLY'},provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'LocalStorage/IndexedDB-style browser persistence',NETWORK:'Network observations and remote nodes'},pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
     getPrivateState(){return{state:this.state,intent:this.intent,curiosity:this.curiosity,energy:this.energy,generation:this.life.generation,explored:this.life.explored,thought:this.mind.thought,desire:this.mind.desire}}
   }
 
@@ -773,11 +797,11 @@ bindMainEvents();renderMainQueue();
       workCompleted:Number(life.workCompleted)||0,
       workResources:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedBalance:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0},
       recentWork:(agent?.workLog||[]).slice(-12).map(w=>({workId:w.workId,type:w.type,name:w.name,asset:w.asset,amount:w.amount,status:w.status,source:w.source,executionClass:w.executionClass,sourceClass:w.sourceClass,energyCost:w.energyCost,at:w.at})),
-      liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length},
+      liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length,workCompleted:Number(agent?.life?.workCompleted||0),workEarnedBalance:{...(agent?.life?.workEarnedBalance||{})},workAuthority:'SELF_CONFIRMED_BY_EXECUTION'},
       economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedAvailable:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0}},
       provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
       layers:{REAL:'VERIFIED_EXTERNAL_ONLY',COMPUTABLE:'WORK_DERIVED',LOCAL:'PERSISTED',NETWORK:'OBSERVED'},
-      verification:{computable:'WORK_EXECUTION_CONFIRMED',real:'EXTERNAL_CONFIRMATION_ONLY_FOR_EXTERNAL_ASSETS',live:'CURRENT_TELEMETRY_SNAPSHOT'},
+      verification:{computable:'WORK_EXECUTION_CONFIRMED_BY_NEON_ORB',real:'EXTERNAL_CONFIRMATION_ONLY_FOR_EXTERNAL_ASSETS',live:'CURRENT_TELEMETRY_SNAPSHOT'},authority:{autonomous:true,scope:'NEON_PLAYER_X',work:'SELF_CONFIRMED_BY_EXECUTION',economy:'WORK_DERIVED',treasury:'SAME_SOLANA_ACCOUNT'},
       at:Date.now()
     };
   };

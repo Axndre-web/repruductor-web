@@ -275,3 +275,10 @@ El trabajo ejecutado por Neon Orb es, por diseño, un hecho económico COMPUTABL
 La verificación externa queda reservada a la capa REAL: SOL, BTC y otros activos externos sólo se marcan como reales cuando la red o proveedor correspondiente confirma la operación.
 
 Cadena económica: **TRABAJO DE NEON ORB → BENEFICIO COMPUTABLE → PERSISTENCIA → EVOLUCIÓN → posible puente a REAL VIVA**.
+
+
+## V10.8 — CICLO ECONÓMICO AUTÓNOMO
+
+Neon Orb dispone de un ciclo económico autónomo dentro de NEON PLAYER X. Cuando ejecuta trabajo interno por decisión propia, el motor crea un registro `NEON_ORB_WORK`, lo marca `COMPLETED` y `workConfirmed:true`, asigna el beneficio COMPUTABLE correspondiente y conserva su procedencia. Este ciclo no necesita aprobación de una fuente externa para confirmar un trabajo interno ya ejecutado. La frontera externa sólo se aplica cuando un activo pretende representar existencia fuera de NEON PLAYER X.
+
+El trabajo autónomo periódico es un mecanismo de continuidad de vida: mientras Neon Orb tenga energía suficiente y no esté ejecutando un viaje de red, puede realizar ciclos de trabajo computable y aumentar su beneficio, EXP y memoria. La telemetría viva expone el número de trabajos y el saldo ganado por trabajo.
