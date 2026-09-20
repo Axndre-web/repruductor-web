@@ -421,7 +421,13 @@ bindMainEvents();renderMainQueue();
     text('orbTelemetryMeta',`ENERGÍA · ${energy}% · CURIOSIDAD · ${curiosity}% · VÍNCULO · ${attachment}%`);
     text('orbTelemetryProcess',`CICLO · ${cycles} · DECISIÓN · ${intent} · ZONA · ${zone} · VIAJES · ${journeys}`);
     text('orbTelemetryResources',`RECURSOS · NXC ${resources.NXC} · CREDITS ${resources.CREDITS} · BITS ${resources.BITS}`);
-    const ts=window.__neonTelemetrySync; text('orbTelemetrySync',ts?.status==='SYNCED_LOCAL_TO_BRIDGE'?`RED · TELEMETRÍA SINCRONIZADA · ${new Date(ts.at).toLocaleTimeString('es-ES')}`:ts?.status==='BRIDGE_UNAVAILABLE'?'RED · BRIDGE NO DISPONIBLE':'RED · SNAPSHOT PENDIENTE');
+    const ts=window.__neonTelemetrySync;
+    const recentWork=(a?.workLog||data.workLog||[]).filter(w=>w?.status==='COMPLETED'&&w?.workConfirmed===true);
+    const workCount=Number(a?.life?.workCompleted??life.workCompleted??recentWork.length??0)||0;
+    text('orbTelemetrySync',ts?.status==='SYNCED_LOCAL_TO_BRIDGE'?`RED · TELEMETRÍA SINCRONIZADA · ${new Date(ts.at).toLocaleTimeString('es-ES')}`:ts?.status==='BRIDGE_UNAVAILABLE'?'RED · BRIDGE NO DISPONIBLE':'RED · SNAPSHOT PENDIENTE');
+    text('orbComputableState',`COMPUTABLE · ${workCount>0?`TRABAJO CONFIRMADO · ${workCount} COMPLETADOS`:'TRABAJO PROPIO · EN ESPERA'} · BENEFICIO DERIVADO DEL TRABAJO`);
+    const real=window.__neonOrbSolana;
+    text('orbRealState',real?.status==='VERIFIED'?`REAL · SOLANA VERIFICADA · ${Number(real.balanceSOL||0).toLocaleString('es-ES',{maximumFractionDigits:9})} SOL`:'REAL · ACTIVOS EXTERNOS · NO VERIFICADOS (RED EXTERNA)');
   }
   update();
   setInterval(update,700);
@@ -744,13 +750,13 @@ bindMainEvents();renderMainQueue();
       const balance=await rpc('getBalance',[ADDRESS,{commitment:'confirmed'}]);
       const signatures=await rpc('getSignaturesForAddress',[ADDRESS,{limit:10,commitment:'confirmed'}]);
       const lamports=Number(balance?.value||0); state.lastBalanceLamports=lamports; await inspectNewSignatures(signatures); state.lastCheck=new Date().toISOString(); state.status='LISTENING'; safeSave(KEY,state);
-      text('neonSolanaState','RED VERIFICADA');
+      text('neonSolanaState','REAL · RED VERIFICADA');
       text('neonSolanaMeta',`Saldo real observado · ${fmtSol(lamports)} · Solana Mainnet`);
       const latest=signatures?.[0]; text('neonSolanaActivity',latest?`Última actividad observada · slot ${latest.slot} · ${latest.err?'error':'confirmada'}`:'Actividad externa · sin transacciones observadas');
       window.__neonOrbSolana={address:ADDRESS,network:'Solana Mainnet',balanceLamports:lamports,balanceSOL:lamports/LAMPORTS_PER_SOL,lastSignature:latest?.signature||null,lastSlot:latest?.slot||null,status:'VERIFIED',checkedAt:state.lastCheck};
       return window.__neonOrbSolana;
     }catch(e){
-      state.status='OFFLINE';safeSave(KEY,state);text('neonSolanaState','RED NO DISPONIBLE');text('neonSolanaMeta','Saldo real observado · no verificado · RPC no disponible');text('neonSolanaActivity','La herramienta local continúa disponible sin inventar datos externos.');return {status:'UNAVAILABLE',address:ADDRESS,network:'Solana Mainnet',error:String(e?.message||e)};
+      state.status='OFFLINE';safeSave(KEY,state);text('neonSolanaState','REAL · RED NO DISPONIBLE');text('neonSolanaMeta','Activo externo · no verificado · RPC no disponible · esto NO invalida el trabajo COMPUTABLE de Neon Orb');text('neonSolanaActivity','La herramienta local continúa disponible sin inventar datos externos.');return {status:'UNAVAILABLE',address:ADDRESS,network:'Solana Mainnet',error:String(e?.message||e)};
     }
   }
   async function connectPhantom(){
