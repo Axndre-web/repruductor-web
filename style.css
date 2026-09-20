@@ -88,3 +88,6 @@ body{padding-bottom:76px}
 .neon-solana-card .neon-solana-actions{flex-wrap:wrap}
 
 .neon-solana-card #neonOnChainTx a{word-break:break-all}
+
+/* V11.1 — identidad REAL externa: primaria y respaldos claramente diferenciados. */
+.neon-identity-badge{display:block;font-size:.78rem;opacity:.9;margin-top:.25rem}

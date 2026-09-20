@@ -29,7 +29,7 @@ PORT = int(os.getenv('NEON_SOLANA_BRIDGE_PORT', '8788'))
 RPC = os.getenv('NEON_SOLANA_RPC', 'https://api.mainnet-beta.solana.com')
 EXPECTED_PUBLIC_KEY = os.getenv(
     'NEON_SOLANA_PUBLIC_KEY',
-    '5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3'
+    'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh'
 )
 KEYPAIR_PATH = os.getenv('NEON_SOLANA_KEYPAIR_PATH', '')
 MAX_BODY = 16_384

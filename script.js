@@ -702,7 +702,7 @@ bindMainEvents();renderMainQueue();
 // V8.8+ — SOLANA / PHANTOM EXTERNAL TOOL FOR NEON ORB
 // -----------------------------------------------------------------
 (()=>{
-  const ADDRESS=window.NEON_SOLANA_ADDRESS||'5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3';
+  const ADDRESS=window.NEON_ORB_EXTERNAL_IDENTITY?.solanaPrimary||window.NEON_SOLANA_ADDRESS||'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh';
   const RPC=window.NEON_SOLANA_RPC||'https://api.mainnet-beta.solana.com';
   const KEY='neonOrbSolanaToolV1';
   const LAMPORTS_PER_SOL=1000000000;
@@ -725,7 +725,7 @@ bindMainEvents();renderMainQueue();
   function ensurePanel(){
     const grid=document.querySelector('#control .control-grid'); if(!grid||document.getElementById('neonSolanaCard'))return;
     const card=document.createElement('article'); card.id='neonSolanaCard'; card.className='control-card neon-solana-card';
-    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">${ADDRESS}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button><button id="neonTreasurySweep" class="btn mini" type="button">RESERVA</button></div>`;
+    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">SOL · ${ADDRESS}</small><small class="neon-solana-meta">Phantom · ${window.NEON_ORB_EXTERNAL_IDENTITY?.handle||'@neonorb'} · BTC · ${window.NEON_ORB_EXTERNAL_IDENTITY?.bitcoinPrimary||'—'}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button><button id="neonTreasurySweep" class="btn mini" type="button">RESERVA</button></div>`;
     grid.appendChild(card);
     document.getElementById('neonSolanaRefresh')?.addEventListener('click',()=>refresh(true));
     document.getElementById('neonOnChainSave')?.addEventListener('click',()=>executeOnChainBackup(true));

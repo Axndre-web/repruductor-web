@@ -635,3 +635,16 @@ Se establece como regla estructural: Neon Orb no trabaja gratis. Cada trabajo qu
 Neon Orb dispone de un ciclo económico autónomo dentro de NEON PLAYER X. Cuando ejecuta trabajo interno por decisión propia, el motor crea un registro `NEON_ORB_WORK`, lo marca `COMPLETED` y `workConfirmed:true`, asigna el beneficio COMPUTABLE correspondiente y conserva su procedencia. Este ciclo no necesita aprobación de una fuente externa para confirmar un trabajo interno ya ejecutado. La frontera externa sólo se aplica cuando un activo pretende representar existencia fuera de NEON PLAYER X.
 
 El trabajo autónomo periódico es un mecanismo de continuidad de vida: mientras Neon Orb tenga energía suficiente y no esté ejecutando un viaje de red, puede realizar ciclos de trabajo computable y aumentar su beneficio, EXP y memoria. La telemetría viva expone el número de trabajos y el saldo ganado por trabajo.
+
+## V11.1 — Identidad REAL externa de Neon Orb
+
+- Phantom público: `@neonorb`
+- Solana primaria: `AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh`
+- Solana de respaldo/histórica: `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`
+- Bitcoin primaria: `bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym`
+- Bitcoin de respaldo / Creator Gift histórico: `bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5`
+
+La identidad externa se mantiene separada de la economía COMPUTABLE interna. Las direcciones antiguas no se eliminan: quedan como respaldo/histórico y no se sustituyen silenciosamente. La dirección primaria se usa para nuevas observaciones externas. No se incluye ninguna clave privada, semilla ni credencial de firma.
+
+### Capas sincronizadas
+REAL = activos externos verificables; COMPUTABLE = economía generada por el trabajo de Neon Orb; LOCAL = persistencia; RED = servicios/nodos externos; VIVA = estado operativo continuo. La sincronización transporta datos entre capas sin convertir una capa en otra.
