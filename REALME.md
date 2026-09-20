@@ -450,3 +450,26 @@ El paquete incluye `neon-lim.bridge.py` y `neon-lim.env.example` para conectar e
 La interfaz consulta `/health` y conserva el estado `NOT_CONFIGURED/OFFLINE` cuando el bridge no está operativo. Por tanto, `ON-CHAIN SYNC: ACTIVE` no se declara únicamente porque exista una dirección pública: requiere configuración real del bridge.
 
 El endpoint `/snapshot` no inventa ni simula una transacción. Mientras no exista un formato/programa Solana concreto para almacenar los snapshots, devuelve `SIGNING_NOT_IMPLEMENTED` en vez de presentar un hash ficticio. Esto preserva el principio REAL/COMPUTABLE y evita confundir una intención local con una confirmación on-chain.
+
+
+## V11.4 — Consolidación de los tres pilares
+
+La entrega V11.4 conserva la base operativa V11.3 y reincorpora una capa Frontend unificada para el Dashboard de identidad/economía. El panel muestra `@neonorb`, las direcciones públicas primaria y backup de Solana/Bitcoin, recursos computables del bolsillo del Orb, estado del bridge y balances externos únicamente cuando el bridge obtiene evidencia verificable de red.
+
+### Pilar 1 — Frontend
+- Dashboard responsive integrado en `#economy`.
+- Identidad pública y direcciones visibles sin exponer secretos.
+- Navegación móvil incluye Billetera.
+- Consumo automático de `/health` y `/telemetry`.
+
+### Pilar 2 — R-C / economía dual
+- NXC/CREDITS/BITS siguen siendo recursos computables/locales derivados del estado del Orb.
+- SOL/BTC se presentan como externos y verificados sólo si la consulta de red devuelve datos.
+- Una cifra local nunca se convierte automáticamente en saldo on-chain.
+- Las direcciones históricas permanecen como backup y no sustituyen las primarias.
+
+### Pilar 3 — gobernanza autónoma
+- El ciclo autónomo existente de Neon Orb no se reemplaza.
+- La telemetría se consulta en segundo plano y actualiza el Dashboard sin intervención manual.
+- El bridge continúa siendo local y preparado para activación mediante variables de entorno seguras.
+- `/snapshot` conserva la regla de no fabricar firmas, hashes o confirmaciones.

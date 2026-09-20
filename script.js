@@ -25,6 +25,13 @@ async function neonSolanaBridgeHealth(){
   }
 }
 window.neonSolanaBridgeHealth=neonSolanaBridgeHealth;
+async function neonBridgeTelemetry(){
+  const url=(window.NEON_BRIDGE_HEALTH_URL||'http://127.0.0.1:8787/health').replace(/\/health\/?$/,'/telemetry');
+  try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('telemetry');const data=await r.json();window.__neonBridgeTelemetry=data;window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}catch(error){const data={ok:false,status:'OFFLINE',reason:'BRIDGE_UNAVAILABLE',checkedAt:new Date().toISOString()};window.__neonBridgeTelemetry=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}
+}
+window.neonBridgeTelemetry=neonBridgeTelemetry;
+neonBridgeTelemetry().catch(()=>{});
+setInterval(()=>neonBridgeTelemetry().catch(()=>{}),30000);
 
 const $$=s=>[...document.querySelectorAll(s)];
 const stations=[

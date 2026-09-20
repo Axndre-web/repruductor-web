@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="UI/styles-economy.css">
 </head>
 <body data-theme="neon-dark">
 <div class="app-bg"></div><div class="scanlines"></div><div class="edge-frame"></div>
@@ -29,6 +30,7 @@
   <a href="#radio" class="nav-link">◉ <span>Radio</span></a>
   <a href="#player" class="nav-link">♫ <span>Player</span></a>
   <a href="#tienda" class="nav-link">▣ <span>Tienda</span></a>
+  <a href="#economy" class="nav-link">◉ <span>Billetera</span></a>
   <a href="#control" class="nav-link">◈ <span>Control</span></a><a href="#temas" class="nav-link">✦ <span>Temas</span></a>
 </nav>
 <main>
@@ -50,6 +52,10 @@
     <div class="dock-now"><div class="dock-cover" id="dockCover"><img src="icon-96.png" alt=""></div><div><span>LISTA LOCAL</span><b id="dockNow">Sin archivo seleccionado</b><small id="dockMeta">Arrastra archivos para reproducirlos aquí.</small></div></div>
     <div class="file-queue" id="fileQueue"></div>
   </aside>
+</section>
+<section id="economy" class="section panel reveal neon-wallet-shell">
+  <div class="section-head"><div><span class="eyebrow">NEON ORB · WALLET CONTROL</span><h2>IDENTIDAD <em>& ECONOMÍA</em></h2><p class="section-note">Dashboard unificado · identidad pública · economía computable · activos externos verificados.</p></div><span class="live-chip" id="walletLiveChip">● MONITORIZANDO</span></div>
+  <div id="walletDashboard" aria-live="polite"></div>
 </section>
 <section id="radio" class="section panel reveal">
   <div class="section-head radio-section-head"><div><span class="eyebrow">LIVE RADIO NETWORK</span><h2>RADIO <em>STATION GRID</em></h2><p class="section-note">Red de emisoras · reconexión automática · estado en tiempo real</p></div><div class="radio-network-status"><span class="pill" id="radioNetworkPill"><i></i> <b id="radioNetworkState">RED LISTA</b></span><button class="btn mini radio-refresh" id="radioRefresh" type="button" title="Comprobar emisoras">↻ <span>ACTUALIZAR</span></button></div></div>
@@ -116,4 +122,7 @@
 <script src="neon-ai.config.js"></script>
 <script src="creator-gift.bridge.js"></script>
 <script src="script.js"></script>
+<script type="module">import { mountWalletDashboard } from './UI/wallet-dashboard.js';
+mountWalletDashboard(document.getElementById('walletDashboard'));
+</script>
 </body></html>
