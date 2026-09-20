@@ -63,31 +63,3 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 @media (max-width:900px){.radio-layout{grid-template-columns:1fr}.radio-stage{min-height:400px}.radio-grid{max-height:390px}.radio-section-head{align-items:flex-start}.radio-network-status{flex-shrink:0}.radio-grid-tools{align-items:flex-start}}
 @media (max-width:640px){.radio-section-head{display:block}.radio-network-status{margin-top:12px;justify-content:space-between}.radio-layout{gap:12px}.radio-stage{min-height:350px;padding:17px}.stage-top h3{font-size:1.05rem;max-width:calc(100vw - 125px)}.stage-logo{width:60px;height:60px;border-radius:17px}.stage-controls{gap:8px;flex-wrap:wrap}.stage-controls .range{min-width:150px;flex:1}.stage-controls .mini{flex:1}.radio-grid-tools{display:block}.radio-filters{justify-content:flex-start;margin-top:10px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:2px}.radio-filter{flex:0 0 auto}.radio-grid{grid-template-columns:1fr;max-height:440px;padding-right:2px}.radio-grid-footer{display:block;line-height:1.7}.radio-grid-footer span:last-child{display:block;margin-top:3px}}
 @media (prefers-reduced-motion:reduce){.radio-card,.radio-filter,.listen{transition:none}.wave i{animation:none}}
-
-
-/* V8.8+ — Mobile interaction, Creator Gift clearance and Neon Orb external tools */
-#orbGiftState,#orbGiftMeta,.orb-gift-card{position:relative;z-index:1}
-.orb-gift-card{padding-bottom:85px}
-.black-hole-canvas,.neon-mascot{pointer-events:none}
-.neon-bottom-dock{position:fixed;left:0;right:0;bottom:0;z-index:99999;display:flex;align-items:center;justify-content:center;gap:8px;padding:8px max(10px,env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-right));background:rgba(3,3,7,.82);border-top:1px solid color-mix(in srgb,var(--accent) 28%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 -12px 40px rgba(0,0,0,.55)}
-.neon-bottom-dock .btn{min-height:38px;padding:9px 12px;touch-action:manipulation}
-.neon-bottom-dock input{min-width:120px;max-width:260px;border:1px solid var(--line);border-radius:9px;background:#050507;color:#eee;padding:9px 10px;font-size:.62rem;outline:none;touch-action:manipulation}
-.neon-bottom-dock input:focus{border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 14px color-mix(in srgb,var(--accent) 12%,transparent)}
-.neon-solana-card{background:radial-gradient(circle at 85% 18%,rgba(120,92,255,.12),transparent 36%),linear-gradient(145deg,#090812,#020204);border-color:rgba(120,92,255,.22)}
-.neon-solana-card #neonSolanaState{color:#b9a8ff}
-.neon-solana-address{display:block;margin-top:8px;overflow-wrap:anywhere;font:600 .52rem ui-monospace,SFMono-Regular,Menlo,monospace;color:#8e879e}
-.neon-solana-meta{display:block;margin-top:6px;color:#686470;font-size:.56rem;line-height:1.55}
-.neon-solana-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
-.neon-solana-actions .btn{padding:8px 10px;font-size:.5rem}
-body{padding-bottom:76px}
-@media(max-width:620px){body{padding-bottom:88px}.neon-bottom-dock{justify-content:stretch;overflow-x:auto}.neon-bottom-dock .btn{flex:1 0 auto}.neon-bottom-dock input{flex:1 0 150px}.orb-gift-card{padding-bottom:85px}}
-
-/* V9.0 — on-chain backup status */
-.neon-solana-card #neonOnChainState{font-weight:700;letter-spacing:.04em}
-.neon-solana-card #neonOnChainTx{overflow-wrap:anywhere;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.72rem}
-.neon-solana-card .neon-solana-actions{flex-wrap:wrap}
-
-.neon-solana-card #neonOnChainTx a{word-break:break-all}
-
-/* V11.1 — identidad REAL externa: primaria y respaldos claramente diferenciados. */
-.neon-identity-badge{display:block;font-size:.78rem;opacity:.9;margin-top:.25rem}

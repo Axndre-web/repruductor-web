@@ -1,1 +1,6 @@
-{"name":"neon-player-x-unified-economy","private":true,"type":"module","version":"0.1.0"}
+{
+  "name": "neon-player-x-unified-economy",
+  "private": true,
+  "type": "module",
+  "version": "11.3.0"
+}
