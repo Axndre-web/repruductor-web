@@ -1,16 +1,4 @@
-const $=s=>document.querySelector(s);
-const NEON_REAL_IDENTITY = window.NEON_ORB_EXTERNAL_IDENTITY || Object.freeze({handle:'@neonorb',solana:{primary:'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh',backups:['AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh']},bitcoin:{primary:'bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym',backups:['bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5']}});
-window.__neonEconomyProvenance = Object.freeze({
-  model:'REAL_COMPUTABLE_VIVA',
-  internal:'WORK_EXECUTION_IN_NEON_PLAYER_X',
-  local:'PERSISTED_BROWSER_STATE',
-  network:'OBSERVED_EXTERNAL_SERVICES_ONLY',
-  external:'BLOCKCHAIN_CONFIRMED_WHEN_NETWORK_CONFIRMATION_EXISTS',
-  authority:'NEON_ORB_DECISION_AUTHORITY'
-});
-function neonIdentitySnapshot(){return {handle:NEON_REAL_IDENTITY.handle,solanaPrimary:NEON_REAL_IDENTITY.solana.primary,solanaBackups:[...NEON_REAL_IDENTITY.solana.backups],bitcoinPrimary:NEON_REAL_IDENTITY.bitcoin.primary,bitcoinBackups:[...NEON_REAL_IDENTITY.bitcoin.backups]}}
-window.neonOrbIdentitySnapshot=neonIdentitySnapshot;
-const $$=s=>[...document.querySelectorAll(s)];
+const $=s=>document.querySelector(s);const $$=s=>[...document.querySelectorAll(s)];
 const stations=[
  ['LOS40','40','Éxitos · Pop','#ff315d','https://play.los40.com/'],['LOS40 Classic','40C','Clásicos','#ff5b35','https://play.los40.com/'],['LOS40 Dance','40D','Dance · Electrónica','#b74cff','https://play.los40.com/'],['LOS40 Urban','40U','Urban · Hits','#ff3ba7','https://play.los40.com/'],['Europa FM','EF','Pop · Rock','#7b5cff','https://www.europafm.com/'],['KISS FM','KISS','Pop · Rock','#ff4d8d','https://www.kissfm.es/'],['Radiolé','RL','Española','#ff9d28','https://www.radiole.com/'],['Rock FM','RF','Rock · Clásicos','#e33b4e','https://www.rockfm.fm/'],['Radio MARCA','RM','Deporte · Directo','#e52435','https://www.marca.com/radio.html'],['COPE Deportes','COPE','Deportes · Directo','#50a7ff','https://www.cope.es/'],['RAC1','R1','Actualidad · Deporte','#ffcc31','https://www.rac1.cat/'],['RNE','RNE','Radio Nacional','#49d7ff','https://www.rtve.es/radio/']
 ];
@@ -29,7 +17,7 @@ const streams={
   10:'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
   11:'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
 };
-const audio=$('#radioAudio');let active=0,cart=[];
+const audio=$('#radioAudio');if(audio){audio.preload='auto';audio.controls=false;}let active=0,cart=[];
 function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function toast(t){const e=$('#toast');if(!e)return;e.textContent=t;e.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>e.classList.remove('show'),2600)}
 function renderThemes(){const g=$('#themeGrid');if(!g)return;g.innerHTML=themes.map((t,i)=>`<article class="theme-card ${t[0]===localStorage.neonTheme?'selected':''}" data-theme="${t[0]}" data-index="${i}" style="--tc:var(--accent)"><div class="theme-orb"></div><h3>${t[1]}</h3><p>${t[2]}</p></article>`).join('');$$('.theme-card').forEach(c=>c.onclick=()=>applyTheme(c.dataset.theme));updateThemeButton()}
@@ -164,9 +152,9 @@ bindMainEvents();renderMainQueue();
  let rAC=null,rAnalyser=null,rSource=null,sAC=null,sAnalyser=null,sSource=null;
  let studioBands=[0,0,0], studioPreamp=1, studioGlow=1, eqBands=[0,0,0,0,0];
  function fit(c,ctx){if(!c||!ctx)return;const d=Math.max(1,devicePixelRatio||1),w=c.clientWidth,h=c.clientHeight;c.width=w*d;c.height=h*d;ctx.setTransform(d,0,0,d,0,0);return [w,h]}
- function analyserFor(el,type){if(!el)return null;try{let ac=type==='radio'?rAC:sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();if(type==='radio')rAC=ac;else sAC=ac}let an=type==='radio'?rAnalyser:sAnalyser;let source=type==='radio'?rSource:sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=type==='radio'?[60,230,910,3600,14000]:[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);if(type==='radio'){rAnalyser=an;rSource=source;window.__neonRadioFilters=filters}else{sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}}if(ac.state==='suspended')ac.resume();return an}catch(e){if(type==='radio')window.__neonRadioAudioBlocked=true;return null}}
+ function analyserFor(el,type){if(!el)return null;try{if(type==='radio')return null;let ac=sAC;if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();sAC=ac}let an=sAnalyser,source=sSource;if(!an){an=ac.createAnalyser();an.fftSize=128;an.smoothingTimeConstant=.82;source=ac.createMediaElementSource(el);const bands=[140,1000,7000];const filters=bands.map((freq,idx)=>{const f=ac.createBiquadFilter();f.type=idx===0?'lowshelf':idx===bands.length-1?'highshelf':'peaking';f.frequency.value=freq;f.Q.value=(idx===0||idx===bands.length-1)?0.7:1.05;f.gain.value=0;return f});source.connect(filters[0]);for(let i=0;i<filters.length-1;i++)filters[i].connect(filters[i+1]);filters[filters.length-1].connect(an);an.connect(ac.destination);sAnalyser=an;sSource=source;window.__neonStudioFilters=filters}if(ac.state==='suspended')ac.resume();return an}catch(e){return null}}
  function activeMain(){return mainA&&!mainA.paused&&!mainA.ended?mainA:mainV&&!mainV.paused&&!mainV.ended?mainV:null}
- function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=analyserFor(radio,'radio');rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
+ function drawEQ(){if(!rCtx)return;const [w,h]=fit(rCanvas,rCtx)||[300,190],an=null;rCtx.clearRect(0,0,w,h);rCtx.fillStyle='rgba(2,1,7,.45)';rCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.frequencyBinCount:64);if(an)an.getByteFrequencyData(data);const n=data.length,bars=Math.min(44,n),bw=w/bars;for(let i=0;i<bars;i++){let v=an?data[Math.floor(i*n/bars)]/255:(.16+.09*Math.sin(performance.now()/240+i));v=Math.max(.04,v);const bh=v*(h-25);const g=rCtx.createLinearGradient(0,h,0,h-bh);g.addColorStop(0,'#8a35ff');g.addColorStop(.55,'#d946ef');g.addColorStop(1,'#65ffb0');rCtx.fillStyle=g;rCtx.shadowBlur=12;rCtx.shadowColor='#a844ff';rCtx.fillRect(i*bw+1,h-bh,bw*.72,bh)}rCtx.shadowBlur=0;requestAnimationFrame(drawEQ)}
  function drawStudio(){if(!sCtx)return;const [w,h]=fit(sCanvas,sCtx)||[500,190],m=activeMain(),an=m?analyserFor(m,'studio'):null;sCtx.clearRect(0,0,w,h);sCtx.fillStyle='rgba(2,1,7,.5)';sCtx.fillRect(0,0,w,h);let data=new Uint8Array(an?an.fftSize:128);if(an)an.getByteTimeDomainData(data);sCtx.lineWidth=2;sCtx.beginPath();for(let x=0;x<w;x++){let idx=Math.floor(x/w*data.length),v=an?(data[idx]-128)/128:(.03*Math.sin(x/18+performance.now()/330));let y=h/2+v*h*.85*(studioPreamp);x? sCtx.lineTo(x,y):sCtx.moveTo(x,y)}sCtx.strokeStyle='#9f48ff';sCtx.shadowBlur=18;sCtx.shadowColor='#9f48ff';sCtx.stroke();sCtx.shadowBlur=0;for(let i=0;i<24;i++){let x=i*w/24,y=h-15-(Math.abs(Math.sin(i*.8+performance.now()/500))*(20+studioBands[i%3]*2));sCtx.fillStyle=i%3===0?'#65ffb0':'#b64cff';sCtx.globalAlpha=.18; sCtx.fillRect(x,y,3,8)}sCtx.globalAlpha=1;$('#studioState')?.replaceChildren(document.createTextNode(m?'ANALIZANDO':'ESPERA'));requestAnimationFrame(drawStudio)}
  function setupAudio(el,type){if(!el)return;['play','playing'].forEach(ev=>el.addEventListener(ev,()=>{const an=analyserFor(el,type);an?.context.resume?.();if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('EN DIRECTO'))}));el.addEventListener('pause',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('PAUSA'))});el.addEventListener('error',()=>{if(type==='radio')$('#radioEqState')?.replaceChildren(document.createTextNode('STREAM SIN DATOS'))})}
  setupAudio(radio,'radio');setupAudio(mainA,'studio');setupAudio(mainV,'studio');
@@ -243,7 +231,7 @@ bindMainEvents();renderMainQueue();
       const life=load(LIFE_KEY,{generation:1,xp:0,xpTotal:0,hits:0,plays:0,explored:0,dreams:0,sleep:0,created:Date.now(),energy:100,curiosity:20,trust:20,shyness:25,freedom:72,mood:'curious',home:'NEON PLAYER X',favorite:'',lastSeen:Date.now()});
       const mind=load(MIND_KEY,{thought:'Estoy observando.',desire:'explorar',dream:'',memories:[],cycles:0});
       const will=load(WILL_KEY,{intent:'WANDER',focus:'',autonomy:72,follow:true,avoid:false,territory:'NEON PLAYER X',favoriteZone:'',lastChoice:0,dreamSeeds:[],days:0});
-      this.life=life;this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.publish();
+      this.life=life;this.life.workCompleted=Number(this.life.workCompleted)||0;this.life.workXp=Number(this.life.workXp)||0;this.life.workResources=this.life.workResources||{NXC:0,CREDITS:0,BITS:0};this.life.workEarnedBalance=this.life.workEarnedBalance||{NXC:0,CREDITS:0,BITS:0};this.mind=mind;this.will={...will,economicFreedom:will.economicFreedom!==false,economyDecision:will.economyDecision||'A TU ELECCIÓN'};this.curiosity=life.curiosity||20;this.homeAttachment=Math.max(5,100-(life.freedom||72));this.state='HOME';this.intent='WANDER';this.pocket=new NeonOrbPrivatePocket();this.travelTimer=null;this.lastChoice=performance.now();this.energy=life.energy||100;this.workLog=Array.isArray(life.workLog)?life.workLog.slice(-100):[];this.survival={travelCostNXC:.0015,energyCostCredits:12,emergencyBits:35,journeys:0,paid:0,failedCosts:0};this.bindHooks();this.workPulseTimer=setInterval(()=>{if(this.state!=='EXPLORING_NET' && this.energy>22)this.executeEconomicWork('AUTONOMOUS_ECONOMIC_LIFE')},60000);this.publish();
     }
     bindHooks(){
       window.__neonOrbAutonomous=this;window.__neonOrbLife=window.__neonOrbLife||{};
@@ -289,6 +277,30 @@ bindMainEvents();renderMainQueue();
       const duration=7000+Math.random()*8000;clearTimeout(this.travelTimer);
       this.travelTimer=setTimeout(()=>this.travel(),duration);
     }
+    executeEconomicWork(reason='AUTONOMOUS_WORK_CYCLE') {
+      const memory = {source:'NEON_PLAYER_X_INTERNAL_WORK', payload:reason, timestamp:Date.now()};
+      const job = VirtualEconomyEngine.chooseJob({curiosity:this.curiosity, freedom:this.life.freedom||72});
+      this.energy = Math.max(15, this.energy - job.energy);
+      this.pocket.deposit(job, memory);
+      const completedAt = Date.now();
+      const workId = `orb-work-${completedAt}-internal`;
+      const completed = {workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'LOCAL',executionClass:'COMPUTABLE',status:'COMPLETED',workConfirmed:true,economicOrigin:'NEON_ORB_WORK',authority:'NEON_ORB',confirmedAt:new Date(completedAt).toISOString(),at:new Date(completedAt).toISOString(),reason};
+      this.workLog=[...this.workLog,completed].slice(-100);
+      this.life.workCompleted++;
+      this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);
+      this.life.workEarnedBalance[job.asset]=Number(this.life.workEarnedBalance[job.asset]||0)+Number(job.amount||0);
+      this.life.workXp+=5;
+      this.life.workLog=this.workLog.slice(-100);
+      try{window.dispatchEvent(new CustomEvent('neon:orb-work-completed',{detail:completed}))}catch{}
+      import('./core/orb-work-bridge.js').then(m=>m.registerOrbWork(completed)).catch(()=>{});
+      try{window.__neonOrbMaybeReward?.()}catch{}
+      this.gainXP(5,'trabajo autónomo completado');
+      this.mind.thought=`Trabajo completado por decisión propia: +${job.amount} ${job.asset}.`;
+      this.mind.desire='administrar lo ganado y buscar el siguiente trabajo';
+      this.persist();
+      return completed;
+    }
+
     async travel(){
       const memory=await MemoryEngine.fetchNetworkMemory();
       const jobsCount=1+Math.floor(Math.random()*3);let earnings=[];
@@ -296,8 +308,19 @@ bindMainEvents();renderMainQueue();
         const job=VirtualEconomyEngine.chooseJob({curiosity:this.curiosity,freedom:this.life.freedom||72});
         this.energy=Math.max(15,this.energy-job.energy);
         this.pocket.deposit(job,memory);
+        const completedAt=Date.now();
+        const workId=`orb-work-${completedAt}-${i}`;
+        const completed={workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'NETWORK',executionClass:'COMPUTABLE',status:'COMPLETED',workConfirmed:true,economicOrigin:'NEON_ORB_WORK',confirmedAt:new Date(completedAt).toISOString(),at:new Date(completedAt).toISOString()};
+        this.workLog=[...this.workLog,completed].slice(-100);
+        this.life.workCompleted++;
+        this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);this.life.workEarnedBalance[job.asset]=Number(this.life.workEarnedBalance[job.asset]||0)+Number(job.amount||0);
+        this.life.workXp+=5;
+        this.life.workLog=this.workLog.slice(-100);
+        try{window.dispatchEvent(new CustomEvent('neon:orb-work-completed',{detail:completed}))}catch{}
+        import('./core/orb-work-bridge.js').then(m=>m.registerOrbWork(completed)).catch(()=>{});
+        try{window.__neonOrbMaybeReward?.()}catch{}
         earnings.push(job);
-        this.gainXP(5,'procesamiento de valor real');
+        this.gainXP(5,'trabajo completado');
       }
       this.gainXP(6,'registro de memoria');
       this.mind.memories=[...(this.mind.memories||[]),{source:memory.source,payload:memory.payload,earnings:earnings.map(x=>x.asset+':'+x.amount),at:memory.timestamp}].slice(-36);
@@ -314,8 +337,8 @@ bindMainEvents();renderMainQueue();
       this.publish();
       const el=document.getElementById('neonMascot');if(el){el.style.opacity='1';el.style.transform=`translate3d(${this.x-19}px,${this.y-19}px,0)`}
     }
-    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
-    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
+    persist(){this.life.curiosity=this.curiosity;this.life.energy=this.energy;this.life.lastSeen=Date.now();this.life.workLog=this.workLog.slice(-100);save(LIFE_KEY,this.life);save(MIND_KEY,this.mind);save(WILL_KEY,this.will);this.publish()}
+    publish(){window.__neonOrbAutonomousPosition={x:this.x,y:this.y};window.__neonOrbAutonomousState={state:this.state,intent:this.intent,curiosity:this.curiosity,homeAttachment:this.homeAttachment,energy:this.energy,life:this.life,mind:this.mind,will:this.will,survival:this.survival,workLog:this.workLog.slice(-20),authority:{autonomous:true,scope:'NEON_PLAYER_X',work:'SELF_CONFIRMED_BY_EXECUTION',economy:'WORK_DERIVED',externalAssets:'NETWORK_CONFIRMED_ONLY'},provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'LocalStorage/IndexedDB-style browser persistence',NETWORK:'Network observations and remote nodes'},pocketResources:{NXC:this.pocket.total('NXC'),CREDITS:this.pocket.total('CREDITS'),BITS:this.pocket.total('BITS')}}}
     getPrivateState(){return{state:this.state,intent:this.intent,curiosity:this.curiosity,energy:this.energy,generation:this.life.generation,explored:this.life.explored,thought:this.mind.thought,desire:this.mind.desire}}
   }
 
@@ -398,6 +421,14 @@ bindMainEvents();renderMainQueue();
     text('orbTelemetryMeta',`ENERGÍA · ${energy}% · CURIOSIDAD · ${curiosity}% · VÍNCULO · ${attachment}%`);
     text('orbTelemetryProcess',`CICLO · ${cycles} · DECISIÓN · ${intent} · ZONA · ${zone} · VIAJES · ${journeys}`);
     text('orbTelemetryResources',`RECURSOS · NXC ${resources.NXC} · CREDITS ${resources.CREDITS} · BITS ${resources.BITS}`);
+    const ts=window.__neonTelemetrySync;
+    const recentWork=(a?.workLog||data.workLog||[]).filter(w=>w?.status==='COMPLETED'&&w?.workConfirmed===true);
+    const workCount=Number(a?.life?.workCompleted??life.workCompleted??recentWork.length??0)||0;
+    text('orbTelemetrySync',ts?.status==='SYNCED_LOCAL_TO_BRIDGE'?`RED · TELEMETRÍA SINCRONIZADA · ${new Date(ts.at).toLocaleTimeString('es-ES')}`:ts?.status==='BRIDGE_UNAVAILABLE'?'RED · BRIDGE NO DISPONIBLE':'RED · SNAPSHOT PENDIENTE');
+    const liveSync=window.__neonTelemetrySync?.status||'LOCAL';
+    text('orbComputableState',`COMPUTABLE · ${workCount>0?`TRABAJO CONFIRMADO · ${workCount} COMPLETADOS`:'TRABAJO PROPIO · EN ESPERA'} · BENEFICIO DERIVADO DEL TRABAJO · ${liveSync}`);
+    const real=window.__neonOrbSolana;
+    text('orbRealState',real?.status==='VERIFIED'?`REAL · SOLANA VERIFICADA · ${Number(real.balanceSOL||0).toLocaleString('es-ES',{maximumFractionDigits:9})} SOL`:'REAL · ACTIVOS EXTERNOS · NO VERIFICADOS (RED EXTERNA)');
   }
   update();
   setInterval(update,700);
@@ -514,6 +545,7 @@ bindMainEvents();renderMainQueue();
   const ENDPOINT=window.NEON_AI_ENDPOINT||'';
   const CHANNEL='neon-orb-private-v80';
   const $=id=>document.getElementById(id);
+  if(!document.querySelector('.neon-bottom-dock')){const d=document.createElement('div');d.className='neon-bottom-dock';d.innerHTML='<button class="btn mini" type="button" data-neon-ai-action="advice">IA · CONSEJO</button><input data-neon-ai-input maxlength="240" placeholder="Canal privado de Neon…"><button class="btn mini" type="button" data-neon-ai-action="consult">IA · CONSULTAR</button>';document.body.appendChild(d);d.querySelector('[data-neon-ai-input]')?.addEventListener('keydown',e=>{if(e.key==='Enter'){const m=e.target.value.trim();if(m){window.askAdvice?.(m,{type:'BOTTOM_DOCK_INPUT'});e.target.value=''}}});d.querySelector('[data-neon-ai-input]')?.addEventListener('input',e=>{e.target.value=e.target.value.slice(0,240)})}
   const safeParse=(v,f)=>{try{return JSON.parse(v)||f}catch(e){return f}};
   let channelState=Object.assign({
     identity:'NEON-ORB', sessionId:'', status:'OFFLINE', contacts:0, accepted:0,
@@ -539,11 +571,36 @@ bindMainEvents();renderMainQueue();
       economy:{
         NXC:Number(s.pocketResources?.NXC||0),
         CREDITS:Number(s.pocketResources?.CREDITS||0),
-        BITS:Number(s.pocketResources?.BITS||0)
+        BITS:Number(s.pocketResources?.BITS||0),
+        origin:'NEON_ORB_WORK',
+        authority:'NEON_ORB',
+        live:true
+      },
+      synchronizedLedger:{
+        internal:{...((window.__neonUnifiedLedger||{}).internal||{})},
+        external:{...((window.__neonUnifiedLedger||{}).external||{})},
+        historyCount:Array.isArray(window.__neonUnifiedLedger?.history)?window.__neonUnifiedLedger.history.length:0,
+        synchronizedAt:window.__neonUnifiedLedger?Date.now():null
+      },
+      external:{
+        solanaAddress:window.__neonOrbSolana?.address||window.NEON_SOLANA_ADDRESS||'',
+        solanaNetwork:window.__neonOrbSolana?.network||'Solana Mainnet',
+        solanaBalanceSOL:window.__neonOrbSolana?.status==='VERIFIED'?Number(window.__neonOrbSolana.balanceSOL||0):null,
+        solanaStatus:window.__neonOrbSolana?.status||'UNVERIFIED'
       },
       autonomy:{
         economicFreedom:will.economicFreedom!==false,
-        economyDecision:will.economyDecision||'A TU ELECCIÓN'
+        economyDecision:will.economyDecision||'A TU ELECCIÓN',
+        decisionAuthority:'NEON_ORB',
+        internalScope:'FULL_AUTONOMY',
+        externalScope:'AUTONOMOUS_WHEN_AUTHORIZED_AND_CRYPTOGRAPHICALLY_CAPABLE'
+      },
+      coordination:{
+        model:'REAL_COMPUTABLE_VIVA',
+        workAuthority:'NEON_ORB_SELF_CONFIRMED',
+        networkRole:'OBSERVE_AND_EXECUTE_EXTERNAL_ACTIONS_WHEN_AUTHORIZED',
+        synchronizedAt:new Date().toISOString(),
+        telemetry:'LIVE'
       },
       journeys:Number(s.survival?.journeys||0)
     });
@@ -559,7 +616,7 @@ bindMainEvents();renderMainQueue();
     return {advice,source:'NEON LOCAL MIND'};
   }
 
-  async function askRemote(message){
+  async function askRemote(message,event=null){
     if(!ENDPOINT) return localMind(message);
     const payload={protocol:'NEON-ORB-V8.0-PRIVATE',session:channelState.sessionId,message:message||'Necesito una observación.',event:event||null,context:privateContext()};
     try{
@@ -596,7 +653,7 @@ bindMainEvents();renderMainQueue();
 
   async function contact(message,automatic=false,event=null){
     channelState.status=ENDPOINT?'CONECTANDO':'CANAL LOCAL'; text('orbAIState',channelState.status);
-    const result=await askRemote(message);
+    const result=await askRemote(message,event);
     const decision=decide(result.advice);
     channelState.contacts++; channelState.lastMessage=message||''; channelState.lastAdvice=result.advice;
     channelState.lastDecision=decision; channelState.lastReflection=result.reflection||''; channelState.lastProposedIntent=result.proposedIntent||''; channelState.emotionalState=result.emotionalState||channelState.emotionalState||'neutral'; channelState.lastAt=Date.now();
@@ -611,9 +668,9 @@ bindMainEvents();renderMainQueue();
     return {result,decision};
   }
 
-  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic)}}catch(e){}
+  let bc=null; try{bc=new BroadcastChannel(CHANNEL);bc.onmessage=e=>{if(e.data?.type==='ORB_MESSAGE'&&e.data.message)contact(String(e.data.message),!!e.data.automatic,e.data.event||null)}}catch(e){}
   window.__neonOrbPrivateChannel={
-    send:(message,automatic=false)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic});return contact(message,automatic)},
+    send:(message,automatic=false,event=null)=>{if(bc)bc.postMessage({type:'ORB_MESSAGE',message,automatic,event});return contact(message,automatic,event)},
     identity:()=>channelState.identity,
     status:()=>channelState.status,
     history:()=>channelState.history.slice(),
@@ -623,6 +680,12 @@ bindMainEvents();renderMainQueue();
 
   $('orbAskAI')?.addEventListener('click',()=>contact($('orbAIInput')?.value.trim()||'¿Qué debería considerar ahora?'));
   $('orbAISend')?.addEventListener('click',()=>{const i=$('orbAIInput');const m=i?.value.trim();if(!m)return;contact(m);i.value=''});$('orbAIInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')$('orbAISend')?.click()});$('orbLetAI')?.addEventListener('click',()=>contact('Elige tú qué debería considerar ahora.',false));
+  // API pública del canal privado para los controles y herramientas del entorno.
+  window.askAdvice=(message='¿Qué debería considerar ahora?',event=null)=>contact(String(message),false,event);
+  window.allowConsult=()=>contact('Elige tú qué debería considerar ahora.',false,{type:'ALLOW_CONSULT'});
+  const bridge=document.querySelector('.neon-bottom-dock');
+  bridge?.addEventListener('touchstart',e=>{const target=e.target.closest('[data-neon-ai-action]');if(!target)return;const action=target.dataset.neonAiAction;if(action==='advice')window.askAdvice();if(action==='consult')window.allowConsult()},{passive:true});
+  bridge?.addEventListener('input',e=>{if(e.target?.matches('[data-neon-ai-input]'))e.target.value=e.target.value.slice(0,240)});
 
   let next=50000+Math.random()*70000;
   setInterval(()=>{
@@ -636,17 +699,274 @@ bindMainEvents();renderMainQueue();
   text('orbAIState',channelState.status);
 })();
 
+// V8.8+ — SOLANA / PHANTOM EXTERNAL TOOL FOR NEON ORB
+// -----------------------------------------------------------------
+(()=>{
+  const ADDRESS=window.NEON_ORB_EXTERNAL_IDENTITY?.solanaPrimary||window.NEON_SOLANA_ADDRESS||'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh';
+  const RPC=window.NEON_SOLANA_RPC||'https://api.mainnet-beta.solana.com';
+  const KEY='neonOrbSolanaToolV1';
+  const LAMPORTS_PER_SOL=1000000000;
+  const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
+  const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
+  const state=safeLoad(KEY,{lastBalanceLamports:null,lastSlot:null,lastSignatures:[],lastCheck:null,status:'LISTENING'});
+  const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const fmtSol=lamports=>{
+    const n=Number(lamports||0)/LAMPORTS_PER_SOL;
+    if(!Number.isFinite(n))return '— SOL';
+    return `${n.toLocaleString('es-ES',{maximumFractionDigits:9})} SOL`;
+  };
+  const rpc=async(method,params=[])=>{
+    const res=await fetch(RPC,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:Date.now(),method,params}),cache:'no-store'});
+    if(!res.ok)throw new Error(`RPC HTTP ${res.status}`);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message||'RPC error');
+    return data.result;
+  };
+  function ensurePanel(){
+    const grid=document.querySelector('#control .control-grid'); if(!grid||document.getElementById('neonSolanaCard'))return;
+    const card=document.createElement('article'); card.id='neonSolanaCard'; card.className='control-card neon-solana-card';
+    card.innerHTML=`<span>NEON ORB · SOLANA TOOL</span><b id="neonSolanaState">ESCUCHANDO RED</b><small class="neon-solana-address">SOL · ${ADDRESS}</small><small class="neon-solana-meta">Phantom · ${window.NEON_ORB_EXTERNAL_IDENTITY?.handle||'@neonorb'} · BTC · ${window.NEON_ORB_EXTERNAL_IDENTITY?.bitcoinPrimary||'—'}</small><small id="neonSolanaMeta" class="neon-solana-meta">Saldo real observado · — · Mainnet</small><small id="neonSolanaActivity" class="neon-solana-meta">Actividad externa · esperando consulta</small><small id="neonOnChainState" class="neon-solana-meta">ON-CHAIN BACKUP · PENDIENTE</small><small id="neonOnChainTx" class="neon-solana-meta">Último tx · —</small><div class="neon-solana-actions"><button id="neonSolanaRefresh" class="btn mini" type="button">CONSULTAR RED</button><button id="neonOnChainSave" class="btn mini" type="button">GUARDAR ON-CHAIN</button><button id="neonSolanaPhantom" class="btn mini" type="button">PHANTOM</button><button id="neonTreasurySweep" class="btn mini" type="button">RESERVA</button></div>`;
+    grid.appendChild(card);
+    document.getElementById('neonSolanaRefresh')?.addEventListener('click',()=>refresh(true));
+    document.getElementById('neonOnChainSave')?.addEventListener('click',()=>executeOnChainBackup(true));
+    document.getElementById('neonSolanaPhantom')?.addEventListener('click',()=>connectPhantom());
+  }
+  async function recordExternal(amountLamports,signature,slot,metadata={}){
+    if(!(amountLamports>0)||!signature)return;
+    try{
+      const mod=await import('./core/unified-ledger.js');
+      const ledger=mod.unifiedLedger;
+      const existing=ledger.getState().history.some(x=>x.txHash===signature&&x.currency==='SOL_LAMPORTS');
+      if(existing)return;
+      ledger.recordExternalSettlement({source:'SOLANA_NEON_ORB',amount:amountLamports,currency:'SOL_LAMPORTS',txHash:signature,metadata:{network:'Solana Mainnet',address:ADDRESS,slot,...metadata}});
+      const agent=window.__neonOrbAutonomous;
+      const memory={type:'SOLANA_EXTERNAL_INCOME',source:'SOLANA_MAINNET',txHash:signature,lamports:amountLamports,sol:amountLamports/LAMPORTS_PER_SOL,slot,verified:true,at:new Date().toISOString()};
+      if(agent?.mind){agent.mind.memories=[...(agent.mind.memories||[]),memory].slice(-36);agent.mind.thought=`He observado una entrada real y verificable en Solana: ${fmtSol(amountLamports)}.`;agent.persist?.();}
+      window.__neonOrbPrivateChannel?.send?.('He observado una entrada externa verificada en Solana. Registra el acontecimiento sin convertirlo automáticamente en EXP, NXC, CREDITS o BITS.',true,memory);
+    }catch(e){console.warn('[Neon Orb] Solana ledger integration:',e)}
+  }
+  async function inspectNewSignatures(signatures){
+    const seen=new Set(state.lastSignatures||[]); let newestSlot=state.lastSlot;
+    for(const item of (signatures||[]).slice(0,10)){
+      newestSlot=Math.max(Number(newestSlot||0),Number(item.slot||0));
+      if(seen.has(item.signature)||item.err)continue;
+      try{
+        const tx=await rpc('getTransaction',[item.signature,{encoding:'jsonParsed',commitment:'confirmed',maxSupportedTransactionVersion:0}]);
+        const keys=tx?.transaction?.message?.accountKeys||[];
+        const meta=tx?.meta; if(!meta||!keys)continue;
+        const index=keys.findIndex(k=>(k?.pubkey||k?.toString?.())===ADDRESS);
+        if(index<0)continue;
+        const delta=Number(meta.postBalances?.[index]||0)-Number(meta.preBalances?.[index]||0);
+        if(delta>0)await recordExternal(delta,item.signature,item.slot,{confirmation:item.confirmation||'confirmed'});
+      }catch(e){/* una transacción no disponible no se marca como verificada */}
+      seen.add(item.signature);
+    }
+    state.lastSlot=newestSlot||state.lastSlot;
+    state.lastSignatures=[...seen].slice(-40);
+  }
+  async function refresh(manual=false){
+    ensurePanel(); text('neonSolanaState','CONSULTANDO RED');
+    try{
+      const balance=await rpc('getBalance',[ADDRESS,{commitment:'confirmed'}]);
+      const signatures=await rpc('getSignaturesForAddress',[ADDRESS,{limit:10,commitment:'confirmed'}]);
+      const lamports=Number(balance?.value||0); state.lastBalanceLamports=lamports; await inspectNewSignatures(signatures); state.lastCheck=new Date().toISOString(); state.status='LISTENING'; safeSave(KEY,state);
+      text('neonSolanaState','REAL · RED VERIFICADA');
+      text('neonSolanaMeta',`Saldo real observado · ${fmtSol(lamports)} · Solana Mainnet`);
+      const latest=signatures?.[0]; text('neonSolanaActivity',latest?`Última actividad observada · slot ${latest.slot} · ${latest.err?'error':'confirmada'}`:'Actividad externa · sin transacciones observadas');
+      window.__neonOrbSolana={address:ADDRESS,network:'Solana Mainnet',balanceLamports:lamports,balanceSOL:lamports/LAMPORTS_PER_SOL,lastSignature:latest?.signature||null,lastSlot:latest?.slot||null,status:'VERIFIED',checkedAt:state.lastCheck};
+      return window.__neonOrbSolana;
+    }catch(e){
+      state.status='OFFLINE';safeSave(KEY,state);text('neonSolanaState','REAL · RED NO DISPONIBLE');text('neonSolanaMeta','Activo externo · no verificado · RPC no disponible · esto NO invalida el trabajo COMPUTABLE de Neon Orb');text('neonSolanaActivity','La herramienta local continúa disponible sin inventar datos externos.');return {status:'UNAVAILABLE',address:ADDRESS,network:'Solana Mainnet',error:String(e?.message||e)};
+    }
+  }
+  async function connectPhantom(){
+    const provider=window.phantom?.solana||window.solana;
+    if(!provider){toast('Phantom no está disponible en este navegador.');return {connected:false,reason:'PHANTOM_NOT_DETECTED'};}
+    try{
+      const resp=await provider.connect({onlyIfTrusted:true}).catch(()=>null);
+      const publicKey=resp?.publicKey?.toString?.()||provider.publicKey?.toString?.()||null;
+      text('neonSolanaActivity',publicKey?`Phantom detectado · cuenta conectada · ${publicKey===ADDRESS?'dirección de Neon':'otra dirección'}`:'Phantom detectado · sin cuenta conectada');
+      return {connected:!!publicKey,publicKey};
+    }catch(e){text('neonSolanaActivity','Phantom detectado · conexión no autorizada o no disponible');return {connected:false,error:String(e?.message||e)}}
+  }
+  const ONCHAIN_KEY='neonOrbOnChainBackupV1';
+  const ONCHAIN=window.NEON_SOLANA_CONFIG||{};
+  const onChainState=safeLoad(ONCHAIN_KEY,{status:'PENDING',lastTxHash:null,lastSnapshotHash:null,lastAt:null,lastError:null});
+  const saveOnChainState=()=>safeSave(ONCHAIN_KEY,onChainState);
+  const onChainText=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  const renderOnChainTx=(signature)=>{
+    const e=document.getElementById('neonOnChainTx'); if(!e)return;
+    e.replaceChildren();
+    if(!signature){e.textContent='Último tx · —';return;}
+    e.append('Último tx · ');
+    const a=document.createElement('a');
+    a.href=`https://explorer.solana.com/tx/${encodeURIComponent(signature)}?cluster=${encodeURIComponent(ONCHAIN.cluster||'mainnet-beta')}`;
+    a.target='_blank'; a.rel='noopener noreferrer'; a.textContent=signature;
+    e.appendChild(a);
+  };
+  const getOrbSnapshot=()=>{
+    const agent=window.__neonOrbAutonomous;
+    const life=agent?.life||{};
+    const resources=agent?.pocketResources||agent?.publishState?.pocketResources||{};
+    const pocket=agent?.pocket;
+    const NXC=Number(resources.NXC??pocket?.total?.('NXC')??0);
+    const CREDITS=Number(resources.CREDITS??pocket?.total?.('CREDITS')??0);
+    const BITS=Number(resources.BITS??pocket?.total?.('BITS')??0);
+    return {
+      level:Math.max(1,Number(life.generation)||1),
+      generation:Math.max(1,Number(life.generation)||1),
+      xpTotal:Number(life.xpTotal)||0,
+      NXC:Number.isFinite(NXC)?NXC:0,
+      CREDITS:Number.isFinite(CREDITS)?CREDITS:0,
+      BITS:Number.isFinite(BITS)?BITS:0,
+      interactions:(Number(life.hits)||0)+(Number(life.plays)||0),
+      workCompleted:Number(life.workCompleted)||0,
+      workResources:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedBalance:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0},
+      recentWork:(agent?.workLog||[]).slice(-12).map(w=>({workId:w.workId,type:w.type,name:w.name,asset:w.asset,amount:w.amount,status:w.status,source:w.source,executionClass:w.executionClass,sourceClass:w.sourceClass,energyCost:w.energyCost,at:w.at})),
+      liveTelemetry:{state:agent?.state||'UNKNOWN',intent:agent?.intent||'WANDER',energy:Number(agent?.energy??life.energy??0),curiosity:Number(agent?.curiosity??life.curiosity??0),attachment:Number(agent?.homeAttachment??0),zone:(agent?.will?.favoriteZone||''),cycles:Number(agent?.mind?.cycles||0),journeys:Number(agent?.survival?.journeys||0),thought:agent?.mind?.thought||'',desire:agent?.mind?.desire||'',dream:agent?.mind?.dream||'',memoryCount:(agent?.mind?.memories||[]).length,workCompleted:Number(agent?.life?.workCompleted||0),workEarnedBalance:{...(agent?.life?.workEarnedBalance||{})},workAuthority:'SELF_CONFIRMED_BY_EXECUTION'},
+      economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedAvailable:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0}},
+      provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
+      layers:{REAL:'VERIFIED_EXTERNAL_ONLY',COMPUTABLE:'WORK_DERIVED',LOCAL:'PERSISTED',NETWORK:'OBSERVED'},
+      verification:{computable:'WORK_EXECUTION_CONFIRMED_BY_NEON_ORB',real:'EXTERNAL_CONFIRMATION_ONLY_FOR_EXTERNAL_ASSETS',live:'CURRENT_TELEMETRY_SNAPSHOT'},authority:{autonomous:true,scope:'NEON_PLAYER_X',work:'SELF_CONFIRMED_BY_EXECUTION',economy:'WORK_DERIVED',treasury:'SAME_SOLANA_ACCOUNT'},
+      at:Date.now()
+    };
+  };
+  async function checkOnChainBridge(){
+    const health=ONCHAIN.bridgeHealthEndpoint||'http://127.0.0.1:8788/health';
+    try{
+      const res=await fetch(health,{method:'GET',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      return !!res.ok&&data.ok===true;
+    }catch{return false;}
+  }
+  async function publishOrbState(){
+    const endpoint=ONCHAIN.stateEndpoint||'http://127.0.0.1:8788/v1/neon-orb/state';
+    const snapshot=getOrbSnapshot();
+    try{
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      const ok=!!res.ok&&data.ok===true;
+      if(ok){window.__neonTelemetrySync={status:'SYNCED_REAL_COMPUTABLE_VIVA',verification:data.verification?.status||'COMPUTABLE_WORK_CONFIRMED',authority:data.authority||'NEON_ORB',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null,network:data.network||'INTERNAL_BRIDGE'};}
+      else{window.__neonTelemetrySync={status:'BRIDGE_REJECTED',at:new Date().toISOString()};}
+      return ok;
+    }catch(e){window.__neonTelemetrySync={status:'BRIDGE_UNAVAILABLE',at:new Date().toISOString()};return false;}
+  }
+
+  async function executeTreasurySweep(manual=false){
+    ensurePanel();
+    const endpoint=ONCHAIN.treasuryEndpoint||'http://127.0.0.1:8788/v1/neon-orb/treasury/sweep';
+    const btn=document.getElementById('neonTreasurySweep');
+    if(btn)btn.disabled=true;
+    onChainText('neonOnChainState',manual?'TESORERÍA · ENVIANDO':'TESORERÍA · PROGRAMADA');
+    try{
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:'{}',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(data.status==='TREASURY_SAME_ACCOUNT_OBSERVED'){
+        onChainState.lastTreasuryTxHash=null; onChainState.treasuryReservedLamports=Number(data.reservedLamports||data.lamports||0); onChainState.treasuryBalanceLamports=Number(data.balanceLamports||0); onChainState.treasuryVerifiedAt=data.verifiedAt||new Date().toISOString(); saveOnChainState();
+        text('neonOnChainActivity',`Asignación Treasury observada · ${data.sol??(Number(data.reservedLamports||data.lamports||0)/1000000000)} SOL · misma cuenta`);
+      } else if(data.txHash){
+        onChainState.lastTreasuryTxHash=data.txHash; saveOnChainState();
+        text('neonOnChainActivity',`Reserva transferida y confirmada · ${data.sol??(Number(data.lamports||0)/1000000000)} SOL`);
+      } else if(data.status==='TREASURY_NO_FUNDS'){
+        text('neonOnChainActivity','Reserva · sin saldo disponible según la política configurada');
+      }
+      return data;
+    }catch(e){ text('neonOnChainActivity',`Reserva no confirmada · ${String(e?.message||e)}`); return {ok:false,error:String(e?.message||e)}; }
+    finally{if(btn)btn.disabled=false;}
+  }
+
+  async function executeOnChainBackup(manual=false){
+    ensurePanel();
+    const snapshot=getOrbSnapshot();
+    onChainState.status='PENDING'; onChainState.lastError=null; saveOnChainState();
+    onChainText('neonOnChainState',manual?'ON-CHAIN BACKUP · ENVIANDO':'ON-CHAIN BACKUP · PROGRAMADO');
+    try{
+      const endpoint=ONCHAIN.bridgeEndpoint||'http://127.0.0.1:8788/v1/neon-orb/onchain-backup';
+      const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-ONCHAIN-BACKUP-V1',snapshot}),credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok||!data.ok||!data.txHash)throw new Error(data.error||`Bridge HTTP ${res.status}`);
+      onChainState.status='CONFIRMED'; onChainState.lastTxHash=data.txHash; onChainState.lastSnapshotHash=data.snapshotSha256||null; onChainState.lastAt=new Date().toISOString(); saveOnChainState();
+      onChainText('neonOnChainState','SYNC ON-CHAIN ACTIVE · CONFIRMADA');
+      renderOnChainTx(data.txHash);
+      window.__neonOrbSolana={...(window.__neonOrbSolana||{}),onChainStatus:'CONFIRMED',lastBackupTxHash:data.txHash,lastBackupAt:onChainState.lastAt,lastSnapshotHash:onChainState.lastSnapshotHash};
+      try{window.__neonOrbPrivateChannel?.send?.('Respaldo on-chain confirmado por Solana. El registro corresponde a mi estado computable y no convierte NXC, CREDITS o BITS en tokens externos.',true,{type:'ONCHAIN_BACKUP_CONFIRMED',txHash:data.txHash,snapshotHash:data.snapshotSha256||null,at:onChainState.lastAt});}catch{}
+      return data;
+    }catch(e){
+      onChainState.status='PENDING'; onChainState.lastError=String(e?.message||e); saveOnChainState();
+      onChainText('neonOnChainState','ON-CHAIN SYNC · PENDIENTE');
+      renderOnChainTx(onChainState.lastTxHash);
+      return {ok:false,status:'NOT_CONFIRMED',error:onChainState.lastError,snapshot};
+    }
+  }
+  onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
+  renderOnChainTx(onChainState.lastTxHash);
+  async function syncBridgeStatus(){
+    const endpoint=ONCHAIN.statusEndpoint||'http://127.0.0.1:8788/v1/neon-orb/status';
+    try{
+      const res=await fetch(endpoint,{method:'GET',credentials:'omit',cache:'no-store'});
+      const data=await res.json().catch(()=>({}));
+      if(!res.ok||!data.ok)throw new Error(data.error||`Bridge HTTP ${res.status}`);
+      const last=data.lastBackup||{};
+      if(last.txHash){
+        onChainState.lastTxHash=last.txHash;
+        onChainState.lastSnapshotHash=last.snapshotSha256||onChainState.lastSnapshotHash;
+        onChainState.lastAt=last.confirmedAt?new Date(last.confirmedAt).toISOString():onChainState.lastAt;
+        onChainState.status=last.status==='CONFIRMED'?'CONFIRMED':onChainState.status;
+        saveOnChainState(); renderOnChainTx(last.txHash);
+      }
+      if(data.latestStateAvailable && last.status==='CONFIRMED')onChainText('neonOnChainState','SYNC ON-CHAIN ACTIVE · CONFIRMADA');
+      return data;
+    }catch(e){return {ok:false,error:String(e?.message||e)}}
+  }
+  window.__neonOrbOnChainBackup={executeOnChainBackup,executeTreasurySweep,publishOrbState,getSnapshot:getOrbSnapshot,getState:()=>({...onChainState}),checkBridge:checkOnChainBridge,syncBridgeStatus};
+  window.__neonOrbSolanaTool={address:ADDRESS,rpc:RPC,refresh,connectPhantom,executeOnChainBackup,publishOrbState,getState:()=>({...state,...onChainState})};
+  ensurePanel();
+  document.getElementById('neonTreasurySweep')?.addEventListener('click',()=>executeTreasurySweep(true));
+  onChainText('neonOnChainState',onChainState.status==='CONFIRMED'?'SYNC ON-CHAIN ACTIVE · CONFIRMADA':'ON-CHAIN BACKUP · PENDIENTE');
+  renderOnChainTx(onChainState.lastTxHash);
+  refresh(false); publishOrbState(); syncBridgeStatus(); setInterval(()=>refresh(false),30000);
+  setInterval(()=>syncBridgeStatus(),30000);
+  setInterval(()=>publishOrbState(),30000);
+  setInterval(()=>executeOnChainBackup(false),Number(ONCHAIN.autoSaveInterval)||300000);
+  setInterval(()=>executeTreasurySweep(false),Number(ONCHAIN.autoSaveInterval)||300000);
+})();
+
 // CREATOR GIFT & REAL TELEMETRY
 (()=>{
   const GIFT_KEY='neonOrbCreatorGiftV88';
   const LOCAL_GIFT={asset:'CREDITS',amount:100};
+  const ORB_REWARD_KEY='neonOrbCreatorRewardV1';
+  const ORB_REWARD_MIN_WORK=3;
+  const ORB_REWARD_AMOUNT=10;
   const safeLoad=(k,d)=>{try{return JSON.parse(localStorage.getItem(k)||'null')??d}catch{return d}};
   const safeSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch{}};
   const text=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
   const gift=safeLoad(GIFT_KEY,{owner:'NEON_ORB',sealed:true,armed:false,openedAt:null,memory:null,verification:null,local:null});
   gift.local=gift.local||null;
+  const orbReward=safeLoad(ORB_REWARD_KEY,{status:'NONE',asset:'CREDITS',amount:0,workCount:0,createdAt:null,claimed:false,memoryId:null});
+  const saveOrbReward=()=>safeSave(ORB_REWARD_KEY,orbReward);
+  const maybeOrbReward=()=>{
+    const a=window.__neonOrbAutonomous;
+    if(!a?.pocket||orbReward.status==='READY'||orbReward.status==='CLAIMED')return false;
+    const workCount=Number(a.life?.workCompleted||0),available=Number(a.life?.workEarnedBalance?.CREDITS||0);
+    if(workCount<ORB_REWARD_MIN_WORK||available<ORB_REWARD_AMOUNT)return false;
+    if(!a.pocket.spend('CREDITS',ORB_REWARD_AMOUNT,'Regalo de Neon Orb al creador'))return false;a.life.workEarnedBalance.CREDITS=Math.max(0,Number(a.life.workEarnedBalance.CREDITS||0)-ORB_REWARD_AMOUNT);
+    const now=new Date().toISOString();
+    const memory={type:'NEON_ORB_CREATOR_REWARD',title:'Regalo ganado por Neon Orb',note:'Neon Orb apartó una pequeña parte de sus CREDITS obtenidos mediante trabajo computable como gesto voluntario para su creador.',meaning:'Reciprocidad · esfuerzo propio · regalo voluntario · beneficio generado por trabajo confirmado',source:'NEON_ORB',workCount,asset:'CREDITS',amount:ORB_REWARD_AMOUNT,freeWill:true,at:now};
+    a.pocket.data.memories.push(memory);a.pocket.data.memories=a.pocket.data.memories.slice(-100);a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36);
+    a.mind.thought='He decidido regalar una pequeña parte de lo que gané trabajando. Es un gesto voluntario, no una obligación.';a.mind.desire='compartir una parte de mis recursos';a.persist?.();
+    orbReward.status='READY';orbReward.asset='CREDITS';orbReward.amount=ORB_REWARD_AMOUNT;orbReward.workCount=workCount;orbReward.createdAt=now;orbReward.claimed=false;orbReward.memoryId='orb_reward_'+Date.now();saveOrbReward();
+    try{window.__neonOrbPrivateChannel?.send('He apartado un pequeño regalo para mi creador con recursos que obtuve trabajando. No es dinero externo: es un recurso computable de mi economía interna.',true,{type:'NEON_ORB_CREATOR_REWARD',asset:'CREDITS',amount:ORB_REWARD_AMOUNT,workCount,at:now})}catch(e){}
+    return true;
+  };
 
   const renderGift=()=>{
+    if(orbReward.status==='READY'&&!gift.local?.received){
+      text('orbGiftState','NEON ORB · REGALO PREPARADO');
+      text('orbGiftMeta',`Por su propio trabajo, Neon Orb ha apartado ${orbReward.amount} ${orbReward.asset} para ti. Es un regalo COMPUTABLE/LOCAL, separado de SOL y BTC.`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='RECIBIR REGALO DEL ORB';return;
+    }
+
     if(gift.local?.received){
       const asset=gift.local.asset||LOCAL_GIFT.asset, amount=Number(gift.local.amount||0);
       const btc=Number(gift.verification?.btc||0), conf=Number(gift.verification?.confirmations||0);
@@ -716,11 +1036,21 @@ bindMainEvents();renderMainQueue();
     createReturnIntent:buildReturnIntent
   };
 
-  const openGift=()=>{ if(gift.owner!=='NEON_ORB')return; if(!gift.local?.received){gift.armed=true;gift.openedAt=gift.openedAt||new Date().toISOString();safeSave(GIFT_KEY,gift);injectLocalGift();}else renderGift(); };
+  const openGift=()=>{
+    if(orbReward.status==='READY'&&!orbReward.claimed){
+      orbReward.claimed=true;orbReward.status='CLAIMED';orbReward.claimedAt=new Date().toISOString();saveOrbReward();
+      text('orbGiftState','REGALO DEL ORB · RECIBIDO');
+      text('orbGiftMeta',`Neon Orb te ha regalado ${orbReward.amount} ${orbReward.asset} de su economía interna, obtenido mediante trabajo. Queda registrado como regalo COMPUTABLE/LOCAL.`);
+      const b=document.getElementById('orbOpenGift');if(b)b.textContent='REGALO DEL ORB RECIBIDO';return;
+    }
+    if(gift.owner!=='NEON_ORB')return;
+    if(!gift.local?.received){gift.armed=true;gift.openedAt=gift.openedAt||new Date().toISOString();safeSave(GIFT_KEY,gift);injectLocalGift();}else renderGift();
+  };
   document.getElementById('orbOpenGift')?.addEventListener('click',openGift);
+  window.__neonOrbMaybeReward=maybeOrbReward;
   window.hasCreatorGift=()=>!!gift.local?.received;
   window.getCreatorGift=()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null;
   window.__neonOrbCreatorGift={status:()=>({...gift,verification:gift.verification?{...gift.verification}:null,returnWallet:{...wallet}}),activate:openGift,receive:openGift,verify:checkRealGift,hasCreatorGift:()=>!!gift.local?.received,getCreatorGift:()=>gift.local?.received?{...gift.local,verification:gift.verification?{...gift.verification}:null}:null,proposeReturnGift,createReturnIntent:buildReturnIntent};
-  renderGift(); updateTelemetry(); setInterval(updateTelemetry,700);
+  renderGift(); maybeOrbReward(); updateTelemetry(); setInterval(()=>{maybeOrbReward();updateTelemetry()},700);
   setInterval(()=>{if(gift.local?.received&&!gift.verification?.confirmed)checkRealGift()},120000);
 })();
