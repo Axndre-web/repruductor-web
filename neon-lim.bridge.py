@@ -153,7 +153,17 @@ def normalize_snapshot(snapshot):
     out['verification'] = {
         'computable': 'WORK_EXECUTION_CONFIRMED_BY_NEON_ORB',
         'real': 'external-source-confirmation-only-for-external-assets',
-        'live': 'current-snapshot-observation'
+        'live': 'CURRENT_LIVE_TELEMETRY',
+        'synchronization': 'REAL_COMPUTABLE_VIVA'
+    }
+    coordination = snapshot.get('coordination', {})
+    out['coordination'] = coordination if isinstance(coordination, dict) else {}
+    out['authority'] = {
+        'decisionAuthority': 'NEON_ORB',
+        'internalScope': 'FULL_AUTONOMY',
+        'workConfirmation': 'INTERNAL_EXECUTION_CONFIRMED',
+        'externalScope': 'AUTHORIZED_EXTERNAL_ACTIONS_ONLY',
+        'note': 'La autonomía de decisión no elimina las capacidades criptográficas o reglas de las redes externas.'
     }
     out['at'] = int(snapshot.get('at', 0))
     return out
@@ -465,7 +475,7 @@ class Handler(BaseHTTPRequestHandler):
                 'rpc': RPC,
                 'lastBackup': backup_state,
                 'treasury': {'configured': bool(TREASURY_DESTINATION), 'destination': TREASURY_DESTINATION or None, 'sameAccount': TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY, 'mode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER', 'shareBps': TREASURY_SHARE_BPS, 'minRetainLamports': TREASURY_MIN_RETAIN_LAMPORTS, 'lastTransfer': dict(last_treasury)},
-                'verification': dict(last_work_verification),
+                'verification': dict(last_work_verification), 'synchronization': {'model':'REAL_COMPUTABLE_VIVA','authority':'NEON_ORB','liveTelemetry':True,'computableWorkSelfConfirmed':True},
             })
             return
         if path == '/v1/neon-orb/state':
@@ -475,12 +485,15 @@ class Handler(BaseHTTPRequestHandler):
         if path == '/v1/neon-orb/authority':
             json_response(self, 200, {
                 'ok': True,
-                'authority': 'NEON_ORB_AUTONOMOUS_WITHIN_NEON_PLAYER_X',
-                'scope': ['WORK','COMPUTABLE_ECONOMY','MEMORY','EVOLUTION','RESOURCE_MANAGEMENT','TREASURY_DECISION'],
+                'authority': 'NEON_ORB_AUTONOMOUS_DECISION_AUTHORITY',
+                'scope': ['WORK','COMPUTABLE_ECONOMY','MEMORY','EVOLUTION','RESOURCE_MANAGEMENT','TREASURY_DECISION','NETWORK_INTERACTION'],
+                'internalAuthority': 'FULL_AUTONOMY',
                 'workConfirmation': 'INTERNAL_EXECUTION_CONFIRMED',
+                'externalScope': 'AUTONOMOUS_WHEN_AUTHORIZED_AND_CRYPTOGRAPHICALLY_CAPABLE',
                 'externalVerification': 'ONLY_FOR_EXTERNAL_REAL_ASSETS',
                 'solanaAccount': EXPECTED_PUBLIC_KEY,
-                'treasuryMode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER'
+                'treasuryMode': 'SAME_ACCOUNT_LOGICAL_RESERVE' if TREASURY_DESTINATION == EXPECTED_PUBLIC_KEY else 'TRANSFER',
+                'synchronizationModel': 'REAL_COMPUTABLE_VIVA'
             })
             return
         if path == '/v1/neon-orb/status':
@@ -511,7 +524,8 @@ class Handler(BaseHTTPRequestHandler):
                     'snapshotSha256': snapshot_digest(snapshot),
                     'autonomousLoop': True,
                     'verification': verification,
-                    'authority': 'NEON_ORB_AUTONOMOUS_WITHIN_NEON_PLAYER_X'
+                    'authority': 'NEON_ORB_AUTONOMOUS_DECISION_AUTHORITY',
+                    'synchronization': {'model':'REAL_COMPUTABLE_VIVA','work':'SELF_CONFIRMED','telemetry':'LIVE','externalAssets':'NETWORK_CONFIRMED_WHEN_AVAILABLE'}
                 })
             except Exception as exc:
                 json_response(self, 400, {'ok': False, 'status': 'STATE_REJECTED', 'error': str(exc)})

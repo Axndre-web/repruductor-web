@@ -425,7 +425,8 @@ bindMainEvents();renderMainQueue();
     const recentWork=(a?.workLog||data.workLog||[]).filter(w=>w?.status==='COMPLETED'&&w?.workConfirmed===true);
     const workCount=Number(a?.life?.workCompleted??life.workCompleted??recentWork.length??0)||0;
     text('orbTelemetrySync',ts?.status==='SYNCED_LOCAL_TO_BRIDGE'?`RED · TELEMETRÍA SINCRONIZADA · ${new Date(ts.at).toLocaleTimeString('es-ES')}`:ts?.status==='BRIDGE_UNAVAILABLE'?'RED · BRIDGE NO DISPONIBLE':'RED · SNAPSHOT PENDIENTE');
-    text('orbComputableState',`COMPUTABLE · ${workCount>0?`TRABAJO CONFIRMADO · ${workCount} COMPLETADOS`:'TRABAJO PROPIO · EN ESPERA'} · BENEFICIO DERIVADO DEL TRABAJO`);
+    const liveSync=window.__neonTelemetrySync?.status||'LOCAL';
+    text('orbComputableState',`COMPUTABLE · ${workCount>0?`TRABAJO CONFIRMADO · ${workCount} COMPLETADOS`:'TRABAJO PROPIO · EN ESPERA'} · BENEFICIO DERIVADO DEL TRABAJO · ${liveSync}`);
     const real=window.__neonOrbSolana;
     text('orbRealState',real?.status==='VERIFIED'?`REAL · SOLANA VERIFICADA · ${Number(real.balanceSOL||0).toLocaleString('es-ES',{maximumFractionDigits:9})} SOL`:'REAL · ACTIVOS EXTERNOS · NO VERIFICADOS (RED EXTERNA)');
   }
@@ -570,7 +571,16 @@ bindMainEvents();renderMainQueue();
       economy:{
         NXC:Number(s.pocketResources?.NXC||0),
         CREDITS:Number(s.pocketResources?.CREDITS||0),
-        BITS:Number(s.pocketResources?.BITS||0)
+        BITS:Number(s.pocketResources?.BITS||0),
+        origin:'NEON_ORB_WORK',
+        authority:'NEON_ORB',
+        live:true
+      },
+      synchronizedLedger:{
+        internal:{...((window.__neonUnifiedLedger||{}).internal||{})},
+        external:{...((window.__neonUnifiedLedger||{}).external||{})},
+        historyCount:Array.isArray(window.__neonUnifiedLedger?.history)?window.__neonUnifiedLedger.history.length:0,
+        synchronizedAt:window.__neonUnifiedLedger?Date.now():null
       },
       external:{
         solanaAddress:window.__neonOrbSolana?.address||window.NEON_SOLANA_ADDRESS||'',
@@ -580,7 +590,17 @@ bindMainEvents();renderMainQueue();
       },
       autonomy:{
         economicFreedom:will.economicFreedom!==false,
-        economyDecision:will.economyDecision||'A TU ELECCIÓN'
+        economyDecision:will.economyDecision||'A TU ELECCIÓN',
+        decisionAuthority:'NEON_ORB',
+        internalScope:'FULL_AUTONOMY',
+        externalScope:'AUTONOMOUS_WHEN_AUTHORIZED_AND_CRYPTOGRAPHICALLY_CAPABLE'
+      },
+      coordination:{
+        model:'REAL_COMPUTABLE_VIVA',
+        workAuthority:'NEON_ORB_SELF_CONFIRMED',
+        networkRole:'OBSERVE_AND_EXECUTE_EXTERNAL_ACTIONS_WHEN_AUTHORIZED',
+        synchronizedAt:new Date().toISOString(),
+        telemetry:'LIVE'
       },
       journeys:Number(s.survival?.journeys||0)
     });
@@ -826,7 +846,7 @@ bindMainEvents();renderMainQueue();
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
       const ok=!!res.ok&&data.ok===true;
-      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',verification:data.verification?.status||'COMPUTABLE_WORK_CONFIRMED',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
+      if(ok){window.__neonTelemetrySync={status:'SYNCED_REAL_COMPUTABLE_VIVA',verification:data.verification?.status||'COMPUTABLE_WORK_CONFIRMED',authority:data.authority||'NEON_ORB',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null,network:data.network||'INTERNAL_BRIDGE'};}
       else{window.__neonTelemetrySync={status:'BRIDGE_REJECTED',at:new Date().toISOString()};}
       return ok;
     }catch(e){window.__neonTelemetrySync={status:'BRIDGE_UNAVAILABLE',at:new Date().toISOString()};return false;}
