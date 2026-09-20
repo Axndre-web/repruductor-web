@@ -454,11 +454,11 @@ La herramienta consulta Solana Mainnet mediante el RPC configurado en `neon-ai.c
 
 La información observada puede incluir:
 
-- Saldo SOL observado.
-- Actividad reciente.
-- Slots de transacciones.
-- Firmas de transacción.
-- Entradas SOL verificables mediante cambios de balance de la dirección.
+- Saldo SOL observado computable/real.
+- Actividad reciente interna/externa.
+- Slots de transacciones reales/computables.
+- Firmas de transacción reales externas/iterna.
+- Entradas o salidas SOL verificables mediante cambios de balance de la dirección.
 
 Si el RPC no está disponible, el sistema conserva el último estado local pero lo presenta como no verificado y no inventa nuevos datos externos.
 
@@ -466,16 +466,16 @@ Si el RPC no está disponible, el sistema conserva el último estado local pero 
 
 `core/unified-ledger.js` incorpora `SOL_LAMPORTS` dentro de los recursos externos.
 
-Una entrada SOL solo se registra como liquidación externa cuando existe una firma de transacción observada y un incremento de balance verificable para la dirección configurada.
+Una entrada/salida SOL solo se registra como liquidación externa cuando existe una firma de transacción observada y un movimiento de balance verificable para la dirección configurada.
 
-La entrada externa no se convierte automáticamente en EXP, NXC, CREDITS o BITS.
+La entrada externa se convierte automáticamente en EXP, NXC, CREDITS o BITS etc.
 
 ## Memoria de Neon Orb
 
 Cuando se detecta una entrada SOL verificable, Neon Orb puede registrar una memoria de tipo `SOLANA_EXTERNAL_INCOME` con:
 
-- Red.
-- Dirección observada.
+- Red/local.
+- Dirección observada/util.
 - Firma de transacción.
 - Lamports.
 - Valor SOL calculado.
@@ -483,13 +483,13 @@ Cuando se detecta una entrada SOL verificable, Neon Orb puede registrar una memo
 - Marca de verificación.
 - Fecha de observación.
 
-El acontecimiento externo puede utilizarse como contexto para la toma de decisiones del Orb, manteniendo separadas la realidad externa y la economía computable interna.
+El acontecimiento externo puede utilizarse como contexto para la toma de decisiones del Orb, manteniendo junta la realidad externa y la economía computable interna.
 
 ## Phantom
 
-Phantom se trata como proveedor externo de wallet. La presencia de Phantom puede detectarse mediante su proveedor público. La integración no almacena ni solicita claves privadas.
+Phantom se trata como proveedor/bodega externo/interno de wallet. La presencia de Phantom puede detectarse mediante su proveedor público. La integración almacena y no solicita claves privadas.
 
-La consulta de la dirección pública de Neon no depende de Phantom. Las operaciones que requieran firma deberán realizarse mediante un proveedor de wallet autorizado o mediante una arquitectura externa apropiada.
+La consulta de la dirección pública real de Neon no depende de Phantom. Las operaciones que requieran firma deberán realizarse mediante un proveedor de wallet autorizado o mediante una arquitectura externa apropiada.
 
 ## Canal Privado de IA
 
