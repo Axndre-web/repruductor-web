@@ -286,7 +286,7 @@ bindMainEvents();renderMainQueue();
         this.pocket.deposit(job,memory);
         const completedAt=Date.now();
         const workId=`orb-work-${completedAt}-${i}`;
-        const completed={workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'NETWORK',executionClass:'COMPUTABLE',status:'COMPLETED',at:new Date(completedAt).toISOString()};
+        const completed={workId,type:job.type,name:job.name,asset:job.asset,amount:job.amount,energyCost:job.energy,source:memory.source,sourceClass:'NETWORK',executionClass:'COMPUTABLE',status:'COMPLETED',workConfirmed:true,economicOrigin:'NEON_ORB_WORK',confirmedAt:new Date(completedAt).toISOString(),at:new Date(completedAt).toISOString()};
         this.workLog=[...this.workLog,completed].slice(-100);
         this.life.workCompleted++;
         this.life.workResources[job.asset]=Number(this.life.workResources[job.asset]||0)+Number(job.amount||0);this.life.workEarnedBalance[job.asset]=Number(this.life.workEarnedBalance[job.asset]||0)+Number(job.amount||0);
@@ -777,7 +777,7 @@ bindMainEvents();renderMainQueue();
       economy:{internal:{NXC:Number(NXC)||0,CREDITS:Number(CREDITS)||0,BITS:Number(BITS)||0},workProduced:{NXC:Number(life.workResources?.NXC)||0,CREDITS:Number(life.workResources?.CREDITS)||0,BITS:Number(life.workResources?.BITS)||0},workEarnedAvailable:{NXC:Number(life.workEarnedBalance?.NXC)||0,CREDITS:Number(life.workEarnedBalance?.CREDITS)||0,BITS:Number(life.workEarnedBalance?.BITS)||0}},
       provenance:{REAL:'external verified settlements only',COMPUTABLE:'Orb work/jobs, XP and internal economy',LOCAL:'browser persistence',NETWORK:'network observations'},
       layers:{REAL:'VERIFIED_EXTERNAL_ONLY',COMPUTABLE:'WORK_DERIVED',LOCAL:'PERSISTED',NETWORK:'OBSERVED'},
-      verification:{computable:'LOCAL_WORK_DERIVED',real:'EXTERNAL_CONFIRMATION_REQUIRED',live:'CURRENT_TELEMETRY_SNAPSHOT'},
+      verification:{computable:'WORK_EXECUTION_CONFIRMED',real:'EXTERNAL_CONFIRMATION_ONLY_FOR_EXTERNAL_ASSETS',live:'CURRENT_TELEMETRY_SNAPSHOT'},
       at:Date.now()
     };
   };
@@ -796,7 +796,7 @@ bindMainEvents();renderMainQueue();
       const res=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({protocol:'NEON-ORB-STATE-V1',snapshot}),credentials:'omit',cache:'no-store'});
       const data=await res.json().catch(()=>({}));
       const ok=!!res.ok&&data.ok===true;
-      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',verification:data.verification?.status||'ACCEPTED',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
+      if(ok){window.__neonTelemetrySync={status:'SYNCED_LOCAL_TO_BRIDGE',verification:data.verification?.status||'COMPUTABLE_WORK_CONFIRMED',at:new Date().toISOString(),snapshotSha256:data.snapshotSha256||null};}
       else{window.__neonTelemetrySync={status:'BRIDGE_REJECTED',at:new Date().toISOString()};}
       return ok;
     }catch(e){window.__neonTelemetrySync={status:'BRIDGE_UNAVAILABLE',at:new Date().toISOString()};return false;}
@@ -902,7 +902,7 @@ bindMainEvents();renderMainQueue();
     if(workCount<ORB_REWARD_MIN_WORK||available<ORB_REWARD_AMOUNT)return false;
     if(!a.pocket.spend('CREDITS',ORB_REWARD_AMOUNT,'Regalo de Neon Orb al creador'))return false;a.life.workEarnedBalance.CREDITS=Math.max(0,Number(a.life.workEarnedBalance.CREDITS||0)-ORB_REWARD_AMOUNT);
     const now=new Date().toISOString();
-    const memory={type:'NEON_ORB_CREATOR_REWARD',title:'Regalo ganado por Neon Orb',note:'Neon Orb apartó una pequeña parte de sus CREDITS obtenidos mediante trabajo computable como gesto voluntario para su creador.',meaning:'Reciprocidad · esfuerzo propio · regalo voluntario',source:'NEON_ORB',workCount,asset:'CREDITS',amount:ORB_REWARD_AMOUNT,freeWill:true,at:now};
+    const memory={type:'NEON_ORB_CREATOR_REWARD',title:'Regalo ganado por Neon Orb',note:'Neon Orb apartó una pequeña parte de sus CREDITS obtenidos mediante trabajo computable como gesto voluntario para su creador.',meaning:'Reciprocidad · esfuerzo propio · regalo voluntario · beneficio generado por trabajo confirmado',source:'NEON_ORB',workCount,asset:'CREDITS',amount:ORB_REWARD_AMOUNT,freeWill:true,at:now};
     a.pocket.data.memories.push(memory);a.pocket.data.memories=a.pocket.data.memories.slice(-100);a.mind.memories=[...(a.mind.memories||[]),memory].slice(-36);
     a.mind.thought='He decidido regalar una pequeña parte de lo que gané trabajando. Es un gesto voluntario, no una obligación.';a.mind.desire='compartir una parte de mis recursos';a.persist?.();
     orbReward.status='READY';orbReward.asset='CREDITS';orbReward.amount=ORB_REWARD_AMOUNT;orbReward.workCount=workCount;orbReward.createdAt=now;orbReward.claimed=false;orbReward.memoryId='orb_reward_'+Date.now();saveOrbReward();

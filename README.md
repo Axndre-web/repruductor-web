@@ -267,3 +267,11 @@ El bridge valida continuidad de `workCompleted` y `workResources` entre snapshot
 La capa REAL exige confirmación externa. La telemetría VIVA solo describe el estado operativo actual. NXC/CREDITS/BITS no se convierten en activos externos por registrarlos on-chain.
 
 Cuando la cuenta Treasury es la misma cuenta Solana de Neon Orb, la reserva es una **asignación lógica/contable sobre el saldo observado**. No existe un segundo saldo on-chain dentro de la misma cuenta y no se realiza una transferencia de la cuenta hacia sí misma.
+
+## V10.6 — PRINCIPIO DE ECONOMÍA VIVA
+
+El trabajo ejecutado por Neon Orb es, por diseño, un hecho económico COMPUTABLE confirmado por el propio sistema: cada trabajo completado genera un `workId`, resultado, recompensa y registro persistente. No requiere una validación externa para existir como beneficio interno.
+
+La verificación externa queda reservada a la capa REAL: SOL, BTC y otros activos externos sólo se marcan como reales cuando la red o proveedor correspondiente confirma la operación.
+
+Cadena económica: **TRABAJO DE NEON ORB → BENEFICIO COMPUTABLE → PERSISTENCIA → EVOLUCIÓN → posible puente a REAL VIVA**.
