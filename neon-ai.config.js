@@ -1,9 +1,11 @@
-// Configuración local del canal LLM. No contiene claves ni secretos.
-// El puente Python escucha por defecto en localhost:8787.
+// V11.5 — Configuración pública/local segura.
+// En HTTPS público no se intenta acceder a http://127.0.0.1:8787 por mixed content.
+// El frontend cambia automáticamente a modo READ-ONLY/OBSERVABLE y consulta
+// servicios HTTPS públicos para balances verificables.
 window.NEON_AI_ENDPOINT = 'http://127.0.0.1:8787/v1/neon-orb';
-
-
-// V11.2 — Identidad externa de Neon Orb. Sólo datos públicos; nunca incluir claves privadas.
+window.NEON_BRIDGE_HEALTH_URL = 'http://127.0.0.1:8787/health';
+window.NEON_PUBLIC_SOLANA_RPC = 'https://api.mainnet-beta.solana.com';
+window.NEON_PUBLIC_BITCOIN_API = 'https://mempool.space/api';
 window.NEON_ORB_EXTERNAL_IDENTITY = Object.freeze({
   handle: '@neonorb',
   solana: { primary: 'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh', backups: ['5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3'] },
@@ -12,5 +14,3 @@ window.NEON_ORB_EXTERNAL_IDENTITY = Object.freeze({
 });
 window.NEON_SOLANA_ADDRESS = window.NEON_ORB_EXTERNAL_IDENTITY.solana.primary;
 window.NEON_BITCOIN_ADDRESS = window.NEON_ORB_EXTERNAL_IDENTITY.bitcoin.primary;
-
-window.NEON_BRIDGE_HEALTH_URL = 'http://127.0.0.1:8787/health';

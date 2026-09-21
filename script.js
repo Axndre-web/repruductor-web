@@ -10,24 +10,61 @@ window.__neonEconomyProvenance = Object.freeze({
 });
 function neonIdentitySnapshot(){return {handle:NEON_REAL_IDENTITY.handle,solanaPrimary:NEON_REAL_IDENTITY.solana.primary,solanaBackups:[...NEON_REAL_IDENTITY.solana.backups],bitcoinPrimary:NEON_REAL_IDENTITY.bitcoin.primary,bitcoinBackups:[...NEON_REAL_IDENTITY.bitcoin.backups]}}
 window.neonOrbIdentitySnapshot=neonIdentitySnapshot;
-async function neonSolanaBridgeHealth(){
-  const url=window.NEON_BRIDGE_HEALTH_URL||'http://127.0.0.1:8787/health';
-  try{
-    const r=await fetch(url,{cache:'no-store'});
-    if(!r.ok) throw new Error('bridge');
-    const data=await r.json();
-    window.__neonSolanaBridgeHealth=data;
-    return data;
-  }catch(error){
-    const data={ok:false,status:'OFFLINE',reason:'BRIDGE_UNAVAILABLE',checkedAt:new Date().toISOString()};
-    window.__neonSolanaBridgeHealth=data;
-    return data;
+function neonBridgeUrl(kind){
+  const configured=window.NEON_BRIDGE_HEALTH_URL;
+  if(configured){
+    try{
+      const u=new URL(configured,location.href);
+      // Never request an HTTP localhost bridge from an HTTPS public page: browsers
+      // correctly block this as mixed content. Public mode is handled below.
+      if(location.protocol==='https:' && u.protocol==='http:') return null;
+      return kind==='telemetry' ? u.href.replace(/\/health\/?$/,'/telemetry') : u.href;
+    }catch(_){ return null; }
   }
+  if(location.protocol==='http:' || location.protocol==='file:'){
+    return kind==='telemetry' ? 'http://127.0.0.1:8787/telemetry' : 'http://127.0.0.1:8787/health';
+  }
+  return null;
+}
+async function neonFetchJSON(url, timeout=4500){
+  const ctl=new AbortController(); const timer=setTimeout(()=>ctl.abort(),timeout);
+  try{const r=await fetch(url,{cache:'no-store',signal:ctl.signal});if(!r.ok)throw new Error('HTTP '+r.status);return await r.json();}
+  finally{clearTimeout(timer);}
+}
+async function neonPublicTelemetry(){
+  const out={ok:false,status:'OBSERVABLE',mode:'READ_ONLY',network:'mainnet-beta',signer:'PUBLIC_READ_ONLY',publicAddress:NEON_REAL_IDENTITY.solana.primary,checkedAt:new Date().toISOString(),solanaBalanceLamports:null,solanaBalanceStatus:'UNAVAILABLE',bitcoinAddress:NEON_REAL_IDENTITY.bitcoin.primary,bitcoinSatoshis:null,bitcoinBalanceStatus:'UNAVAILABLE'};
+  // The public RPC endpoint accepts JSON-RPC POST; fetch JSON helper is GET-only, so issue separately.
+  try{
+    const ctl=new AbortController(); const timer=setTimeout(()=>ctl.abort(),4500);
+    const r=await fetch('https://api.mainnet-beta.solana.com',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[NEON_REAL_IDENTITY.solana.primary,{commitment:'confirmed'}]}),cache:'no-store',signal:ctl.signal});
+    clearTimeout(timer);
+    if(r.ok){const d=await r.json();const v=d?.result?.value;if(Number.isFinite(v)){out.solanaBalanceLamports=Number(v);out.solanaBalanceStatus='VERIFIED';}}
+  }catch(_){ }
+  try{
+    const d=await neonFetchJSON(`https://mempool.space/api/address/${encodeURIComponent(NEON_REAL_IDENTITY.bitcoin.primary)}`);
+    const st=d?.chain_stats||{}; const value=Number(st.funded_txo_sum||0)-Number(st.spent_txo_sum||0);
+    if(Number.isFinite(value)){out.bitcoinSatoshis=value;out.bitcoinBalanceStatus='VERIFIED';}
+  }catch(_){ }
+  out.ok=out.solanaBalanceStatus==='VERIFIED'||out.bitcoinBalanceStatus==='VERIFIED';
+  return out;
+}
+async function neonSolanaBridgeHealth(){
+  const url=neonBridgeUrl('health');
+  if(!url){
+    const data={ok:false,status:'OBSERVABLE',mode:'READ_ONLY',reason:'PUBLIC_HOST_NO_LOCAL_BRIDGE',network:'mainnet-beta',signer:'PUBLIC_READ_ONLY',publicAddress:NEON_REAL_IDENTITY.solana.primary,checkedAt:new Date().toISOString()};
+    window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;
+  }
+  try{const data=await neonFetchJSON(url);window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}
+  catch(_){const data={ok:false,status:'OFFLINE',mode:'READ_ONLY',reason:'BRIDGE_UNAVAILABLE',checkedAt:new Date().toISOString()};window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}
 }
 window.neonSolanaBridgeHealth=neonSolanaBridgeHealth;
 async function neonBridgeTelemetry(){
-  const url=(window.NEON_BRIDGE_HEALTH_URL||'http://127.0.0.1:8787/health').replace(/\/health\/?$/,'/telemetry');
-  try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error('telemetry');const data=await r.json();window.__neonBridgeTelemetry=data;window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}catch(error){const data={ok:false,status:'OFFLINE',reason:'BRIDGE_UNAVAILABLE',checkedAt:new Date().toISOString()};window.__neonBridgeTelemetry=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}
+  const url=neonBridgeUrl('telemetry');
+  if(url){
+    try{const data=await neonFetchJSON(url);window.__neonBridgeTelemetry=data;window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;}catch(_){ }
+  }
+  const data=await neonPublicTelemetry();
+  window.__neonBridgeTelemetry=data;window.__neonSolanaBridgeHealth=data;window.dispatchEvent(new CustomEvent('neon:bridge-health',{detail:data}));return data;
 }
 window.neonBridgeTelemetry=neonBridgeTelemetry;
 neonBridgeTelemetry().catch(()=>{});

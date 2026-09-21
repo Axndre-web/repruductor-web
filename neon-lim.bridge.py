@@ -26,6 +26,7 @@ def health():
     return {
         "ok": rpc_ready and keypair_ready,
         "status":"READY" if rpc_ready and keypair_ready else "NOT_CONFIGURED",
+        "mode":"LOCAL_SIGNING" if rpc_ready and keypair_ready else "LOCAL_OBSERVABLE",
         "network":"configured" if rpc_ready else "RPC_MISSING",
         "signer":"configured" if keypair_ready else "KEYPAIR_MISSING",
         "publicAddress":PUBLIC,

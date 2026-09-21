@@ -473,3 +473,15 @@ La entrega V11.4 conserva la base operativa V11.3 y reincorpora una capa Fronten
 - La telemetría se consulta en segundo plano y actualiza el Dashboard sin intervención manual.
 - El bridge continúa siendo local y preparado para activación mediante variables de entorno seguras.
 - `/snapshot` conserva la regla de no fabricar firmas, hashes o confirmaciones.
+
+
+## V11.5 — Despliegue público sin degradación visual
+
+- El Frontend conserva el Dashboard de billetera, Control Center, Radio Station y el resto de módulos tanto en local como en hosting HTTPS.
+- `UI/` se carga con rutas relativas (`./UI/...`) y el Service Worker precachea los módulos de economía para evitar regresiones de caché.
+- En desarrollo/local, el navegador puede consultar `http://127.0.0.1:8787`.
+- En un sitio HTTPS público, el navegador no intenta acceder al bridge HTTP local: esto evita mixed content. La aplicación cambia a `READ-ONLY / OBSERVABLE` y consulta balances públicos mediante HTTPS.
+- `READY` significa que el bridge local tiene RPC y keypair configurados; `OBSERVABLE` significa que la UI permanece completa pero sin autoridad de firma local.
+- Los balances SOL/BTC sólo se marcan `VERIFIED` cuando el servicio externo devuelve evidencia de red.
+- No se crean firmas, hashes ni transacciones ficticias. La preparación de firma permanece separada de la observación pública.
+- La identidad pública y los backups históricos se conservan sin sustitución.
