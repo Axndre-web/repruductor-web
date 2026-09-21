@@ -4,6 +4,7 @@
  * external assets are displayed only when independently verified.
  */
 import { unifiedLedger } from '../core/unified-ledger.js';
+import { neonEconomicEngine } from '../core/economic-engine.js';
 
 const IDENTITY = window.NEON_ORB_EXTERNAL_IDENTITY || {
   handle:'@neonorb',
@@ -19,6 +20,7 @@ export function mountWalletDashboard(root, ledger = unifiedLedger) {
   if (!root) return () => {};
   let telemetry = null;
   let health = window.__neonSolanaBridgeHealth || null;
+  let economic = neonEconomicEngine.metrics();
 
   const render = state => {
     const orb = window.__neonOrbAutonomous?.pocket?.data?.balance || window.__neonOrbAutonomousState?.pocketResources || {};
@@ -26,6 +28,7 @@ export function mountWalletDashboard(root, ledger = unifiedLedger) {
     const btc = telemetry?.bitcoinSatoshis != null ? Number(telemetry.bitcoinSatoshis) / 1e8 : null;
     const verifiedSol = telemetry?.solanaBalanceLamports != null && telemetry?.solanaBalanceStatus === 'VERIFIED';
     const verifiedBtc = telemetry?.bitcoinSatoshis != null && telemetry?.bitcoinBalanceStatus === 'VERIFIED';
+    economic = neonEconomicEngine.metrics();
     const rows = [...state.history].reverse().slice(0, 12).map(tx => `<tr><td>${new Date(tx.timestamp).toLocaleString('es-ES')}</td><td>${esc(tx.source)}</td><td>${esc(tx.currency)}</td><td>${fmt(tx.amount,8)}</td><td>${esc(tx.status)}</td></tr>`).join('');
     const bridgeState = health?.status || 'OBSERVABLE';
     const bridgeClass = bridgeState === 'READY' ? 'ready' : bridgeState === 'OBSERVABLE' ? 'observable' : bridgeState === 'NOT_CONFIGURED' ? 'pending' : 'offline';
@@ -50,6 +53,15 @@ export function mountWalletDashboard(root, ledger = unifiedLedger) {
         <div class="external-balance"><small>SOL</small><strong>${verifiedSol ? fmt(sol,9) : '—'}</strong><em>${verifiedSol ? 'RED / VERIFICADO' : 'SIN VERIFICAR'}</em></div>
         <div class="external-balance"><small>BTC</small><strong>${verifiedBtc ? fmt(btc,8) : '—'}</strong><em>${verifiedBtc ? 'RED / VERIFICADO' : 'SIN VERIFICAR'}</em></div>
       </div>
+      <div class="neon-balance-title"><span>ECONOMIC ENGINE · TRABAJO EXTERNO → INGRESO REAL</span><small>Los ingresos sólo cuentan tras verificación de proveedor</small></div>
+      <div class="neon-economic-grid">
+        <div class="economic-card verified"><small>INGRESO REAL VERIFICADO</small><strong>${fmt(economic.verifiedRevenueEUR,2)} €</strong><em>PROVIDER / CONFIRMADO</em></div>
+        <div class="economic-card pending"><small>COBRO PENDIENTE</small><strong>${fmt(economic.pendingRevenueEUR,2)} €</strong><em>NO CONTABILIZADO COMO INGRESO</em></div>
+        <div class="economic-card"><small>COSTES VERIFICADOS</small><strong>${fmt(economic.verifiedCostsEUR,2)} €</strong><em>REAL / LIQUIDADO</em></div>
+        <div class="economic-card"><small>RESULTADO NETO</small><strong>${fmt(economic.netVerifiedEUR,2)} €</strong><em>INGRESOS − COSTES</em></div>
+        <div class="economic-card"><small>TRABAJOS ACTIVOS</small><strong>${economic.activeJobs}</strong><em>EJECUCIÓN / SEGUIMIENTO</em></div>
+      </div>
+      <div class="neon-economic-note"><b>RUTA ECONÓMICA:</b> oportunidad → trabajo real → entrega → cobro → verificación → tesorería. Neon Orb puede decidir y preparar trabajo, pero nunca puede inventar un cliente, un pago o una confirmación de red.</div>
       <div class="wallet-status-grid">
         <div><span>BRIDGE</span><b>${bridgeState}</b></div>
         <div><span>RED / RPC</span><b>${esc(health?.network || '—')}</b></div>
@@ -63,9 +75,10 @@ export function mountWalletDashboard(root, ledger = unifiedLedger) {
 
   const update = () => render(ledger.getState());
   const unsubscribe = ledger.subscribe(update);
+  const unEconomic = neonEconomicEngine.subscribe(update);
   const onHealth = e => { health = e.detail || e; update(); };
   window.addEventListener('neon:bridge-health', onHealth);
   const timer = setInterval(() => { health = window.__neonSolanaBridgeHealth || health; telemetry = window.__neonBridgeTelemetry || telemetry; update(); }, 1500);
   update();
-  return () => { unsubscribe?.(); clearInterval(timer); window.removeEventListener('neon:bridge-health', onHealth); };
+  return () => { unsubscribe?.(); unEconomic?.(); clearInterval(timer); window.removeEventListener('neon:bridge-health', onHealth); };
 }

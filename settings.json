@@ -1,15 +1,3 @@
 {
-    "livePreview.defaultPreviewPath": "/index.html",
-    "python-envs.pythonProjects": [
-        {
-            "path": "__pycache__/neon-llm.bridge.cpython-313.py",
-            "envManager": "ms-python.python:venv",
-            "packageManager": "ms-python.python:pip"
-        },
-        {
-            "path": "__pycache__/neon-lim.bridge.cpython-313.py",
-            "envManager": "ms-python.python:venv",
-            "packageManager": "ms-python.python:pip"
-        }
-    ]
+    "livePreview.defaultPreviewPath": "/index.html"
 }
