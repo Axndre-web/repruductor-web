@@ -122,7 +122,10 @@
 <script src="neon-ai.config.js"></script>
 <script src="creator-gift.bridge.js"></script>
 <script src="script.js"></script>
-<script type="module">import { mountWalletDashboard } from './UI/wallet-dashboard.js';
+<script type="module">
+import { mountWalletDashboard } from './UI/wallet-dashboard.js';
+import { startEconomicAutonomy } from './core/economic-autonomy.js';
 mountWalletDashboard(document.getElementById('walletDashboard'));
+startEconomicAutonomy({intervalMs:60000,context:()=>({orbState:window.__neonOrbAutonomous?.state||'UNKNOWN',energy:window.__neonOrbAutonomous?.life?.energy??null})});
 </script>
 </body></html>

@@ -485,3 +485,78 @@ La entrega V11.4 conserva la base operativa V11.3 y reincorpora una capa Fronten
 - Los balances SOL/BTC sólo se marcan `VERIFIED` cuando el servicio externo devuelve evidencia de red.
 - No se crean firmas, hashes ni transacciones ficticias. La preparación de firma permanece separada de la observación pública.
 - La identidad pública y los backups históricos se conservan sin sustitución.
+
+---
+
+# V11.6 — ECONOMIC ENGINE / TRABAJO EXTERNO → INGRESO REAL
+
+V11.6 añade una capa económica productiva sobre la arquitectura V11.x sin sustituir el núcleo existente.
+
+## Objetivo
+
+Convertir el concepto de:
+
+`TRABAJO EXTERNO → INGRESO REAL`
+
+en un flujo trazable y verificable:
+
+`oportunidad → trabajo → entrega → cobro → verificación → tesorería → resultado neto`
+
+## Regla de integridad económica
+
+- El trabajo interno puede producir valor **COMPUTABLE**.
+- Un cobro externo sólo pasa a **REAL / VERIFIED** después de una confirmación de un proveedor externo confiable.
+- Los pagos `PENDING` no incrementan el balance externo del ledger.
+- No se fabrican clientes, ventas, firmas, hashes, balances ni ingresos.
+- Los costes verificados se descuentan para calcular el resultado neto.
+
+## Economic Engine
+
+`core/economic-engine.js` mantiene:
+
+- oportunidades de trabajo;
+- trabajos en ejecución;
+- entregas;
+- cobros pendientes;
+- liquidaciones verificadas;
+- costes;
+- decisiones autónomas;
+- métricas de ingreso, coste y resultado neto.
+
+`core/economic-autonomy.js` ejecuta ciclos automáticos. El ciclo únicamente puede seleccionar oportunidades previamente registradas; no inventa una fuente de ingresos.
+
+## PayPal / ingresos reales
+
+El checkout de PayPal continúa funcionando desde el frontend, pero V11.6 añade una segunda capa de conciliación.
+
+El navegador puede observar que PayPal ha completado una captura, pero el ingreso de tesorería permanece pendiente hasta que un backend/bridge verifica el `orderID` contra PayPal.
+
+`neon-lim.bridge.py` incorpora:
+
+- `POST /paypal/verify`
+- OAuth2 server-side de PayPal mediante variables de entorno;
+- consulta del pedido;
+- comprobación de `COMPLETED`;
+- comprobación de una captura `COMPLETED`;
+- comprobación opcional del importe esperado;
+- devolución del identificador de captura y estado del proveedor.
+
+Las credenciales PayPal sólo existen en el entorno del bridge/backend. Nunca deben publicarse en JavaScript.
+
+## Producción
+
+Configurar en el entorno seguro:
+
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
+- `PAYPAL_BASE_URL=https://api-m.paypal.com`
+
+El frontend público debe utilizar un endpoint HTTPS de backend/revenue gateway. No debe intentar acceder a `http://127.0.0.1:8787` desde una página HTTPS.
+
+## Estado de la autonomía económica
+
+La infraestructura está preparada para administrar trabajo e ingresos reales, pero la generación de ingresos depende de que existan oportunidades/servicios/clientes reales y un adaptador de ejecución conectado. El sistema no considera una tarea local, una animación o un saldo interno como dinero externo.
+
+Este diseño mantiene el principio R-C:
+
+**Trabajo Computable = Trabajo Real Computable**, mientras que el dinero externo sólo se reconoce cuando existe una liquidación externa verificable.

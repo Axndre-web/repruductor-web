@@ -537,20 +537,33 @@ bindMainEvents();renderMainQueue();
           });
         },
         onClick:()=>payStatus('Abriendo checkout seguro de PayPal…'),
-        onApprove:(data,actions)=>{
+        onApprove:async (data,actions)=>{
           if(paypalBusy)return;
           paypalBusy=true;payStatus('Procesando el pago…');
           const snapshot=pendingOrder?.snapshot||cartSnapshot();
-          return actions.order.capture().then(details=>{
+          return actions.order.capture().then(async details=>{
             const capture=details?.purchase_units?.[0]?.payments?.captures?.[0];
             const captureStatus=capture?.status||details?.status;
             if(captureStatus!=='COMPLETED')throw new Error('El pago no quedó completado');
             const id=data?.orderID||details?.id||'—';
-            orderHistory.push({id,total:snapshot.total,items:snapshot.items.map(x=>x.name+' × '+x.qty).join(', '),date:new Date().toLocaleString('es-ES')});
+            orderHistory.push({id,total:snapshot.total,items:snapshot.items.map(x=>x.name+' × '+x.qty).join(', '),date:new Date().toLocaleString('es-ES'),status:'CAPTURED_PENDING_RECONCILIATION'});
             saveOrders();renderOrders();updateControl();
             localStorage.neonLastPayPalOrder=id;localStorage.neonLastPayPalDate=new Date().toISOString();
-            payStatus('✓ Pago completado correctamente · Pedido '+id,true);toast('Pago PayPal completado');
-            cart=[];renderCart();pendingOrder=null;paypalBusy=false;setTimeout(closePay,1500);
+            try{
+              const [{recordApprovedOrder},{verifyPayPalOrder}]=await Promise.all([import('./integrations/paypal-checkout.js'),import('./integrations/revenue-gateway.js')]);
+              recordApprovedOrder({orderID:id,amountEUR:snapshot.total,verified:false,metadata:{items:snapshot.items}});
+              const verification=await verifyPayPalOrder(id,snapshot.total);
+              if(verification?.settlement?.status==='VERIFIED'){
+                orderHistory[orderHistory.length-1].status='VERIFIED_REVENUE';saveOrders();renderOrders();
+                payStatus('✓ Pago verificado · ingreso real registrado · '+id,true);toast('Ingreso real verificado');
+              }else{
+                payStatus('✓ Pago capturado · conciliación de tesorería pendiente · '+id,true);toast('Pago recibido · verificación pendiente');
+              }
+            }catch(err){
+              console.warn('NEON REVENUE RECONCILIATION',err);
+              payStatus('✓ Pago capturado · verificación de tesorería pendiente · '+id,true);
+            }
+            cart=[];renderCart();pendingOrder=null;paypalBusy=false;setTimeout(closePay,1800);
           }).catch(err=>{paypalBusy=false;payStatus('⚠ PayPal informó de un error. Tu carrito sigue intacto.');console.error('NEON PAYPAL CAPTURE',err);toast('PayPal no pudo confirmar el pago')});
         },
         onCancel:()=>{paypalBusy=false;payStatus('Pago cancelado. Tu carrito sigue intacto.');toast('Pago cancelado')},
