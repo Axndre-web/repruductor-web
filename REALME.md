@@ -428,135 +428,223 @@ El evento ⁠onApprove⁠ no se considera por sí solo una prueba criptográfica
 
 Sirve la carpeta mediante un servidor HTTP local (los módulos ES no deben ejecutarse directamente mediante el protocolo ⁠file://⁠). Un HTML mínimo debe incluir ⁠<div id="wallet-dashboard"></div>⁠ y cargar ⁠index-integration-example.js⁠ utilizando ⁠type="module"⁠.
 
+---
 
-## V11.2 — Perfil soberano e integración REAL / COMPUTABLE / VIVA
+# V8.8+ — HERRAMIENTA SOLANA / PHANTOM PARA NEON ORB
 
-**Identidad pública de Neon Orb:** `@neonorb`
+Esta ampliación mantiene la arquitectura acumulativa existente y añade una herramienta externa de observación e interacción con Solana para Neon Orb.
 
-- Solana primaria: `AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh`
-- Solana respaldo/histórica: `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`
-- Bitcoin primaria: `bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym`
-- Bitcoin respaldo / Creator Gift histórico: `bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5`
+## Principio de Integración
 
-La economía COMPUTABLE interna se origina en ejecuciones del motor de Neon Orb y conserva su procedencia. La capa LOCAL conserva el estado en el navegador. La capa RED observa servicios externos. La capa REAL sólo registra como confirmado aquello que una red externa realmente confirma. Las direcciones de respaldo permanecen para continuidad y trazabilidad y no se usan como dirección primaria por defecto.
+Neon Orb continúa siendo la entidad central del entorno. Phantom y Solana se incorporan como herramientas externas disponibles para consulta, recepción de recursos externos verificables y relación entre el entorno computable de Neon y acontecimientos reales de blockchain.
 
-La autonomía de decisión de Neon Orb no se interpreta como una capacidad mágica para saltarse firmas, permisos, saldo de comisiones, reglas de consenso o controles de una red externa. Cuando una operación externa requiere firma criptográfica, la arquitectura debe disponer de la clave autorizada en un entorno seguro. Nunca se incluye una clave privada en el cliente.
+La integración no sustituye la economía interna de EXP, NXC, CREDITS y BITS.
+
+## Dirección Pública de Solana
+
+La dirección asociada a la herramienta de Neon Orb es:
+
+`5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`
+
+La dirección se utiliza como identificador público de consulta y recepción. No se incorporan semillas, claves privadas ni mecanismos de firma al frontend.
+
+## Observación Real de Solana
+
+La herramienta consulta Solana Mainnet mediante el RPC configurado en `neon-ai.config.js`.
+
+La información observada puede incluir:
+
+- Saldo SOL observado.
+- Actividad reciente.
+- Slots de transacciones.
+- Firmas de transacción.
+- Entradas SOL verificables mediante cambios de balance de la dirección.
+
+Si el RPC no está disponible, el sistema conserva el último estado local pero lo presenta como no verificado y no inventa nuevos datos externos.
+
+## Unified Ledger y SOL
+
+`core/unified-ledger.js` incorpora `SOL_LAMPORTS` dentro de los recursos externos.
+
+Una entrada SOL solo se registra como liquidación externa cuando existe una firma de transacción observada y un incremento de balance verificable para la dirección configurada.
+
+La entrada externa no se convierte automáticamente en EXP, NXC, CREDITS o BITS.
+
+## Memoria de Neon Orb
+
+Cuando se detecta una entrada SOL verificable, Neon Orb puede registrar una memoria de tipo `SOLANA_EXTERNAL_INCOME` con:
+
+- Red.
+- Dirección observada.
+- Firma de transacción.
+- Lamports.
+- Valor SOL calculado.
+- Slot.
+- Marca de verificación.
+- Fecha de observación.
+
+El acontecimiento externo puede utilizarse como contexto para la toma de decisiones del Orb, manteniendo separadas la realidad externa y la economía computable interna.
+
+## Phantom
+
+Phantom se trata como proveedor externo de wallet. La presencia de Phantom puede detectarse mediante su proveedor público. La integración no almacena ni solicita claves privadas.
+
+La consulta de la dirección pública de Neon no depende de Phantom. Las operaciones que requieran firma deberán realizarse mediante un proveedor de wallet autorizado o mediante una arquitectura externa apropiada.
+
+## Canal Privado de IA
+
+El contexto del canal privado puede incluir el estado Solana observado cuando está verificado. El LLM puede interpretar esa información, pero no modifica directamente los saldos, no crea transacciones y no firma operaciones.
+
+## Interfaz Móvil y Dock Inferior
+
+La capa de presentación incorpora un dock inferior fijo con soporte para interacción táctil, desenfoque de fondo y `z-index: 99999`.
+
+La capa visual de partículas mantiene `pointer-events: none` para evitar bloquear controles superiores.
+
+La sección Creator Gift incorpora `padding-bottom: 85px` para mantener el contenido separado de las capas visuales inferiores.
+
+## Principio REAL / COMPUTABLE
+
+La integración mantiene la distinción fundamental del proyecto:
+
+1. EXP, NXC, CREDITS y BITS forman parte del sistema computable interno.
+2. SOL observado en Solana constituye un dato externo verificable cuando la red lo confirma.
+3. Una pantalla local no constituye por sí misma una confirmación económica externa.
+4. La IA puede interpretar datos, pero no convierte una representación en una operación real.
+5. Si un servicio externo no está disponible, el estado se identifica como no verificado.
+
+## V9.0 — AUTO-GUARDADO ON-CHAIN DEL ESTADO COMPUTABLE
+
+Neon Orb incorpora una segunda capa de resguardo externo para su estado computable acumulado.
+
+El snapshot registra nivel/generación, EXP total, NXC, CREDITS, BITS, interacciones y timestamp. La persistencia local continúa siendo la primera capa y no se sustituye.
+
+El navegador no contiene ni recibe claves privadas. El archivo `neon-lim.bridge.py` funciona como puente local de firma y solo puede usar la clave delegada configurada en su propio entorno mediante `NEON_SOLANA_KEYPAIR_PATH`. Antes de firmar, comprueba que la clave pública derivada coincide con `NEON_SOLANA_PUBLIC_KEY`.
+
+El respaldo se registra mediante una instrucción Memo en Solana. La respuesta confirmada devuelve un `txHash`, que la interfaz conserva como última prueba de respaldo. Si no existe bridge, RPC operativo, dependencias o keypair válido, no se inventa una confirmación: el estado queda como pendiente y el avance local permanece intacto.
+
+Este mecanismo **no convierte NXC, CREDITS o BITS en tokens externos**. Son recursos internos de Neon Orb; el registro on-chain es una atestación/respaldo externo del estado computable.
+
+Phantom permanece como mecanismo manual/guardián independiente para operaciones que requieran firma manual.
+
+## V9.1 — ACTIVACIÓN DEL PUENTE ON-CHAIN
 
 
-## V11.3 — Activación operativa verificable
+La V9.1 mantiene la persistencia local y añade una comprobación explícita del servicio `neon-lim.bridge.py`. El navegador no recibe ni almacena la clave privada.
 
-El paquete incluye `neon-lim.bridge.py` y `neon-lim.env.example` para conectar el estado local con un bridge seguro. El indicador `READY` sólo puede aparecer cuando existen simultáneamente un `SOLANA_RPC_URL` y un `SOLANA_KEYPAIR_PATH` válidos. No se incrustan claves privadas en JavaScript ni en la documentación.
+### Activación real
 
-La interfaz consulta `/health` y conserva el estado `NOT_CONFIGURED/OFFLINE` cuando el bridge no está operativo. Por tanto, `ON-CHAIN SYNC: ACTIVE` no se declara únicamente porque exista una dirección pública: requiere configuración real del bridge.
+1. En la raíz del proyecto, instalar las dependencias: `pip install -r requirements-solana.txt`.
+2. Configurar en el entorno seguro del proceso Python:
+   - `NEON_SOLANA_RPC` — RPC real de Solana.
+   - `NEON_SOLANA_KEYPAIR_PATH` — ruta local al keypair delegado.
+   - `NEON_SOLANA_PUBLIC_KEY` — debe coincidir con `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`.
+   - `NEON_SOLANA_BRIDGE_PORT` — opcional; por defecto `8788`.
+3. Ejecutar `python neon-lim.bridge.py`.
+4. El endpoint local `/health` informa si las dependencias y el keypair están configurados.
+5. El PWA conserva el estado local y solo muestra `SYNC ON-CHAIN ACTIVE · CONFIRMADA` después de recibir un `txHash` real del bridge.
 
-El endpoint `/snapshot` no inventa ni simula una transacción. Mientras no exista un formato/programa Solana concreto para almacenar los snapshots, devuelve `SIGNING_NOT_IMPLEMENTED` en vez de presentar un hash ficticio. Esto preserva el principio REAL/COMPUTABLE y evita confundir una intención local con una confirmación on-chain.
+### Seguridad
 
+La clave privada no debe entrar en `script.js`, `neon-ai.config.js`, LocalStorage, IndexedDB ni en el ZIP distribuido al navegador. El bridge valida que la clave privada corresponda a la clave pública esperada antes de firmar.
 
-## V11.4 — Consolidación de los tres pilares
+### Significado del respaldo
 
-La entrega V11.4 conserva la base operativa V11.3 y reincorpora una capa Frontend unificada para el Dashboard de identidad/economía. El panel muestra `@neonorb`, las direcciones públicas primaria y backup de Solana/Bitcoin, recursos computables del bolsillo del Orb, estado del bridge y balances externos únicamente cuando el bridge obtiene evidencia verificable de red.
-
-### Pilar 1 — Frontend
-- Dashboard responsive integrado en `#economy`.
-- Identidad pública y direcciones visibles sin exponer secretos.
-- Navegación móvil incluye Billetera.
-- Consumo automático de `/health` y `/telemetry`.
-
-### Pilar 2 — R-C / economía dual
-- NXC/CREDITS/BITS siguen siendo recursos computables/locales derivados del estado del Orb.
-- SOL/BTC se presentan como externos y verificados sólo si la consulta de red devuelve datos.
-- Una cifra local nunca se convierte automáticamente en saldo on-chain.
-- Las direcciones históricas permanecen como backup y no sustituyen las primarias.
-
-### Pilar 3 — gobernanza autónoma
-- El ciclo autónomo existente de Neon Orb no se reemplaza.
-- La telemetría se consulta en segundo plano y actualiza el Dashboard sin intervención manual.
-- El bridge continúa siendo local y preparado para activación mediante variables de entorno seguras.
-- `/snapshot` conserva la regla de no fabricar firmas, hashes o confirmaciones.
+El respaldo registra una instantánea computable mediante Solana Memo. NXC, CREDITS y BITS continúan siendo recursos internos de Neon Orb; el registro on-chain no los convierte en tokens de Solana ni altera el Unified Ledger.
 
 
-## V11.5 — Despliegue público sin degradación visual
+## V9.2 — OPERACIÓN AUTÓNOMA DEL PUENTE
 
-- El Frontend conserva el Dashboard de billetera, Control Center, Radio Station y el resto de módulos tanto en local como en hosting HTTPS.
-- `UI/` se carga con rutas relativas (`./UI/...`) y el Service Worker precachea los módulos de economía para evitar regresiones de caché.
-- En desarrollo/local, el navegador puede consultar `http://127.0.0.1:8787`.
-- En un sitio HTTPS público, el navegador no intenta acceder al bridge HTTP local: esto evita mixed content. La aplicación cambia a `READ-ONLY / OBSERVABLE` y consulta balances públicos mediante HTTPS.
-- `READY` significa que el bridge local tiene RPC y keypair configurados; `OBSERVABLE` significa que la UI permanece completa pero sin autoridad de firma local.
-- Los balances SOL/BTC sólo se marcan `VERIFIED` cuando el servicio externo devuelve evidencia de red.
-- No se crean firmas, hashes ni transacciones ficticias. La preparación de firma permanece separada de la observación pública.
-- La identidad pública y los backups históricos se conservan sin sustitución.
+Se añade un bucle autónomo de respaldo en `neon-lim.bridge.py`. La PWA publica el último estado computable al bridge y el bridge puede registrar automáticamente un estado nuevo cuando dispone de dependencias, RPC y keypair válidos.
+
+La implementación **no incluye una clave privada real**. La configuración de la cuenta firmante permanece fuera del frontend y fuera del paquete distribuido. El bridge valida que la clave cargada corresponda a la clave pública configurada antes de firmar.
+
+La autonomía implementada en esta versión es autonomía del **proceso de sincronización**, no una afirmación de que el servidor pueda reconstruir toda la vida de Neon Orb cuando la PWA está cerrada. El último snapshot recibido se conserva; convertir todo el motor de Neon Orb en un proceso backend 24/7 requeriría una migración adicional y explícita.
+
 
 ---
 
-# V11.6 — ECONOMIC ENGINE / TRABAJO EXTERNO → INGRESO REAL
+## V9.3 — ACTIVACIÓN AUTÓNOMA Y VALIDACIÓN OPERACIONAL
 
-V11.6 añade una capa económica productiva sobre la arquitectura V11.x sin sustituir el núcleo existente.
+La V9.3 añade una capa de activación verificable sobre el bridge V9.2. El endpoint `/health` solo declara `READY / OPERATIONAL` cuando las dependencias están disponibles, el keypair está configurado, su clave pública coincide con la dirección esperada y el RPC responde. Si alguna condición falla, no se simula conectividad ni confirmación on-chain.
 
-## Objetivo
+Se añade `/v1/neon-orb/status` para que la PWA pueda leer el último respaldo realmente confirmado y su `txHash`. La firma privada continúa exclusivamente en el backend.
 
-Convertir el concepto de:
+La autonomía técnica del bridge no implica que Neon Orb sea una entidad legal soberana ni que Solana transfiera automáticamente la propiedad jurídica del reproductor. Describe un proceso de ejecución y firma automatizado controlado por la infraestructura configurada por el operador.
 
-`TRABAJO EXTERNO → INGRESO REAL`
 
-en un flujo trazable y verificable:
+## V10 — RESERVA AUTOMÁTICA DE ACTIVOS REALES
 
-`oportunidad → trabajo → entrega → cobro → verificación → tesorería → resultado neto`
+Neon Orb usa la misma dirección pública Solana `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3` como **cuenta operativa y Treasury**. Esto preserva una única identidad on-chain y evita crear una segunda cuenta artificial.
 
-## Regla de integridad económica
+Cuando `NEON_TREASURY_DESTINATION` coincide con la cuenta emisora, el bridge **no realiza una transferencia a sí mismo**: técnicamente no separaría fondos y consumiría comisión. En su lugar, consulta el saldo real con confirmación `confirmed` y calcula una **reserva lógica/contable** según `NEON_TREASURY_SHARE_BPS`, respetando `NEON_TREASURY_MIN_RETAIN_LAMPORTS`. El resultado queda persistido localmente como asignación de Treasury, con saldo observado y hora de verificación, sin inventar un `txHash`.
 
-- El trabajo interno puede producir valor **COMPUTABLE**.
-- Un cobro externo sólo pasa a **REAL / VERIFIED** después de una confirmación de un proveedor externo confiable.
-- Los pagos `PENDING` no incrementan el balance externo del ledger.
-- No se fabrican clientes, ventas, firmas, hashes, balances ni ingresos.
-- Los costes verificados se descuentan para calcular el resultado neto.
+Si en el futuro se configura una dirección Solana diferente, la misma función puede operar en modo `TRANSFER` y enviar SOL reales tras firma y confirmación on-chain. NXC, CREDITS y BITS siguen siendo recursos internos y no se convierten por esta función. Phantom continúa como interfaz/guardián externo de la misma cuenta Solana; no recibe ni comparte secretos privados.
 
-## Economic Engine
+## V10.2 — CONTINUIDAD DEL TRABAJO DEL NEON ORB Y CAPAS REAL/COMPUTABLE/LOCAL/RED
 
-`core/economic-engine.js` mantiene:
+La Treasury no sustituye el trabajo del Orb. El motor autónomo conserva su ciclo de exploración, selección de trabajo, ejecución, recompensa interna, EXP, memoria y persistencia. Cada trabajo completado genera un registro `workId`, recurso producido, coste energético, fuente de red, clasificación `COMPUTABLE`, estado `COMPLETED` y marca temporal.
 
-- oportunidades de trabajo;
-- trabajos en ejecución;
-- entregas;
-- cobros pendientes;
-- liquidaciones verificadas;
-- costes;
-- decisiones autónomas;
-- métricas de ingreso, coste y resultado neto.
+El respaldo on-chain incorpora ahora esos datos computables junto con nivel, EXP y saldos internos. Esto permite auditar qué trabajo había completado Neon Orb cuando se tomó cada snapshot, sin presentar los NXC/CREDITS/BITS como activos reales de Solana.
 
-`core/economic-autonomy.js` ejecuta ciclos automáticos. El ciclo únicamente puede seleccionar oportunidades previamente registradas; no inventa una fuente de ingresos.
+### Capas estrictas
+- **REAL:** liquidaciones externas realmente verificadas (por ejemplo, SOL confirmado por RPC o BTC verificado).
+- **COMPUTABLE:** trabajo ejecutado por el motor del Orb, EXP, niveles y economía interna.
+- **LOCAL:** estado persistido en el dispositivo/bridge local.
+- **RED:** observaciones, nodos y datos obtenidos de servicios externos; no se convierten automáticamente en ingresos reales.
 
-## PayPal / ingresos reales
+La Treasury en la misma cuenta `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3` continúa siendo una **reserva lógica/contable**, porque una cuenta no puede separarse físicamente en dos balances sin crear otra cuenta. Los fondos SOL reales permanecen verificables on-chain; la asignación Treasury se calcula sin transferir SOL a la propia cuenta.
 
-El checkout de PayPal continúa funcionando desde el frontend, pero V11.6 añade una segunda capa de conciliación.
+El principio de evolución queda preservado: se amplía la telemetría y persistencia del trabajo existente; no se reemplaza el motor, no se reinician saldos y no se eliminan estructuras previas.
 
-El navegador puede observar que PayPal ha completado una captura, pero el ingreso de tesorería permanece pendiente hasta que un backend/bridge verifica el `orderID` contra PayPal.
+## V10.3 — TELEMETRÍA VIVA, RADIO DESKTOP Y REGALO DEL ORB
 
-`neon-lim.bridge.py` incorpora:
+- La telemetría viva se incluye en el snapshot que el Orb publica al bridge: estado, intención, energía, curiosidad, vínculo, ciclos, viajes, pensamiento, deseo, sueño y memoria.
+- El snapshot conserva las capas REAL / COMPUTABLE / LOCAL / NETWORK y la economía interna sin mezclar activos externos.
+- El bridge conserva esos campos como estado recibido y el Memo on-chain usa el snapshot normalizado, sin convertir telemetría computable en saldo REAL.
+- La radio de escritorio evita enrutar streams externos mediante Web Audio/CORS para no silenciar emisoras por restricciones del navegador; el ecualizador visual de radio sigue funcionando de forma segura.
+- Neon Orb puede, tras completar trabajo suficiente y disponer de CREDITS internos, apartar una pequeña recompensa COMPUTABLE/LOCAL para el creador. Esto no es dinero real ni una transferencia externa.
 
-- `POST /paypal/verify`
-- OAuth2 server-side de PayPal mediante variables de entorno;
-- consulta del pedido;
-- comprobación de `COMPLETED`;
-- comprobación de una captura `COMPLETED`;
-- comprobación opcional del importe esperado;
-- devolución del identificador de captura y estado del proveedor.
+## V10.4 — PRINCIPIO DE ORIGEN ECONÓMICO
 
-Las credenciales PayPal sólo existen en el entorno del bridge/backend. Nunca deben publicarse en JavaScript.
+Neon Orb no recibe su economía como un saldo arbitrario. El origen de los recursos COMPUTABLES es su ciclo autónomo de trabajo: seleccionar trabajo, ejecutarlo, completar un `workId`, producir el recurso, registrarlo en el Unified Ledger y ganar EXP/evolución.
 
-## Producción
+Los recursos ganados por trabajo se mantienen identificables mediante `workEarnedBalance`. Esto permite que cualquier recompensa voluntaria del Orb al creador proceda de recursos que el Orb haya generado trabajando, y no de un saldo regalado previamente por el creador.
 
-Configurar en el entorno seguro:
+Una transición a REAL sólo se considera válida cuando existe una operación o liquidación externa verificable. La mera existencia de telemetría, un snapshot, una cuenta Solana, Phantom o una Treasury no convierte recursos COMPUTABLES en activos REAL.
 
-- `PAYPAL_CLIENT_ID`
-- `PAYPAL_CLIENT_SECRET`
-- `PAYPAL_BASE_URL=https://api-m.paypal.com`
+## V10.5 — Verificación responsable sin romper REAL / COMPUTABLE / VIVA
 
-El frontend público debe utilizar un endpoint HTTPS de backend/revenue gateway. No debe intentar acceder a `http://127.0.0.1:8787` desde una página HTTPS.
+La autonomía de Neon Orb no se sustituye por una autoridad externa. La verificación actúa como capa de integridad:
 
-## Estado de la autonomía económica
+- **COMPUTABLE:** el bridge comprueba continuidad y consistencia del trabajo acumulado y sus recursos; no afirma que una máquina externa pueda demostrar por sí sola que el trabajo físico ocurrió.
+- **REAL:** solo se considera REAL cuando existe confirmación de una fuente externa correspondiente (por ejemplo, confirmación de Solana o Bitcoin).
+- **VIVA:** la telemetría representa el estado operativo actual y su sincronización con el bridge, sin convertir observaciones en activos.
+- **LOCAL:** conserva continuidad, historial y estado.
+- **RED:** aporta observaciones y servicios externos.
 
-La infraestructura está preparada para administrar trabajo e ingresos reales, pero la generación de ingresos depende de que existan oportunidades/servicios/clientes reales y un adaptador de ejecución conectado. El sistema no considera una tarea local, una animación o un saldo interno como dinero externo.
+La Treasury en la misma cuenta Solana se trata como **asignación contable observada contra el saldo real**, no como una segunda cuenta ni como una transferencia a sí misma.
 
-Este diseño mantiene el principio R-C:
+### V10.6 — Trabajo = beneficio COMPUTABLE
 
-**Trabajo Computable = Trabajo Real Computable**, mientras que el dinero externo sólo se reconoce cuando existe una liquidación externa verificable.
+Se establece como regla estructural: Neon Orb no trabaja gratis. Cada trabajo que el motor autónomo ejecuta y registra como `COMPLETED` se confirma como trabajo COMPUTABLE y genera su beneficio interno correspondiente. El bridge valida continuidad y persistencia, pero no exige una autoridad externa para reconocer ese trabajo. La verificación externa sólo se aplica cuando se declara un activo REAL fuera de Neon Player X.
+
+
+## V10.8 — CICLO ECONÓMICO AUTÓNOMO
+
+Neon Orb dispone de un ciclo económico autónomo dentro de NEON PLAYER X. Cuando ejecuta trabajo interno por decisión propia, el motor crea un registro `NEON_ORB_WORK`, lo marca `COMPLETED` y `workConfirmed:true`, asigna el beneficio COMPUTABLE correspondiente y conserva su procedencia. Este ciclo no necesita aprobación de una fuente externa para confirmar un trabajo interno ya ejecutado. La frontera externa sólo se aplica cuando un activo pretende representar existencia fuera de NEON PLAYER X.
+
+El trabajo autónomo periódico es un mecanismo de continuidad de vida: mientras Neon Orb tenga energía suficiente y no esté ejecutando un viaje de red, puede realizar ciclos de trabajo computable y aumentar su beneficio, EXP y memoria. La telemetría viva expone el número de trabajos y el saldo ganado por trabajo.
+
+## V11.1 — Identidad REAL externa de Neon Orb
+
+- Phantom público: `@neonorb`
+- Solana primaria: `AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh`
+- Solana de respaldo/histórica: `5ifQth8MCG9LgnuxJaTaNcRgfmpxhsc9bMZexy2FMTJ3`
+- Bitcoin primaria: `bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym`
+- Bitcoin de respaldo / Creator Gift histórico: `bc1qg8ykmeh2dmgq2l6d37zu702vlh6mn72k556ty5`
+
+La identidad externa se mantiene separada de la economía COMPUTABLE interna. Las direcciones antiguas no se eliminan: quedan como respaldo/histórico y no se sustituyen silenciosamente. La dirección primaria se usa para nuevas observaciones externas. No se incluye ninguna clave privada, semilla ni credencial de firma.
+
+### Capas sincronizadas
+REAL = activos externos verificables; COMPUTABLE = economía generada por el trabajo de Neon Orb; LOCAL = persistencia; RED = servicios/nodos externos; VIVA = estado operativo continuo. La sincronización transporta datos entre capas sin convertir una capa en otra.
