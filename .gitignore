@@ -1,8 +1,7 @@
 node_modules/
 .env
-*.log
-__pycache__/
-.DS_Store
 keypair.json
-
+keypair.js
+__pycache__/
 data/
+*.log

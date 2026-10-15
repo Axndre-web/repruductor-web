@@ -1,10 +1,10 @@
 {
   "version": "11.7.1",
   "startedAt": 1790155850.1206267,
-  "cycles": 4326,
-  "decision": "REFRESH_STATE",
+  "cycles": 22221,
+  "decision": "OBSERVE_NETWORK",
   "zone": "LOCAL-BRIDGE",
-  "energy": 82,
+  "energy": 100,
   "curiosity": 72,
   "attachment": 100,
   "journeys": 0,
@@ -13,23 +13,18 @@
     "CREDITS": 0,
     "BITS": 0
   },
-  "lastTick": 1790184290.6333213,
+  "lastTick": 1792076277.7197287,
   "network": {
     "solana": {
-      "address": "AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh",
+      "address": "CpiWyv2tyrbBqZoZMSTcVRgCGPwKgJ2jCyZ7aN1n7fSE",
       "network": "mainnet-beta",
-      "status": "observed",
-      "lamports": 0,
-      "sol": 0.0,
-      "observedAt": 1790184292.4012823
+      "status": "unavailable",
+      "error": "URLError"
     },
     "bitcoin": {
-      "address": "bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym",
+      "address": "",
       "network": "bitcoin-mainnet",
-      "status": "observed",
-      "satoshis": 0,
-      "btc": 0.0,
-      "observedAt": 1790184292.7453568
+      "status": "not_configured"
     }
   },
   "work": {
@@ -38,5 +33,5 @@
     "source": "local-bridge"
   },
   "receipts": [],
-  "lastNetworkRefresh": 1790184292.7453568
+  "lastNetworkRefresh": 1792076262.7181222
 }

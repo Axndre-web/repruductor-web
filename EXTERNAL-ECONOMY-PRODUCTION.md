@@ -39,3 +39,23 @@ Do not put private keys or provider secrets in the public directory. Connect rea
 - `POST /api/economy/costs`
 
 These endpoints are intentionally not exposed as an unrestricted money-moving API. Authentication/authorization should be placed in front of mutation routes before exposing them to the public Internet.
+
+## External provider adapters
+
+This release adds server-to-server adapters under `server/providers/`:
+
+- PayPal Orders API: verifies completed captures server-side before revenue is recognized.
+- Stripe Payment Intents API: verifies successful payments server-side before revenue is recognized.
+- EVM JSON-RPC and Solana JSON-RPC: read-only balance verification; no signing or broadcasting.
+- Authenticated compute-node API: submits bounded compute jobs only when the governor explicitly enables spending.
+- RunPod: concrete server-to-server GPU compute adapter; submission is blocked while spending is disabled.
+
+### Secrets
+
+Secrets are read only on the server. For production, prefer `*_FILE` variables pointing to Docker/Kubernetes secret mounts. The economic ledger never stores provider credentials.
+
+### Production safety boundary
+
+The governor remains authoritative. `allowSpending=false`, `allowSigning=false` and `allowWithdrawals=false` are the default policy. Therefore the compute adapter is installed and connected but cannot create spend-bearing jobs until the policy is deliberately changed in server code/configuration and independently reviewed.
+
+No private key is required for the read-only blockchain adapters.

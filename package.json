@@ -1,17 +1,24 @@
 {
-  "name": "neon-player-x-real-work-unified",
-  "version": "11.7.1",
+  "name": "neon-player-x",
+  "version": "11.8.0",
   "private": true,
+  "main": "server.js",
   "type": "module",
-  "description": "NEON PLAYER X — producción Node.js para servir la aplicación estática.",
+  "description": "Neon Player X con Neon Orb como runtime residente nativo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OWNER/REPO.git"
+  },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "start": "node server.js",
+    "test": "node --test tests/*.test.mjs",
     "test:security": "node --test tests/ledger-security.test.mjs",
-    "test:server": "node --test tests/external-economic-governor.test.mjs",
-    "test": "npm run test:security && npm run test:server"
+    "test:economy": "node --test tests/external-economy.test.mjs",
+    "test:real-pipeline": "node --test tests/real-economy-pipeline.test.mjs"
   },
   "dependencies": {
     "compression": "^1.8.1",
