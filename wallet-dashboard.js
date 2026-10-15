@@ -5,10 +5,7 @@ import { unifiedLedger } from '../core/unified-ledger.js';
 
 const BRIDGE_URL = (globalThis.NEON_BRIDGE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
 const PUBLIC_IDENTITY = '@neonorb';
-const PUBLIC_ADDRESSES = {
-  solana: 'AvcMD59dTTTnHKzfdQtF9AcSzgSNcqCWEkcUYx4BnUeh',
-  bitcoin: 'bc1qs9dvc02xl8ury20xlsya8xda4cpygzhs0ll9ym'
-};
+const PUBLIC_ADDRESSES = { solana: '', bitcoin: '' };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const short = value => value ? `${value.slice(0, 8)}…${value.slice(-8)}` : '—';
 
@@ -41,8 +38,8 @@ export function mountWalletDashboard(root, ledger = unifiedLedger) {
         <span class="wallet-live ${remote.connected ? 'is-live' : ''}"><i></i>${bridgeLabel}</span>
       </header>
       <div class="wallet-identity-grid">
-        <div class="wallet-address"><small>SOLANA · PUBLIC ADDRESS</small><strong title="${esc(PUBLIC_ADDRESSES.solana)}">${esc(short(remote.wallet?.addresses?.solana || PUBLIC_ADDRESSES.solana))}</strong><span>${solValue}</span></div>
-        <div class="wallet-address"><small>BITCOIN · PUBLIC ADDRESS</small><strong title="${esc(PUBLIC_ADDRESSES.bitcoin)}">${esc(short(remote.wallet?.addresses?.bitcoin || PUBLIC_ADDRESSES.bitcoin))}</strong><span>${btcValue}</span></div>
+        <div class="wallet-address"><small>SOLANA · PUBLIC ADDRESS</small><strong title="${esc(remote.wallet?.addresses?.solana || PUBLIC_ADDRESSES.solana)}">${esc(short(remote.wallet?.addresses?.solana || PUBLIC_ADDRESSES.solana) || 'NO CONFIGURADA')}</strong><span>${solValue}</span></div>
+        <div class="wallet-address"><small>BITCOIN · PUBLIC ADDRESS</small><strong title="${esc(remote.wallet?.addresses?.bitcoin || PUBLIC_ADDRESSES.bitcoin)}">${esc(short(remote.wallet?.addresses?.bitcoin || PUBLIC_ADDRESSES.bitcoin) || 'NO CONFIGURADA')}</strong><span>${btcValue}</span></div>
         <div class="wallet-health"><small>SALUD DEL PUENTE</small><strong>${remote.health?.ok ? 'HEALTHY' : 'OBSERVABLE'}</strong><span>${remote.health?.service || 'LOCAL LEDGER'}</span></div>
       </div>
       <div class="neon-balances">

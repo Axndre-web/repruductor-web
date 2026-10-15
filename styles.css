@@ -1,0 +1,120 @@
+/* Gabinete Arcade "Neon Player X" */
+.slot-cabinet-neon {
+    background: #08030c;
+    border: 2px solid #8b00ff;
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(139, 0, 255, 0.4), inset 0 0 15px rgba(255, 215, 0, 0.2);
+    padding: 20px;
+    max-width: 850px;
+    margin: 0 auto;
+    font-family: 'Orbitron', 'Rajdhani', sans-serif;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Marcadores de Jackpot Cards con acentos de oro */
+.jackpot-banner-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.jackpot-card {
+    background: linear-gradient(180deg, #1d0f2a 0%, #0a0412 100%);
+    border: 1px solid #ffd700;
+    border-radius: 6px;
+    padding: 6px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #ffd700;
+    font-weight: bold;
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+/* Visor de Rodillos con Rayos y Humo */
+.reels-frame-neon {
+    position: relative;
+    background: #000;
+    border: 3px solid #b026ff;
+    border-radius: 10px;
+    padding: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 25px rgba(176, 38, 255, 0.6);
+}
+.reels-viewport {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    background: #05020a;
+}
+.reel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    background: #0d0617;
+    padding: 10px 0;
+    border-radius: 6px;
+    border: 1px solid rgba(139, 0, 255, 0.3);
+}
+.symbol {
+    font-size: 2.2rem;
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+/* Animación de giros */
+.reel.spinning {
+    animation: spinReel 0.15s infinite linear;
+}
+@keyframes spinReel {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-30px); }
+}
+
+/* Selector Rápido de Apuestas Oficial */
+.bet-quick-selector {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 15px 0;
+}
+.bet-btn {
+    background: linear-gradient(180deg, #2b123a 0%, #12061c 100%);
+    border: 1px solid #ffd700;
+    color: #00ffcc;
+    padding: 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+.bet-btn.active, .bet-btn:hover {
+    background: linear-gradient(180deg, #7b1fa2 0%, #4a148c 100%);
+    box-shadow: 0 0 12px #00ffcc;
+    color: #fff;
+}
+
+/* Botones Principales Dorados y Neón */
+.slot-controls-gold {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+.ctrl-circle-main {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffd700 0%, #b8860b 70%, #4a3000 100%);
+    border: 3px solid #fff;
+    color: #000;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 20px #ffd700, inset 0 0 10px #ffffff;
+}
+.ctrl-circle-main:active {
+    transform: scale(0.95);
+}
