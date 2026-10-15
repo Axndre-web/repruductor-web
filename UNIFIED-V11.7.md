@@ -22,7 +22,7 @@ Default endpoints:
 - `GET /telemetry`
 - `GET /wallet`
 
-Default bind: `127.0.0.1:8765`.
+Default bind: `127.0.0.1:3000`.
 
 Optional environment variables:
 
