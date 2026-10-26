@@ -36,9 +36,9 @@ try {
     }
 
     fs.writeFileSync(registryPath, JSON.stringify(systemConfig, null, 2), 'utf8');
-    console.log('✅ [GENERAL.JS] Credenciales y entorno sincronizados correctamente con .env');true
+    console.log('✅ [GENERAL.JS] Credenciales y entorno sincronizados correctamente con .env');
 } catch (e) {
-    console.error('❌ [GENERAL.JS] Error al sincronizar el ledger local:', e.message);false
+    console.error('❌ [GENERAL.JS] Error al sincronizar el ledger local:', e.message);
 }
 
 module.exports = {

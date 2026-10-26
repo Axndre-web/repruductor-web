@@ -5,6 +5,11 @@ import helmet from "helmet";
 import path from "node:path";
 import { timingSafeEqual } from "node:crypto";
 import { fileURLToPath } from "node:url";
+import { operationPolicy, preflightEvmTransaction } from "./server/operation-preflight.js";
+import { getNetworkOperationsStatus, searchPublicWeb, searchJobOpportunities, searchGitHubSolutions, performStaticAudit, startupEndpointCheck } from "./server/network-operations.js";
+import { getAgentStatus, runNeonAgent } from "./server/agent-runtime.js";
+import { getBitcoinNetworkStatus } from "./server/bitcoin-network.js";
+import { getRadioControlState, requestRadioControl } from "./server/radio-control.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,7 +17,7 @@ const publicDir = path.join(__dirname, "public");
 const app = express();
 
 const PORT = Number.parseInt(process.env.PORT ?? "3000", 10);
-const HOST = process.env.HOST ?? "0.0.0.0";
+const HOST = process.env.NEON_ALLOW_LAN_ACCESS === "true" ? (process.env.HOST ?? "0.0.0.0") : "127.0.0.1";
 
 app.disable("x-powered-by");
 
@@ -22,6 +27,72 @@ app.use(helmet({
 }));
 app.use(compression());
 app.use(express.json({ limit: "256kb" }));
+
+// Guarded operation endpoints: status and gas preflight only; this server never signs or broadcasts.
+app.get("/api/neon-orb/operations/status", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json({ ok: true, ...operationPolicy(), gasPreflight: true });
+});
+app.post("/api/neon-orb/operations/evm-preflight", orbRateLimit, async (req, res) => {
+  try {
+    const result = await preflightEvmTransaction(req.body || {});
+    res.set("Cache-Control", "no-store");
+    res.status(result.ok ? 200 : 409).json(result);
+  } catch (error) {
+    const code = String(error?.message || "PREFLIGHT_FAILED");
+    const status = code.startsWith("INVALID_") || code === "REQUEST_CHAIN_ID_MISMATCH" ? 400 : 502;
+    res.status(status).json({ ok: false, code, signs: false, broadcasts: false });
+  }
+});
+
+// Bounded network tools: fixed public-source allowlist, read-only search and local static audit.
+app.get("/api/neon-orb/network/status", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json(getNetworkOperationsStatus());
+});
+app.get("/api/neon-orb/agent/status", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json(getAgentStatus());
+});
+app.get("/api/neon-orb/control/status", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json({ ok:true, ecosystem:"NEON_PLAYER_X", administrator:"NEON_ORB", synchronized:true, server:{ port:PORT }, agent:getAgentStatus(), autonomy:autonomySupervisorStatus(), miningWorker:minerSupervisorStatus(), network:getNetworkOperationsStatus(), radio:getRadioControlState(), updatedAt:new Date().toISOString() });
+});
+app.get("/api/neon-orb/radio/control", (_req, res) => {
+  res.set("Cache-Control", "no-store");
+  res.json(getRadioControlState());
+});
+app.post("/api/neon-orb/radio/control", adminRequired, orbRateLimit, (req, res) => {
+  try { res.set("Cache-Control", "no-store"); res.json(requestRadioControl({ action:req.body?.action, station:req.body?.station ?? 0, requestedBy:'ADMIN_PANEL' })); }
+  catch (error) { res.status(400).json({ ok:false, code:String(error?.message || 'RADIO_CONTROL_REJECTED') }); }
+});
+app.post("/api/neon-orb/agent/chat", adminRequired, orbRateLimit, async (req, res) => {
+  try {
+    const result = await runNeonAgent({ message: req.body?.message, history: req.body?.history });
+    res.set("Cache-Control", "no-store");
+    res.json(result);
+  } catch (error) {
+    const code = String(error?.message || "AGENT_REQUEST_FAILED").slice(0, 100);
+    const status = code === "AGENT_PROVIDER_NOT_CONFIGURED" ? 503 : (code.startsWith("AGENT_MESSAGE_") ? 400 : 502);
+    res.status(status).json({ ok:false, code, mode:"GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT", appliedChanges:false });
+  }
+});
+app.get("/api/neon-orb/network/search", orbRateLimit, async (req, res) => {
+  try { const result = await searchPublicWeb(req.query.q); res.set("Cache-Control", "no-store"); res.json({ ok:true, ...result }); }
+  catch (error) { res.status(502).json({ ok:false, code:String(error?.message || "NETWORK_SEARCH_FAILED").slice(0,100) }); }
+});
+app.get("/api/neon-orb/jobs/search", orbRateLimit, async (req, res) => {
+  try { const result = await searchJobOpportunities(req.query.q); res.set("Cache-Control", "no-store"); res.json({ ok:true, ...result }); }
+  catch (error) { res.status(502).json({ ok:false, code:String(error?.message || "JOB_SEARCH_FAILED").slice(0,100) }); }
+});
+app.get("/api/neon-orb/network/github-search", orbRateLimit, async (req, res) => {
+  try { const result = await searchGitHubSolutions(req.query.q); res.set("Cache-Control", "no-store"); res.json({ ok:true, ...result }); }
+  catch (error) { res.status(502).json({ ok:false, code:String(error?.message || "GITHUB_SEARCH_FAILED").slice(0,100) }); }
+});
+app.post("/api/neon-orb/security/audit", adminRequired, orbRateLimit, async (_req, res) => {
+  try { const result = await performStaticAudit(); res.set("Cache-Control", "no-store"); res.json(result); }
+  catch (error) { res.status(500).json({ ok:false, code:String(error?.message || "STATIC_AUDIT_FAILED").slice(0,100) }); }
+});
 
 // Fixed radio source allowlist. The route never accepts a caller-supplied URL.
 const RADIO_STREAMS = [
@@ -77,35 +148,6 @@ app.get("/api/radio/stream/:id", async (req, res) => {
   }
 });
 
-// Recreational slot state is isolated from the autonomous/economic ledger and wallet.
-app.get('/api/arcade/state', async (req, res) => {
-  res.set('Cache-Control', 'no-store');
-  try {
-    const state = await getArcadeState(String(req.query.deviceId || ''));
-    res.json({ ...state, config: arcadeDemoConfig });
-  } catch (error) {
-    res.status(400).json({ ok: false, error: error?.message || 'invalid_arcade_device' });
-  }
-});
-app.post('/api/arcade/state', async (req, res) => {
-  res.set('Cache-Control', 'no-store');
-  try {
-    const result = await saveArcadeSnapshot(String(req.body?.deviceId || ''), req.body?.balance);
-    res.json(result);
-  } catch (error) {
-    res.status(400).json({ ok: false, error: error?.message || 'invalid_arcade_state' });
-  }
-});
-app.post('/api/arcade/spin', async (req, res) => {
-  res.set('Cache-Control', 'no-store');
-  try {
-    const result = await recordArcadeSpin(String(req.body?.deviceId || ''), req.body || {});
-    res.status(201).json(result);
-  } catch (error) {
-    res.status(400).json({ ok: false, error: error?.message || 'invalid_arcade_event' });
-  }
-});
-
 app.get("/healthz", (_req, res) => {
   res.status(200).json({
     status: "ok",
@@ -127,12 +169,16 @@ import { neonOrbRuntime } from './core/neon-orb-runtime.js';
 import { neonOrbDaemon } from './core/neon-orb-daemon.js';
 import { calculateEconomicAccounting } from './server/economic-accounting.js';
 import { listPaidWorkSources, discoverPublicWork } from './server/public-work-sources.js';
-import { getJupiterSwapQuote, getMarketQuotes, getMiningPoolStatus, getObservedWalletBalances, listMiningPools, verifyBitcoinPayout } from './server/market-mining-telemetry.js';
-import { getArcadeState, recordArcadeSpin, saveArcadeSnapshot, arcadeDemoConfig } from './server/arcade-demo-ledger.js';
+import { getJupiterSwapQuote, getMarketQuotes, getMiningPoolStatus, listMiningPools, verifyBitcoinPayout } from './server/market-mining-telemetry.js';
+import { startWalletObserver, snapshotWalletObservation, stopWalletObserver } from './server/wallet-observer.js';
+import { autonomySupervisorStatus, startAutonomySupervisor, stopAutonomySupervisor, runAutonomyTick } from './server/autonomy-supervisor.js';
+import { startConfiguredMiner, stopConfiguredMiner, minerSupervisorStatus } from './server/miner-supervisor.js';
 
 // Neon Orb is the resident runtime; inference is invoked as one of its capabilities.
 neonOrbRuntime.start();
 void neonOrbDaemon.ready.then(() => neonOrbDaemon.start()).catch(error => console.error('[Neon Orb daemon] startup failed:', error?.message || error));
+startWalletObserver();
+void startAutonomySupervisor().catch(error => console.warn('[NEON autonomy supervisor] startup failed:', error?.message || error));
 const orbRequestWindows = new Map();
 function orbRateLimit(req, res, next) {
   const key = req.ip || req.socket.remoteAddress || 'unknown';
@@ -144,11 +190,32 @@ function orbRateLimit(req, res, next) {
 }
 
 function adminRequired(req, res, next) {
+  // Fail closed in every environment; historical minimum was expected.length < 24, now hardened to 32.
   const expected = process.env.NEON_ADMIN_TOKEN;
   if (!expected || expected.length < 32) return res.status(503).json({ error:'admin_token_not_configured_or_too_weak' });
   const supplied = Buffer.from(String(req.get('authorization') || '').replace(/^Bearer\s+/i, ''), 'utf8');
   const expectedBytes = Buffer.from(expected, 'utf8');
   if (supplied.length !== expectedBytes.length || !timingSafeEqual(supplied, expectedBytes)) return res.status(401).json({ error:'unauthorized' });
+  next();
+}
+
+// Read-only wallet balances may auto-refresh only through the local app origin.
+// This avoids asking for the admin token every page load while preventing LAN access
+// and rejecting cross-origin browser requests. It never grants write/signing capability.
+function localSameOriginReadOnly(req, res, next) {
+  const remote = String(req.socket.remoteAddress || '');
+  const loopback = remote === '127.0.0.1' || remote === '::1' || remote === '::ffff:127.0.0.1';
+  const hostname = String(req.hostname || '').toLowerCase();
+  const localHost = ['127.0.0.1', 'localhost', '::1'].includes(hostname);
+  const origin = req.get('origin');
+  let sameOrigin = false;
+  if (origin) {
+    try { sameOrigin = new URL(origin).host.toLowerCase() === String(req.get('host') || '').toLowerCase(); }
+    catch { sameOrigin = false; }
+  } else {
+    sameOrigin = String(req.get('sec-fetch-site') || '').toLowerCase() === 'same-origin';
+  }
+  if (!loopback || !localHost || !sameOrigin) return res.status(403).json({ ok:false, error:'local_same_origin_required' });
   next();
 }
 
@@ -272,6 +339,31 @@ app.get('/api/neon-orb/mining/payout/:txid/verify', orbRateLimit, async (req, re
   res.set('Cache-Control', 'no-store');
   res.status(result.ok ? 200 : (result.code?.includes('INVALID') ? 400 : 502)).json(result);
 });
+app.get('/api/neon-orb/mining/worker/status', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, identity: 'NEON_ORB', ...minerSupervisorStatus() });
+});
+app.post('/api/neon-orb/mining/worker/start', adminRequired, orbRateLimit, async (_req, res) => {
+  const result = await startConfiguredMiner({ force: true });
+  res.set('Cache-Control', 'no-store');
+  res.status(result.running ? 200 : 409).json({ ok: result.running, identity: 'NEON_ORB', ...result });
+});
+app.post('/api/neon-orb/mining/worker/stop', adminRequired, orbRateLimit, async (_req, res) => {
+  const result = await stopConfiguredMiner();
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, identity: 'NEON_ORB', ...result });
+});
+
+app.get('/api/neon-orb/bitcoin/status', orbRateLimit, async (_req, res) => {
+  try {
+    const result = await getBitcoinNetworkStatus();
+    res.set('Cache-Control', 'no-store');
+    res.json(result);
+  } catch {
+    res.status(502).json({ ok: false, identity: 'NEON_ORB', asset: 'BTC', code: 'BITCOIN_NETWORK_TELEMETRY_UNAVAILABLE', safety: { readOnly: true, signs: false, broadcasts: false } });
+  }
+});
+
 app.get('/api/neon-orb/mining/status', orbRateLimit, async (req, res) => {
   try {
     const poolId = typeof req.query.pool === 'string' ? req.query.pool : undefined;
@@ -305,14 +397,39 @@ app.get('/api/neon-orb/market-data', orbRateLimit, async (req, res) => {
     res.status(502).json({ ok: false, identity: 'NEON_ORB', code: 'MARKET_QUOTES_UNAVAILABLE' });
   }
 });
-app.get('/api/neon-orb/wallet/observed', orbRateLimit, async (_req, res) => {
+app.get('/api/neon-orb/wallet/observed', adminRequired, orbRateLimit, async (_req, res) => {
   try {
-    const result = await getObservedWalletBalances();
+    const result = snapshotWalletObservation();
     res.set('Cache-Control', 'no-store');
     res.json(result);
   } catch {
     res.status(502).json({ ok: false, identity: 'NEON_ORB', code: 'WALLET_OBSERVATION_UNAVAILABLE' });
   }
+});
+
+// Local-only, read-only path for the wallet panel's automatic startup synchronization.
+// The original admin-protected endpoint remains available for explicit integrations.
+app.get('/api/neon-orb/wallet/observed/local', localSameOriginReadOnly, orbRateLimit, async (_req, res) => {
+  if (String(process.env.NEON_WALLET_AUTO_OBSERVE || 'true').trim().toLowerCase() === 'false') {
+    return res.status(503).json({ ok:false, identity:'NEON_ORB', code:'WALLET_AUTO_OBSERVE_DISABLED' });
+  }
+  try {
+    const result = snapshotWalletObservation();
+    res.set('Cache-Control', 'no-store');
+    res.set('Vary', 'Origin, Sec-Fetch-Site');
+    res.json({ ...result, access: 'LOCAL_SAME_ORIGIN_READ_ONLY' });
+  } catch {
+    res.status(502).json({ ok: false, identity: 'NEON_ORB', code: 'WALLET_OBSERVATION_UNAVAILABLE' });
+  }
+});
+
+app.get('/api/neon-orb/autonomy/status', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, ...autonomySupervisorStatus() });
+});
+app.post('/api/neon-orb/autonomy/tick', adminRequired, orbRateLimit, async (_req, res) => {
+  try { res.set('Cache-Control', 'no-store'); res.json({ ok: true, ...await runAutonomyTick() }); }
+  catch (error) { res.status(503).json({ ok: false, identity: 'NEON_ORB', error: String(error?.message || 'AUTONOMY_TICK_FAILED').slice(0,160) }); }
 });
 
 app.get('/api/neon-orb/daemon', (_req, res) => {
@@ -333,14 +450,19 @@ app.get('/api/neon-orb/status', async (_req, res) => {
   try {
     await neonOrbRuntime.ready;
     res.set('Cache-Control', 'no-store');
-    res.json({ ...neonOrbRuntime.snapshot(), economy: neonOrbGovernor.snapshot() });
+    res.json({ ...neonOrbRuntime.snapshot(), economy: neonOrbGovernor.snapshot(), api: { status: true, think: true, chatAlias: true } });
   } catch (error) {
     res.status(503).json({ ok: false, identity: 'NEON_ORB', error: 'runtime_unavailable' });
   }
 });
-app.post('/api/neon-orb/think', orbRateLimit, async (req, res) => {
+
+// Both paths are supported so older front-end bundles can recover during staged deployments.
+async function handleNeonOrbThink(req, res) {
   try {
     const body = req.body && typeof req.body === 'object' ? req.body : {};
+    if (typeof body.message !== 'string' || !body.message.trim()) {
+      return res.status(400).json({ ok: false, identity: 'NEON_ORB', error: 'message_required' });
+    }
     const result = await neonOrbRuntime.think({
       message: body.message,
       context: body.context,
@@ -348,12 +470,15 @@ app.post('/api/neon-orb/think', orbRateLimit, async (req, res) => {
       session: body.session
     });
     res.set('Cache-Control', 'no-store');
-    res.json(result);
+    res.set('X-Neon-Orb-Runtime', 'native');
+    res.json({ ok: true, ...result });
   } catch (error) {
     console.error('[Neon Orb runtime] cognition request failed:', error?.message || error);
     res.status(503).json({ ok: false, identity: 'NEON_ORB', error: 'cognition_unavailable' });
   }
-});
+}
+app.post('/api/neon-orb/think', orbRateLimit, handleNeonOrbThink);
+app.post('/api/neon-orb/chat', orbRateLimit, handleNeonOrbThink);
 
 app.get('/api/economy/status', (_req,res)=>res.json({ok:true,...neonOrbGovernor.snapshot(), economicSources:listEconomicSources()}));
 app.get('/api/economy/accounting', (_req,res)=>{ res.set('Cache-Control','no-store'); res.json({ok:true,accounting:calculateEconomicAccounting()}); });
@@ -407,11 +532,15 @@ app.use((err, _req, res, _next) => {
 
 const server = app.listen(PORT, HOST, () => {
   console.log(`NEON PLAYER X listening on http://${HOST}:${PORT}`);
+  const baseUrl = `http://127.0.0.1:${PORT}`;
+  void startupEndpointCheck(baseUrl).then(checks => console.log('[NEON startup endpoint check]', JSON.stringify(checks))).catch(error => console.warn('[NEON startup endpoint check] failed:', error?.message || error));
 });
 
 function shutdown(signal) {
   console.log(`${signal} received; shutting down...`);
   void neonOrbDaemon.stop().catch(() => {});
+  void stopAutonomySupervisor().catch(() => {});
+  stopWalletObserver();
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 10000).unref();
 }

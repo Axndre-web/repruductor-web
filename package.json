@@ -18,7 +18,9 @@
     "test": "node --test tests/*.test.mjs",
     "test:security": "node --test tests/ledger-security.test.mjs",
     "test:economy": "node --test tests/external-economy.test.mjs",
-    "test:real-pipeline": "node --test tests/real-economy-pipeline.test.mjs"
+    "test:real-pipeline": "node --test tests/real-economy-pipeline.test.mjs",
+    "autostart:install": "node scripts/autostart.mjs install",
+    "autostart:uninstall": "node scripts/autostart.mjs uninstall"
   },
   "dependencies": {
     "compression": "^1.8.1",

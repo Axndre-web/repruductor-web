@@ -1,7 +1,7 @@
 {
   "version": "11.7.1",
   "startedAt": 1790155850.1206267,
-  "cycles": 22221,
+  "cycles": 17062,
   "decision": "OBSERVE_NETWORK",
   "zone": "LOCAL-BRIDGE",
   "energy": 100,
@@ -13,13 +13,15 @@
     "CREDITS": 0,
     "BITS": 0
   },
-  "lastTick": 1792076277.7197287,
+  "lastTick": 1792277639.9572282,
   "network": {
     "solana": {
       "address": "CpiWyv2tyrbBqZoZMSTcVRgCGPwKgJ2jCyZ7aN1n7fSE",
       "network": "mainnet-beta",
-      "status": "unavailable",
-      "error": "URLError"
+      "status": "observed",
+      "lamports": 0,
+      "sol": 0.0,
+      "observedAt": 1792277617.0523245
     },
     "bitcoin": {
       "address": "",
@@ -33,5 +35,5 @@
     "source": "local-bridge"
   },
   "receipts": [],
-  "lastNetworkRefresh": 1792076262.7181222
+  "lastNetworkRefresh": 1792277617.0523245
 }

@@ -39,8 +39,6 @@ HOST = os.getenv('NEON_BRIDGE_HOST', '127.0.0.1')
 PORT = int(os.getenv('NEON_BRIDGE_PORT', '8765'))
 TOKEN = os.getenv('NEON_BRIDGE_TOKEN', '')
 STATE_FILE = os.getenv('NEON_BRIDGE_STATE', os.path.join(os.path.dirname(__file__), 'neon-lim.state.json'))
-# Arcade demo credits use a separate file; the NEON-LIM runtime state/receipts are untouched.
-ARCADE_STATE_FILE = os.getenv('NEON_ARCADE_DEMO_STATE', os.path.join(os.path.dirname(__file__), 'neon-arcade-demo.state.json'))
 SOLANA_ADDRESS = os.getenv('SOLANA_WALLET_ADDRESS') or os.getenv('NEON_SOLANA_ADDRESS') or ''
 BITCOIN_ADDRESS = os.getenv('NEON_BITCOIN_ADDRESS') or os.getenv('BITCOIN_ADDRESS') or ''
 SOLANA_RPC_URL = os.getenv('SOLANA_RPC_ENDPOINT') or os.getenv('SOLANA_RPC_URL') or os.getenv('NEON_SOLANA_RPC') or 'https://api.mainnet-beta.solana.com'
@@ -150,7 +148,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type, X-Neon-Bridge-Token')
-        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Methods', 'GET, OPTIONS')
         self.send_header('Content-Length', str(len(raw)))
         self.end_headers()
         self.wfile.write(raw)
@@ -201,83 +199,7 @@ class Handler(BaseHTTPRequestHandler):
                     'mode': 'OBSERVED_PUBLIC_STATE',
                 })
             return
-        if path == '/arcade/state':
-            if not self.authorized():
-                self.send_json(401, {'ok': False, 'error': 'UNAUTHORIZED'})
-                return
-            device_id = self.path.split('deviceId=', 1)[1].split('&', 1)[0] if 'deviceId=' in self.path else ''
-            if not device_id or len(device_id) > 100 or any(not (c.isalnum() or c in '_-') for c in device_id):
-                self.send_json(400, {'ok': False, 'error': 'INVALID_DEVICE_ID'})
-                return
-            try:
-                with lock:
-                    try:
-                        with open(ARCADE_STATE_FILE, 'r', encoding='utf-8') as f:
-                            arcade = json.load(f)
-                    except (OSError, ValueError):
-                        arcade = {'version': 1, 'devices': {}}
-                    import hashlib
-                    key = hashlib.sha256(device_id.encode('utf-8')).hexdigest()
-                    record = arcade.setdefault('devices', {}).get(key)
-                    if not isinstance(record, dict) or not isinstance(record.get('balance'), (int, float)) or record.get('balance', 0) <= 0:
-                        record = {'balance': 100.0, 'events': [], 'updatedAt': time.time(), 'currency': 'DEMO_CREDITS'}
-                        arcade['devices'][key] = record
-                        os.makedirs(os.path.dirname(ARCADE_STATE_FILE) or '.', exist_ok=True)
-                        temp = ARCADE_STATE_FILE + '.tmp'
-                        with open(temp, 'w', encoding='utf-8') as f: json.dump(arcade, f, ensure_ascii=False)
-                        os.replace(temp, ARCADE_STATE_FILE)
-                    response = {'ok': True, 'balance': round(float(record['balance']), 2), 'events': record.get('events', [])[-100:], 'currency': 'DEMO_CREDITS', 'source': 'python-arcade-demo-store'}
-                self.send_json(200, response)
-            except Exception:
-                self.send_json(500, {'ok': False, 'error': 'ARCADE_STORE_UNAVAILABLE'})
-            return
         self.send_json(404, {'ok': False, 'error': 'NOT_FOUND'})
-
-    def do_POST(self):
-        path = self.path.split('?', 1)[0]
-        if path != '/arcade/state':
-            self.send_json(404, {'ok': False, 'error': 'NOT_FOUND'})
-            return
-        if not self.authorized():
-            self.send_json(401, {'ok': False, 'error': 'UNAUTHORIZED'})
-            return
-        try:
-            length = int(self.headers.get('Content-Length', '0'))
-            if length <= 0 or length > 32768:
-                self.send_json(413, {'ok': False, 'error': 'PAYLOAD_TOO_LARGE'})
-                return
-            body = json.loads(self.rfile.read(length).decode('utf-8'))
-            device_id = body.get('deviceId', '')
-            balance = float(body.get('balance'))
-            event = body.get('event')
-            if not isinstance(device_id, str) or not (8 <= len(device_id) <= 100) or any(not (c.isalnum() or c in '_-') for c in device_id):
-                raise ValueError('invalid_device_id')
-            if not (0 <= balance <= 1000000) or not isinstance(event, dict):
-                raise ValueError('invalid_demo_event')
-            bet, win = float(event.get('betAmount')), float(event.get('winAmount'))
-            if not (0 <= bet <= 10000 and 0 <= win <= 1000000):
-                raise ValueError('invalid_demo_amount')
-            import hashlib
-            key = hashlib.sha256(device_id.encode('utf-8')).hexdigest()
-            with lock:
-                try:
-                    with open(ARCADE_STATE_FILE, 'r', encoding='utf-8') as f: arcade = json.load(f)
-                except (OSError, ValueError): arcade = {'version': 1, 'devices': {}}
-                devices = arcade.setdefault('devices', {})
-                previous = devices.get(key, {'events': []})
-                events = previous.get('events', []) if isinstance(previous.get('events', []), list) else []
-                clean = {'type': 'DEMO_SPIN', 'betAmount': round(bet, 2), 'winAmount': round(win, 2), 'balance': round(balance, 2), 'reels': [str(x)[:8] for x in event.get('reels', [])[:5]] if isinstance(event.get('reels', []), list) else [], 'at': str(event.get('at', time.time()))[:40], 'currency': 'DEMO_CREDITS'}
-                events.append(clean)
-                devices[key] = {'balance': round(balance, 2), 'events': events[-100:], 'updatedAt': time.time(), 'currency': 'DEMO_CREDITS'}
-                os.makedirs(os.path.dirname(ARCADE_STATE_FILE) or '.', exist_ok=True)
-                temp = ARCADE_STATE_FILE + '.tmp'
-                with open(temp, 'w', encoding='utf-8') as f: json.dump(arcade, f, ensure_ascii=False)
-                os.replace(temp, ARCADE_STATE_FILE)
-            self.send_json(201, {'ok': True, 'balance': round(balance, 2), 'persisted': True, 'currency': 'DEMO_CREDITS'})
-        except (ValueError, TypeError, json.JSONDecodeError):
-            self.send_json(400, {'ok': False, 'error': 'INVALID_DEMO_EVENT'})
-        except Exception:
-            self.send_json(500, {'ok': False, 'error': 'ARCADE_STORE_UNAVAILABLE'})
 
 
 def main():
