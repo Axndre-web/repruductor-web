@@ -8,7 +8,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OWNER/REPO.git"
+    "url": "git+https://github.com/axndre-web/repruductor-web.git"
   },
   "engines": {
     "node": ">=22.0.0"
