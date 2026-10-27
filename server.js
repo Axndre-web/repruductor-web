@@ -66,15 +66,36 @@ app.post("/api/neon-orb/radio/control", adminRequired, orbRateLimit, (req, res) 
   try { res.set("Cache-Control", "no-store"); res.json(requestRadioControl({ action:req.body?.action, station:req.body?.station ?? 0, requestedBy:'ADMIN_PANEL' })); }
   catch (error) { res.status(400).json({ ok:false, code:String(error?.message || 'RADIO_CONTROL_REJECTED') }); }
 });
-app.post("/api/neon-orb/agent/chat", adminRequired, orbRateLimit, async (req, res) => {
+// The companion agent is available without an admin token only when the server is
+// bound to loopback (the default) and the request is same-origin. LAN deployments
+// must provide the strong admin token. This keeps the private local workspace private.
+function privateAgentAccess(req, res, next) {
+  if (process.env.NEON_ALLOW_LAN_ACCESS === 'true') return adminRequired(req, res, next);
+  return localSameOriginReadOnly(req, res, next);
+}
+app.post("/api/neon-orb/agent/chat", privateAgentAccess, orbRateLimit, async (req, res) => {
+  const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+  if (message.length < 2) return res.status(400).json({ ok:false, code:'AGENT_MESSAGE_TOO_SHORT' });
   try {
-    const result = await runNeonAgent({ message: req.body?.message, history: req.body?.history });
+    const result = await runNeonAgent({ message, history: req.body?.history, context: req.body?.context });
     res.set("Cache-Control", "no-store");
-    res.json(result);
+    res.set('X-Neon-Orb-Agent', 'tool-capable');
+    res.json({ ...result, answer: result.answer || '', mode: result.mode || 'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT' });
   } catch (error) {
     const code = String(error?.message || "AGENT_REQUEST_FAILED").slice(0, 100);
-    const status = code === "AGENT_PROVIDER_NOT_CONFIGURED" ? 503 : (code.startsWith("AGENT_MESSAGE_") ? 400 : 502);
-    res.status(status).json({ ok:false, code, mode:"GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT", appliedChanges:false });
+    // Keep basic conversation available when the optional local model is offline,
+    // but explicitly mark that tool use is degraded rather than pretending tools ran.
+    if (['AGENT_MODEL_CONNECTION_FAILED', 'AGENT_PROVIDER_NOT_CONFIGURED', 'AGENT_MODEL_HTTP_404', 'AGENT_MODEL_HTTP_500', 'AGENT_MODEL_HTTP_502', 'AGENT_MODEL_HTTP_503'].includes(code)) {
+      try {
+        const fallback = await neonOrbRuntime.think({ message, context: req.body?.context, session: req.body?.session });
+        res.set('Cache-Control', 'no-store');
+        return res.json({ ok:true, agent:'NEON_ORB', answer:fallback.advice, advice:fallback.advice,
+          mode:'NATIVE_FALLBACK_MODEL_OFFLINE', degraded:true, toolsUsed:[], toolCallCount:0,
+          proposedIntent:fallback.proposedIntent, source:fallback.source, appliedChanges:false });
+      } catch { /* report the original provider/runtime failure below */ }
+    }
+    const status = code.startsWith('AGENT_MESSAGE_') ? 400 : (code === 'AGENT_PROVIDER_NOT_CONFIGURED' ? 503 : 502);
+    res.status(status).json({ ok:false, code, mode:'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT', appliedChanges:false });
   }
 });
 app.get("/api/neon-orb/network/search", orbRateLimit, async (req, res) => {
