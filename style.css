@@ -96,3 +96,17 @@ body[data-theme="neon-dark"]{--accent:#b45cff;--accent2:#57ffc1}.theme-card[data
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.nav-link{transition:none}}
 
 @media(max-width:680px){.menu-toggle{display:none!important}}
+
+/* Responsive recovery polish — Android, iOS, tablets and desktop */
+#slot-machine,.neo-holo-map-card,.neo-unified-center{min-width:0;max-width:100%;box-sizing:border-box}
+#slot-machine button,.neo-unified-center button,.neo-map-node{touch-action:manipulation}
+#slot-machine .bet-btn,#slot-machine .ctrl-circle-main{min-height:44px}
+#slot-machine .slot-cabinet-neon{width:100%;box-sizing:border-box}
+#slot-machine .slot-info-bar>*{min-width:0}
+#slot-machine .slot-info-bar span{overflow-wrap:anywhere}
+.neo-holo-map{width:100%;min-height:clamp(280px,42vw,430px)}
+.neo-world-svg{display:block;max-width:100%}
+.neo-map-node{min-width:13px;min-height:13px}
+@media(max-width:760px){#slot-zone .section-head{align-items:flex-start;flex-wrap:wrap}#slot-zone .section-head>div{min-width:0;width:100%}#slot-zone .section-head>.pill{max-width:100%;overflow-wrap:anywhere}.neo-cc-main-grid{grid-template-columns:minmax(0,1fr)}.neo-holo-map{min-height:320px}.slot-header-title{margin:16px 0}.slot-bridge-footer{font-size:.7rem}}
+@media(max-width:420px){#slot-machine .slot-cabinet-neon{padding:10px;border-radius:16px}.jackpot-banner-grid{gap:6px}.jackpot-card{padding:9px 5px}.reels-viewport{gap:3px}.reel{min-height:64px}.reel .symbol{font-size:clamp(1.2rem,7vw,2rem)}.bet-quick-selector{grid-template-columns:repeat(2,minmax(0,1fr))}.ctrl-circle-main{width:100%;padding:14px 10px}.neo-holo-map{min-height:290px}.neo-map-caption{left:6px;right:6px;bottom:6px}.neo-cc-summary-compact{gap:5px}.neo-cc-summary-compact>div{min-width:0}.neo-cc-summary-compact b{overflow-wrap:anywhere}}
+@media(hover:none){.neo-cc-quick-links>a:hover{transform:none}}
