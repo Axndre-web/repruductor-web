@@ -33,3 +33,10 @@
 #neonOrbCompanion .orb-voice{border:1px solid #ffffff2b;border-radius:9px;background:#ffffff0b;color:inherit;padding:7px 8px;font-size:9px;font-weight:800;cursor:pointer;white-space:nowrap}
 #neonOrbCompanion .orb-voice[aria-pressed="true"]{border-color:var(--accent,#a855f7);box-shadow:0 0 14px #a855f744}
 @media(max-width:420px){#neonOrbCompanion .orb-voice{font-size:8px;padding:6px}}
+
+#neonOrbCompanion .orb-mic{width:36px;flex:0 0 36px;border:1px solid #ffffff2b;border-radius:10px;background:#ffffff0b;color:inherit;font-size:16px;cursor:pointer}
+#neonOrbCompanion .orb-mic[aria-pressed="true"]{border-color:#60f0bd;box-shadow:0 0 14px #60f0bd55}
+#neonOrbCompanion .orb-mic:disabled{opacity:.35;cursor:not-allowed}
+#neonOrbCompanion .orb-form{align-items:stretch}
+#neonOrbCompanion .orb-form textarea{min-height:44px}
+@media(max-width:420px){#neonOrbCompanion .orb-head{padding:13px;gap:7px}#neonOrbCompanion .orb-head h2{font-size:17px}#neonOrbCompanion .orb-mic{width:32px;flex-basis:32px}}
