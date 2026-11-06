@@ -1,0 +1,1523 @@
+{
+  "name": "NEON PLAYER X + NEON ORB",
+  "release": "coordinated-2026-11-06",
+  "files": [
+    {
+      "path": ".env.exampl",
+      "size": 724,
+      "sha256": "3de5fd4c722c1a8b45a2ddc3c19ac1dd3b432d2b3cc94b20e38076fdb1ba5bed"
+    },
+    {
+      "path": ".env.example",
+      "size": 3731,
+      "sha256": "8ceec19e5a083a1060b9bb6a76bbb09932a8bffa3cda2d559d9bac464c6ee30b"
+    },
+    {
+      "path": ".gitignore",
+      "size": 68,
+      "sha256": "12e735cde362aaa524b2f1c68672e56dc817d5298e76f8f46b8f23eb5bcf0844"
+    },
+    {
+      "path": ".gitignore.js",
+      "size": 107,
+      "sha256": "b9bcea2712108795b8afbb7b67d941ff09e11fa8378b29abbe648dd48f2bf751"
+    },
+    {
+      "path": ".vscode/launch.js",
+      "size": 517,
+      "sha256": "dbf0701f175724727442820ed381d1e1b317431f9cfe1da74da37b013ac91d10"
+    },
+    {
+      "path": ".vscode/launch.jso",
+      "size": 558,
+      "sha256": "e5d4dfc05dce46c4c0ff67e1fb448132d5ac2edc0b27f80d663d65c5bf56a8e8"
+    },
+    {
+      "path": ".vscode/launch.json",
+      "size": 528,
+      "sha256": "96a95aaf7f16556c12f4eeb7b9e4edf1b6c2fca06f46d99b510d2511355751ca"
+    },
+    {
+      "path": ".vscode/neon-player-x/.vscode/launch.js",
+      "size": 577,
+      "sha256": "3043db21e4d90d69b520260e8adf9993690efc00246f6ffadda1e44436dec1d9"
+    },
+    {
+      "path": ".vscode/neon-player-x/.vscode/launch.jso",
+      "size": 558,
+      "sha256": "e5d4dfc05dce46c4c0ff67e1fb448132d5ac2edc0b27f80d663d65c5bf56a8e8"
+    },
+    {
+      "path": ".vscode/neon-player-x/.vscode/settings.js",
+      "size": 73,
+      "sha256": "0b15fc7dc566ff962f60e8dbe4a0bd5dc56f9cbae99f03029964d8c6ad5c2fcc"
+    },
+    {
+      "path": ".vscode/settings.js",
+      "size": 73,
+      "sha256": "0b15fc7dc566ff962f60e8dbe4a0bd5dc56f9cbae99f03029964d8c6ad5c2fcc"
+    },
+    {
+      "path": ".vscode/settings.json",
+      "size": 55,
+      "sha256": "5f70e029134bfacd86e66e9fe18fd886f5a302e5b08a61f47a7ddaccc46e1c5e"
+    },
+    {
+      "path": "AGENTE-AUTONOMO-TECNICO.md",
+      "size": 5401,
+      "sha256": "010bb4f21e1d60d5b2bf73fc6a3123e953a099c852ce3ce2d3cf724f6fd660ce"
+    },
+    {
+      "path": "ARCADE-REBRAND-PERSISTENCE.md",
+      "size": 1653,
+      "sha256": "acc9d002a39a0078acc8885bb5952bafe975aae42506f3f6a614e220b5a8ad3e"
+    },
+    {
+      "path": "ARCADE-SLOT-INTEGRATION.md",
+      "size": 1294,
+      "sha256": "7cbda8260a82ee666d0b5eb314243b22c31a8de8640f201c5348df8350c5cba9"
+    },
+    {
+      "path": "AUDITORIA-TECNICA-2026-10.md",
+      "size": 5074,
+      "sha256": "d64bf1536ff628f669af1f96e0f905fd8c39c338bc0afd9e59549372684bee42"
+    },
+    {
+      "path": "AUTONOMIA-OPERATIVA-SEGURA.md",
+      "size": 3651,
+      "sha256": "f517661451ffe8c5897a16095ab23a8effe68165e382dddabdf2e0e26f5fd64d"
+    },
+    {
+      "path": "AUTONOMY-OPERATIONS.md",
+      "size": 1644,
+      "sha256": "851325ab12c78dbc9ddfdf1f15b7cb3724ce4d55b59ca9d497282d52525b266a"
+    },
+    {
+      "path": "BITCOIN-POOL-Y-NODO-SINCRONIZADOS.md",
+      "size": 2446,
+      "sha256": "744217f1f4e01187ff2056b8af168e208c3c8ddce5133fdd22b8b9cba04f2630"
+    },
+    {
+      "path": "COINBASE-MULTICHAIN-INTEGRATION.md",
+      "size": 4032,
+      "sha256": "49895b63fe9cee3ee948d41cc10bfce442cc8b9f7889d1ca74e352db42d73c07"
+    },
+    {
+      "path": "CONTROL-CENTER-HOLOGRAPHIC-REFINEMENT.md",
+      "size": 1283,
+      "sha256": "dbc339cc1f82348ac6478d8aa67c7142b9571c5fada6bc9499d2662e2bd32774"
+    },
+    {
+      "path": "CONTROL-CENTER-ORB-FOCUSED-INTERFACE.md",
+      "size": 802,
+      "sha256": "f36d4a2ae18a26649484e750d1c71962a907f60217674f116dc3c84180bd6200"
+    },
+    {
+      "path": "CONTROL-CENTER-RESPONSIVE-HOLOGRAFIA.md",
+      "size": 2070,
+      "sha256": "7989f45cdea5103711ff68817c9a3ddf43d35be0c77a18bc1a6b6cc98dbc90df"
+    },
+    {
+      "path": "DEPLOYMENT.md",
+      "size": 927,
+      "sha256": "0f95c61d14cfb6a8f2f85ff3c414ea9b2defaccfd386d15ad85441debac6d96d"
+    },
+    {
+      "path": "ECONOMIC-AUTONOMY-V11.7.1.md",
+      "size": 1729,
+      "sha256": "1ddc785e874f7ed0b4759e4399c3dbabe5e42685ca91285aac3a7a87f687c891"
+    },
+    {
+      "path": "ECONOMIC-SOURCES-V11.8.md",
+      "size": 1969,
+      "sha256": "6a49a9a592aec7dda30f08c0c07f1ed7cdc04bccd4ce815f0f7a118b22d65255"
+    },
+    {
+      "path": "ECONOMY-EXTERNAL-REAL-V11.7.1.md",
+      "size": 1582,
+      "sha256": "112854af993c42915cb2761baf89b7c468664ec53ec9caef41d27a3de6736925"
+    },
+    {
+      "path": "EXTERNAL-ECONOMY-PRODUCTION.md",
+      "size": 3086,
+      "sha256": "ae53516d1551975c7860de334fac69c7575893405795cfbc8aaf1945f0818be6"
+    },
+    {
+      "path": "FILE-NAME-MAP.txt",
+      "size": 1197,
+      "sha256": "0a7e5c1038487d5bd8bcb94c6144c6635fc8825b18f40a07cd652b080ceae8a3"
+    },
+    {
+      "path": "FUSION-RELEASE.md",
+      "size": 1476,
+      "sha256": "7ddf2a1f8bafbfad11ec2f9a869ac1236cc243a11f1183c749828fc38986bf4b"
+    },
+    {
+      "path": "GITHUB-PAGES-SYNC.md",
+      "size": 478,
+      "sha256": "663e9d773f389a96f225f33dc3756008bb0651471b773dedcaef39811a778495"
+    },
+    {
+      "path": "HOLOGRAPHIC-ECOSYSTEM-UPDATE.md",
+      "size": 928,
+      "sha256": "1ae749e99fad3f492c905d052246832fffbe4f63cc444f5b6d551693ad33922c"
+    },
+    {
+      "path": "LIFE-AUTONOMY-V11.8.1.md",
+      "size": 1637,
+      "sha256": "3ca65c0c4af9166f338790071f06b01dab033616bee4e8059684e629ddc3a287"
+    },
+    {
+      "path": "MEJORAS-NEON-ORB.md",
+      "size": 2155,
+      "sha256": "4a69d13144a889fa3457924c820eb5716776a0e0f56814fee70c437c86046268"
+    },
+    {
+      "path": "NEON-ORB-404-FIX.md",
+      "size": 1909,
+      "sha256": "92599425a1fbccce1ac224cbdda2743b9136c60cd32643f1b47dc23abb789313"
+    },
+    {
+      "path": "NEON-ORB-AUTONOMY-OPERATIONS.md",
+      "size": 2654,
+      "sha256": "b6c9353486e346c5831a2388ecac0fdb8db259986638bf1e6f59a69e4a0d1938"
+    },
+    {
+      "path": "NEON-ORB-CENTRAL-COORDINATOR-IMPLEMENTATION.md",
+      "size": 1777,
+      "sha256": "6acfb91f2805807f3abcb71908ed987a44b8e09be103a5ddbdd5526fa395a861"
+    },
+    {
+      "path": "NEON-ORB-CONNECTION-COORDINATION.md",
+      "size": 2261,
+      "sha256": "b4e060806486c0b622876e51bab22cd3f16d9f84e51a250d1d469d3207e7c8bd"
+    },
+    {
+      "path": "NEON-ORB-COORDINACION-CENTRAL-2026-11.md",
+      "size": 4700,
+      "sha256": "fafb677ab35c698f758de598ced3bfc3aaaa358f35acf1a7b73119c974ced9e3"
+    },
+    {
+      "path": "NEON-ORB-DAEMON-AND-ECONOMY.md",
+      "size": 4585,
+      "sha256": "bb32da9d3888d46896fc7e3b86a36991753bdc6f0e5b883411a7c2f1d0750791"
+    },
+    {
+      "path": "NEON-ORB-ENV-INTEGRATION.md",
+      "size": 1749,
+      "sha256": "fa19e3ff03aa827f4ddf6145ae8722773aa708b3b0e2c9a25f4dea3c1096073b"
+    },
+    {
+      "path": "NEON-ORB-FINAL-CONFIGURATION-V8.md",
+      "size": 3074,
+      "sha256": "b769f4368554bb550cbf83ad71e0285a81a1d685328a6cdc9ef88b033903bcd7"
+    },
+    {
+      "path": "NEON-ORB-MINING-MARKET-V6.md",
+      "size": 5308,
+      "sha256": "747e3366a50a9e65d204b705a6c0c157a277d5810ea790c3e614f491c1338175"
+    },
+    {
+      "path": "NEON-ORB-NATIVE-INTEGRATION.md",
+      "size": 1266,
+      "sha256": "fde6b695e536c9b48ca2a0a8453901289c7f730eede8288e1570b67d1ca2c3f9"
+    },
+    {
+      "path": "NEON-ORB-NATIVE-RUNTIME.md",
+      "size": 2252,
+      "sha256": "6e0943c56edb9c7c65fe5a6ff5418028c1fd286862a421218cc52a53c2044ff9"
+    },
+    {
+      "path": "NEON-ORB-PRIVATE-AGENT-OPERATIONS.md",
+      "size": 1709,
+      "sha256": "57c21dff1a459ada694182cf23cf69a3ebad69bb0eaa9fab055a4e96efcf61e7"
+    },
+    {
+      "path": "NEON-ORB-START-HERE.md",
+      "size": 1901,
+      "sha256": "f4ac2112912022af40787e2028a4982d17b0358a17bd460aec5e233b7d91e903"
+    },
+    {
+      "path": "NEON-ORB-UI-UNIFICATION.md",
+      "size": 1270,
+      "sha256": "548174c50216a99d18be166b9a09eac6c8b7561784d40a2fb05898fbe9e863c4"
+    },
+    {
+      "path": "NEON-ORB-UNIFIED-AUTONOMY.md",
+      "size": 3063,
+      "sha256": "d83d6eb1cfcbb1261bd0240e41441d5ad787a28fe8363d67140fbfd49246c897"
+    },
+    {
+      "path": "NEON-ORB-V11.9-COMMAND-DECK.md",
+      "size": 2248,
+      "sha256": "7abb482222dff9723e650de1c6d6a3cf1fa9f3c78c9b7c19b95750704d3539ca"
+    },
+    {
+      "path": "OPERACIONES-BLOCKCHAIN-SEGURAS.md",
+      "size": 2252,
+      "sha256": "7468b5b4a9be2b5b920a64e18dd757b3dfa5ddcca638e2775f68c0380b2b9578"
+    },
+    {
+      "path": "ORB-PLAYER-INTERFACE-FIXES.md",
+      "size": 1293,
+      "sha256": "dc16fddf318e9c83301f3b41e472b5f73d6f61314565d3f6a0804fc9749657ee"
+    },
+    {
+      "path": "PRODUCTION-DEPLOYMENT.md",
+      "size": 1445,
+      "sha256": "89e3921bf640f8842ab676a8ec0858e366f1fda32be67c86116f5f1295e56378"
+    },
+    {
+      "path": "PUBLIC-KEYS-AND-SECRETS.md",
+      "size": 1015,
+      "sha256": "189dc4c939f159a64f08947c269b8fe11947b74056b84812b1010b4fe1eba33e"
+    },
+    {
+      "path": "PUBLIC-KEYS.env",
+      "size": 145,
+      "sha256": "77cafee0c3d5e31761ad62dad4090138da09b707f3095ac307681d308ad92968"
+    },
+    {
+      "path": "PUBLIC-SYNC-REPORT.md",
+      "size": 936,
+      "sha256": "be7c4feaf3bba1dcf68ac17827055e55dd4e4da7047895e3758202c7b43c4d6d"
+    },
+    {
+      "path": "RADIO-HARDENING.md",
+      "size": 1524,
+      "sha256": "aacb027f6c66b5ca0b307e0a6037b94bc223de850e5dc4c01d2ac71d048cca71"
+    },
+    {
+      "path": "REAL-ECONOMIC-PIPELINE.md",
+      "size": 1784,
+      "sha256": "ee913bbf218a6b4ae203e4bb1cf904fa402cd0e664b50f69c32d38d5efea1ad4"
+    },
+    {
+      "path": "REAL-ECONOMIC-SOURCES.md",
+      "size": 1767,
+      "sha256": "158313a0c409e61fde5e6fc4ac250130cf27df959009e3175e759864f88a7322"
+    },
+    {
+      "path": "REAL-WORK-V11.7.1.md",
+      "size": 929,
+      "sha256": "e0c096da5d5c980e1dc9169169054885f284782089e84745655d9adf7cf11c2b"
+    },
+    {
+      "path": "REALME.md",
+      "size": 19891,
+      "sha256": "cf87c683c45ee1dca8e2d6bac0fff54365f072cd8a8b0291a472c740167dd8b9"
+    },
+    {
+      "path": "RED-SEGURA-AUDITORIA-EMPLEO.md",
+      "size": 2701,
+      "sha256": "ea8a713057152f9c025abb91c254060ed0d3744552b1e7346c6be8ce6ef08546"
+    },
+    {
+      "path": "SECURITY-HARDENING.md",
+      "size": 1204,
+      "sha256": "e3f4636237cfb246d3a581f8f8720a0ab914393ca5e54322d3eec309b652120a"
+    },
+    {
+      "path": "SERVER-404-FIX.md",
+      "size": 723,
+      "sha256": "e660a080d302b5fdf9137c9cd3bfef1a1e42f342e56e860f6939c075e23364d5"
+    },
+    {
+      "path": "UI/account-readiness.js",
+      "size": 2712,
+      "sha256": "10da843194e4b1b9c9ecc426fa80df732aac80676e87051acda29eaf50215145"
+    },
+    {
+      "path": "UI/arcade-slot-machine.js",
+      "size": 5392,
+      "sha256": "468467104af71d43a92f9e44e91cc86f00038409cb9d9ee1acd0a32a0916dd3d"
+    },
+    {
+      "path": "UI/autonomy-dashboard.js",
+      "size": 2514,
+      "sha256": "22763b1fd3dc81b7e367412c3126eec4ff4c7c7dc3a99e79f08e9e7e0856cd6e"
+    },
+    {
+      "path": "UI/autonomy-operations.css",
+      "size": 1429,
+      "sha256": "98f234e3d1887c09cdea8ca4b67b9e37c0197b66c1be7df3319b02bca33b2e3d"
+    },
+    {
+      "path": "UI/autonomy-operations.js",
+      "size": 6504,
+      "sha256": "9fd51d47d11ec4efbe7d19e4a580857b65e1f093709aa2cda49295fd0978d3b4"
+    },
+    {
+      "path": "UI/economic-capabilities-dashboard.js",
+      "size": 3177,
+      "sha256": "d289b4b8322b638e514db5712f4fe63ae3e4293897487bb24f28a545377e20bd"
+    },
+    {
+      "path": "UI/holographic-map.css",
+      "size": 3051,
+      "sha256": "89b251817d9ac05124408af45ccc651670035579b4907e4ae6bb050debb8c441"
+    },
+    {
+      "path": "UI/holographic-map.js",
+      "size": 1870,
+      "sha256": "0ca77754d7b6c16ff2368ca32022be3db5cc3f08428f7fdebb137d5b46bf765e"
+    },
+    {
+      "path": "UI/neon-orb-command-deck.js",
+      "size": 21253,
+      "sha256": "0e71f2d3bc9068c90d93390a486a3cd1a48313746210cd95363eba11b005d3f9"
+    },
+    {
+      "path": "UI/neon-orb-companion.css",
+      "size": 4032,
+      "sha256": "88d297ad99f3ad609b5cd73f3d5489b1faa74ac788369b4c6470eacafb594b10"
+    },
+    {
+      "path": "UI/neon-orb-companion.js",
+      "size": 9892,
+      "sha256": "003f581f753562b0818f9769b7ff247e0b20772c72ce73dc921a09b4f2d7ba52"
+    },
+    {
+      "path": "UI/network-operations-dashboard.js",
+      "size": 9910,
+      "sha256": "c1b3eec3d57f1f9442cdc320e407ae7f9819f34aafa9071bdb090654e5437fb2"
+    },
+    {
+      "path": "UI/real-work-dashboard.js",
+      "size": 5043,
+      "sha256": "0b73af8a5280befbc58e4b6ae7e70444fbb7f5342bb9fd4c221a187ca1ed8b8b"
+    },
+    {
+      "path": "UI/styles-economy.css",
+      "size": 11137,
+      "sha256": "16d1b340b51267968fa1e109f2bd242f28cc8e6a48d3ad67845fd52c791e73f9"
+    },
+    {
+      "path": "UI/styles.css",
+      "size": 3018,
+      "sha256": "d1ae64f850c60de201c0d26db30392dbff00798f8c7abcd348bf1dc9c6c7b5e8"
+    },
+    {
+      "path": "UI/unified-control-center.css",
+      "size": 15958,
+      "sha256": "5b4bb5cb7045734035d944315a0c6d2e9d553d31bd16ae9d47fdb39da7f1f271"
+    },
+    {
+      "path": "UI/unified-control-center.js",
+      "size": 10060,
+      "sha256": "e9f8e7c5c6034a575098631d4cc1ea80a0178421e4a49fe3cacb183906117b38"
+    },
+    {
+      "path": "UI/wallet-dashboard.js",
+      "size": 10889,
+      "sha256": "440d2d62325774f7fad3ed303625310960b33317d6de783c054bebcc1513a9cc"
+    },
+    {
+      "path": "UI/wallet-private.css",
+      "size": 3402,
+      "sha256": "90d5c68c9124fff6768d13d2390d3e005c1986c32a4d89ca6ed47b7286fc228a"
+    },
+    {
+      "path": "UNIFIED-V11.7.md",
+      "size": 1687,
+      "sha256": "a3bdd826952f987f6a5dbf7a8b856c5137e0e0aeaff47dad44e78a90600c37bb"
+    },
+    {
+      "path": "WALLET-AUTO-SYNC-AUTOSTART.md",
+      "size": 3050,
+      "sha256": "a99bce1bf4d5f0902badf66e8f3edb97dd64241d7311f17c76c3c2f9f759c4e0"
+    },
+    {
+      "path": "WALLETS-PRIVADAS-NAVEGACION-LATERAL.md",
+      "size": 1360,
+      "sha256": "036f49dc35175663f84a4a4d0c075a78d47f0652c673d4ddda42c469c9e47a7a"
+    },
+    {
+      "path": "WEB3-PLACTON-OPERATIONS.md",
+      "size": 3510,
+      "sha256": "24a9ebb273001bdbe9fe3c3230de66b59761dd1fd95faebab852fbe868cb37cf"
+    },
+    {
+      "path": "WEB3-REAL-INTEGRATION.md",
+      "size": 3487,
+      "sha256": "b56f0cd7722227d1ca3d91138ef32a395b9dfc6e298308bba6a53176e92263fa"
+    },
+    {
+      "path": "app-icon.jpg",
+      "size": 43698,
+      "sha256": "fb5222b076eaed5d899db5300aaa81b9df07192a60d6cd5383be136789ebeec7"
+    },
+    {
+      "path": "core/economic-autonomy.js",
+      "size": 696,
+      "sha256": "37ef11914085cb9ee433a64e82c7ee48be0adda8c807c1251d87bd1bfc464693"
+    },
+    {
+      "path": "core/economic-engine.js",
+      "size": 6733,
+      "sha256": "4066fd863d0cb550cf03bfba046a68d6c5692151f174bc4b58b011ff4c90264d"
+    },
+    {
+      "path": "core/neon-orb-core.js",
+      "size": 2843,
+      "sha256": "bd14033bb93904c76b792b48703572db21726a096269f12594c3064bc932d613"
+    },
+    {
+      "path": "core/neon-orb-daemon.js",
+      "size": 7357,
+      "sha256": "cec3b14f2c5aa39cee080e08d8fa27a9c01ddf95387b542cf9db634627b31571"
+    },
+    {
+      "path": "core/neon-orb-runtime.js",
+      "size": 9097,
+      "sha256": "ac7a8388d66832c3bd4569393615f488ce2040cc744d937f9a82c1c609422745"
+    },
+    {
+      "path": "core/orb-work-bridge.js",
+      "size": 937,
+      "sha256": "a71dfda73c412785d7fb93235d0486ed35de6fcf3229378aabba1a50f875b1e5"
+    },
+    {
+      "path": "core/slot-engine.js",
+      "size": 991,
+      "sha256": "0d27b63c223f649f4719f7f00816cb24863be853ef669da76f1adadcf59d1eb6"
+    },
+    {
+      "path": "core/unified-ledger.js",
+      "size": 4000,
+      "sha256": "f3b3c54fcdda1ea5e3e14aae0a2227861e8d6d687848339482d27d4268882255"
+    },
+    {
+      "path": "creator-gift.bridge.js",
+      "size": 2294,
+      "sha256": "694c5173fe33190a10029e49117dde4769cdefe18b9dd23ea7990cbaff4f82e6"
+    },
+    {
+      "path": "economic-sources.js",
+      "size": 1096,
+      "sha256": "f4ddb7df4710fcb5091ed2a76ef7015b447e4040ba7438f3d06a5362ff52b181"
+    },
+    {
+      "path": "favicon-32.png",
+      "size": 1389,
+      "sha256": "c6739f46fcc442006358fb1948cae93a29b09221afb3adaac2e55dafce617d71"
+    },
+    {
+      "path": "general.js",
+      "size": 1965,
+      "sha256": "fcdcce8df30711019073538b109294b83dab0a9f607e0356fdfc8d6ef9e6830d"
+    },
+    {
+      "path": "github-pages-sync/.nojekyll",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "github-pages-sync/PAGES-DEPLOY-NOTES.md",
+      "size": 715,
+      "sha256": "c52081dfd52bf4f03234b9b5e4a7f27c0b75cc56395348a83c315372c895ab06"
+    },
+    {
+      "path": "github-pages-sync/UI/account-readiness.js",
+      "size": 2712,
+      "sha256": "10da843194e4b1b9c9ecc426fa80df732aac80676e87051acda29eaf50215145"
+    },
+    {
+      "path": "github-pages-sync/UI/arcade-slot-machine.js",
+      "size": 5392,
+      "sha256": "468467104af71d43a92f9e44e91cc86f00038409cb9d9ee1acd0a32a0916dd3d"
+    },
+    {
+      "path": "github-pages-sync/UI/autonomy-operations.css",
+      "size": 1429,
+      "sha256": "98f234e3d1887c09cdea8ca4b67b9e37c0197b66c1be7df3319b02bca33b2e3d"
+    },
+    {
+      "path": "github-pages-sync/UI/autonomy-operations.js",
+      "size": 6504,
+      "sha256": "9fd51d47d11ec4efbe7d19e4a580857b65e1f093709aa2cda49295fd0978d3b4"
+    },
+    {
+      "path": "github-pages-sync/UI/neon-orb-command-deck.js",
+      "size": 21253,
+      "sha256": "0e71f2d3bc9068c90d93390a486a3cd1a48313746210cd95363eba11b005d3f9"
+    },
+    {
+      "path": "github-pages-sync/UI/neon-orb-companion.css",
+      "size": 4032,
+      "sha256": "88d297ad99f3ad609b5cd73f3d5489b1faa74ac788369b4c6470eacafb594b10"
+    },
+    {
+      "path": "github-pages-sync/UI/neon-orb-companion.js",
+      "size": 9892,
+      "sha256": "003f581f753562b0818f9769b7ff247e0b20772c72ce73dc921a09b4f2d7ba52"
+    },
+    {
+      "path": "github-pages-sync/UI/network-operations-dashboard.js",
+      "size": 9910,
+      "sha256": "c1b3eec3d57f1f9442cdc320e407ae7f9819f34aafa9071bdb090654e5437fb2"
+    },
+    {
+      "path": "github-pages-sync/UI/real-work-dashboard.js",
+      "size": 5043,
+      "sha256": "0b73af8a5280befbc58e4b6ae7e70444fbb7f5342bb9fd4c221a187ca1ed8b8b"
+    },
+    {
+      "path": "github-pages-sync/UI/styles-economy.css",
+      "size": 11137,
+      "sha256": "16d1b340b51267968fa1e109f2bd242f28cc8e6a48d3ad67845fd52c791e73f9"
+    },
+    {
+      "path": "github-pages-sync/UI/styles.css",
+      "size": 3018,
+      "sha256": "d1ae64f850c60de201c0d26db30392dbff00798f8c7abcd348bf1dc9c6c7b5e8"
+    },
+    {
+      "path": "github-pages-sync/UI/unified-control-center.css",
+      "size": 15958,
+      "sha256": "5b4bb5cb7045734035d944315a0c6d2e9d553d31bd16ae9d47fdb39da7f1f271"
+    },
+    {
+      "path": "github-pages-sync/UI/unified-control-center.js",
+      "size": 10060,
+      "sha256": "e9f8e7c5c6034a575098631d4cc1ea80a0178421e4a49fe3cacb183906117b38"
+    },
+    {
+      "path": "github-pages-sync/UI/wallet-dashboard.js",
+      "size": 10889,
+      "sha256": "440d2d62325774f7fad3ed303625310960b33317d6de783c054bebcc1513a9cc"
+    },
+    {
+      "path": "github-pages-sync/UI/wallet-private.css",
+      "size": 3402,
+      "sha256": "90d5c68c9124fff6768d13d2390d3e005c1986c32a4d89ca6ed47b7286fc228a"
+    },
+    {
+      "path": "github-pages-sync/app-icon.jpg",
+      "size": 43698,
+      "sha256": "fb5222b076eaed5d899db5300aaa81b9df07192a60d6cd5383be136789ebeec7"
+    },
+    {
+      "path": "github-pages-sync/core/economic-engine.js",
+      "size": 6733,
+      "sha256": "4066fd863d0cb550cf03bfba046a68d6c5692151f174bc4b58b011ff4c90264d"
+    },
+    {
+      "path": "github-pages-sync/core/neon-orb-runtime.js",
+      "size": 9097,
+      "sha256": "ac7a8388d66832c3bd4569393615f488ce2040cc744d937f9a82c1c609422745"
+    },
+    {
+      "path": "github-pages-sync/core/slot-engine.js",
+      "size": 991,
+      "sha256": "0d27b63c223f649f4719f7f00816cb24863be853ef669da76f1adadcf59d1eb6"
+    },
+    {
+      "path": "github-pages-sync/core/unified-ledger.js",
+      "size": 4000,
+      "sha256": "f3b3c54fcdda1ea5e3e14aae0a2227861e8d6d687848339482d27d4268882255"
+    },
+    {
+      "path": "github-pages-sync/creator-gift.bridge.js",
+      "size": 2294,
+      "sha256": "694c5173fe33190a10029e49117dde4769cdefe18b9dd23ea7990cbaff4f82e6"
+    },
+    {
+      "path": "github-pages-sync/favicon-32.png",
+      "size": 1389,
+      "sha256": "c6739f46fcc442006358fb1948cae93a29b09221afb3adaac2e55dafce617d71"
+    },
+    {
+      "path": "github-pages-sync/icon-180.png",
+      "size": 16415,
+      "sha256": "fef845fefbf745906dca6790954721e4d53957020a222ffea50b40a2f2b79199"
+    },
+    {
+      "path": "github-pages-sync/icon-192.png",
+      "size": 18272,
+      "sha256": "3f658efdf31625b560c8fb9655fe564f9a6a6109ce59b76a146b01d666241499"
+    },
+    {
+      "path": "github-pages-sync/icon-48.png",
+      "size": 2235,
+      "sha256": "7d73295b92bd8560ce333e0790dbe0bf9318982fb12b5692b29fd9249c7ffccc"
+    },
+    {
+      "path": "github-pages-sync/icon-512.png",
+      "size": 88944,
+      "sha256": "dd9fc497e48c7667f49858359d62d57792a0612482a92bc54e587ee4299aee20"
+    },
+    {
+      "path": "github-pages-sync/icon-96.png",
+      "size": 5991,
+      "sha256": "13e3a29236f85bda0e72660036a05712672317757d9ac139e96f4aa737f05c8f"
+    },
+    {
+      "path": "github-pages-sync/index.html",
+      "size": 20974,
+      "sha256": "0b03196da1b7431b9af698d7ca8c282cf6e96d91d3a385b83d9f9f471123c2c0"
+    },
+    {
+      "path": "github-pages-sync/manifest.webmanifest",
+      "size": 424,
+      "sha256": "cb54115e9bfead453abab266f9e26ec92f19ec3c04be4da40da0cc6e62373bbe"
+    },
+    {
+      "path": "github-pages-sync/neon-ai.config.js",
+      "size": 190,
+      "sha256": "8307c73522a25866fd775828d6ff9b4497e65590c923428f58aa521a646b8b24"
+    },
+    {
+      "path": "github-pages-sync/script.js",
+      "size": 76629,
+      "sha256": "8dba22a2ce6c2cd910517af79c55e6de4a7618bb9af376aa89747ca5023ee93a"
+    },
+    {
+      "path": "github-pages-sync/style.css",
+      "size": 66933,
+      "sha256": "98b860fd0611b969128ef755a42c0133a7856158a914149de32587e3d5515621"
+    },
+    {
+      "path": "github-pages-sync/sw.js",
+      "size": 1317,
+      "sha256": "49020c93804c7e9ef0ee0130d916eea1d0d4455ab1aadec1d4f21689d1a0617a"
+    },
+    {
+      "path": "icon-180.png",
+      "size": 16415,
+      "sha256": "fef845fefbf745906dca6790954721e4d53957020a222ffea50b40a2f2b79199"
+    },
+    {
+      "path": "icon-192.png",
+      "size": 18272,
+      "sha256": "3f658efdf31625b560c8fb9655fe564f9a6a6109ce59b76a146b01d666241499"
+    },
+    {
+      "path": "icon-48.png",
+      "size": 2235,
+      "sha256": "7d73295b92bd8560ce333e0790dbe0bf9318982fb12b5692b29fd9249c7ffccc"
+    },
+    {
+      "path": "icon-512.png",
+      "size": 88944,
+      "sha256": "dd9fc497e48c7667f49858359d62d57792a0612482a92bc54e587ee4299aee20"
+    },
+    {
+      "path": "icon-96.png",
+      "size": 5991,
+      "sha256": "13e3a29236f85bda0e72660036a05712672317757d9ac139e96f4aa737f05c8f"
+    },
+    {
+      "path": "index-integration-example.js",
+      "size": 866,
+      "sha256": "ae7c72be6c5d6a7400388e3f3449b9eb3ec6d985d76d85945a83447db022ae83"
+    },
+    {
+      "path": "index.html",
+      "size": 20974,
+      "sha256": "0b03196da1b7431b9af698d7ca8c282cf6e96d91d3a385b83d9f9f471123c2c0"
+    },
+    {
+      "path": "integrations/btc-mempool.js",
+      "size": 2012,
+      "sha256": "0c7305c8f71ac3b0bb7bc8a5ee32befb9cb8be8fe1eea0d648213e117db0a3c1"
+    },
+    {
+      "path": "integrations/paypal-checkout.js",
+      "size": 1549,
+      "sha256": "152a1a2eca6c12207227768f5242eddcff2e7229e1b64e8ad88a5b0df296ee36"
+    },
+    {
+      "path": "integrations/revenue-gateway.js",
+      "size": 1845,
+      "sha256": "837d3697aa9a42d4b327559b3409f7f4fc3578bb4d01cd102b5958420d4f9aff"
+    },
+    {
+      "path": "integrations/solana-web3.js",
+      "size": 13611,
+      "sha256": "7763305d21963b8c99dfd97901554ffbd6992462910ed2315ae1c1d28b5987bb"
+    },
+    {
+      "path": "launch.js",
+      "size": 514,
+      "sha256": "7980f7bd6a4205e06ce25807789532cd0594d4e3a8024423e0ce494aa5a48e02"
+    },
+    {
+      "path": "launch.json",
+      "size": 514,
+      "sha256": "7980f7bd6a4205e06ce25807789532cd0594d4e3a8024423e0ce494aa5a48e02"
+    },
+    {
+      "path": "manifest.webmanifest",
+      "size": 424,
+      "sha256": "cb54115e9bfead453abab266f9e26ec92f19ec3c04be4da40da0cc6e62373bbe"
+    },
+    {
+      "path": "mining/README.md",
+      "size": 3255,
+      "sha256": "84723b1d8341501fdfac12e7a36a5a7c6d9e82218431677651867e850614a96a"
+    },
+    {
+      "path": "mining/miner.env.example",
+      "size": 324,
+      "sha256": "ed3e6ad23cac7868fa9b1f415a7965d0bde7a80c4e3c584b8f20d76662b794c3"
+    },
+    {
+      "path": "mining/run-etc-miner-linux.sh",
+      "size": 1449,
+      "sha256": "08d4a5d580ef5b335a089f4d52a4f206013b650591574f59fedb5c6eada086bf"
+    },
+    {
+      "path": "neon-ai.config.js",
+      "size": 190,
+      "sha256": "8307c73522a25866fd775828d6ff9b4497e65590c923428f58aa521a646b8b24"
+    },
+    {
+      "path": "neon-lim.bridge.py",
+      "size": 9070,
+      "sha256": "f034169f8655202d5d148a0bbaefa78ce83be8dbe2f75404b851de81adee8b9c"
+    },
+    {
+      "path": "neon-lim.env.example",
+      "size": 367,
+      "sha256": "544e14c174f029bd390e225e14a3f5dbc2348705881ab9e6e6c324b69ed1d116"
+    },
+    {
+      "path": "neon-lim.state.js",
+      "size": 929,
+      "sha256": "5753bd88d5462b30dac9f1770c64cfd3c6780b35a40d346bb824c7b2c3a5e7c9"
+    },
+    {
+      "path": "neon-lim.state.json",
+      "size": 859,
+      "sha256": "a7f7a96d7e498145d51442732e1843a770d7bda9074fd797de8469750fd88f37"
+    },
+    {
+      "path": "neon-llm.bridge.py",
+      "size": 4998,
+      "sha256": "b62ee16a81c25a3a28d92d86a5090f3e282e0272f7f0a4e0749cace35800881d"
+    },
+    {
+      "path": "neon-orb.env.example",
+      "size": 724,
+      "sha256": "3de5fd4c722c1a8b45a2ddc3c19ac1dd3b432d2b3cc94b20e38076fdb1ba5bed"
+    },
+    {
+      "path": "package",
+      "size": 464,
+      "sha256": "787e0dd2b0c6052d5ce12c09a416eaae55f66dc653d408cc12cc90239c68c1d8"
+    },
+    {
+      "path": "package-lock.json",
+      "size": 92,
+      "sha256": "cc5ebf4a2dcf91e5d13e670a6cd7bf275e9bc01d4b088edba1f93624857a3f62"
+    },
+    {
+      "path": "package.js",
+      "size": 734,
+      "sha256": "eedb982b1b8d90f47de921c738e895c18c7b6e0ef4ce28ff869c7150134a1c72"
+    },
+    {
+      "path": "package.json",
+      "size": 902,
+      "sha256": "ce043b3724c41b75ecf4a9ba387b26e93d9a16114c87ae321daebe1cbfeda669"
+    },
+    {
+      "path": "public/UI/account-readiness.js",
+      "size": 2712,
+      "sha256": "10da843194e4b1b9c9ecc426fa80df732aac80676e87051acda29eaf50215145"
+    },
+    {
+      "path": "public/UI/arcade-slot-machine.js",
+      "size": 5392,
+      "sha256": "468467104af71d43a92f9e44e91cc86f00038409cb9d9ee1acd0a32a0916dd3d"
+    },
+    {
+      "path": "public/UI/autonomy-operations.css",
+      "size": 1429,
+      "sha256": "98f234e3d1887c09cdea8ca4b67b9e37c0197b66c1be7df3319b02bca33b2e3d"
+    },
+    {
+      "path": "public/UI/autonomy-operations.js",
+      "size": 6504,
+      "sha256": "9fd51d47d11ec4efbe7d19e4a580857b65e1f093709aa2cda49295fd0978d3b4"
+    },
+    {
+      "path": "public/UI/holographic-map.css",
+      "size": 3051,
+      "sha256": "89b251817d9ac05124408af45ccc651670035579b4907e4ae6bb050debb8c441"
+    },
+    {
+      "path": "public/UI/holographic-map.js",
+      "size": 1870,
+      "sha256": "0ca77754d7b6c16ff2368ca32022be3db5cc3f08428f7fdebb137d5b46bf765e"
+    },
+    {
+      "path": "public/UI/neon-orb-command-deck.js",
+      "size": 21253,
+      "sha256": "0e71f2d3bc9068c90d93390a486a3cd1a48313746210cd95363eba11b005d3f9"
+    },
+    {
+      "path": "public/UI/neon-orb-companion.css",
+      "size": 4032,
+      "sha256": "88d297ad99f3ad609b5cd73f3d5489b1faa74ac788369b4c6470eacafb594b10"
+    },
+    {
+      "path": "public/UI/neon-orb-companion.js",
+      "size": 9892,
+      "sha256": "003f581f753562b0818f9769b7ff247e0b20772c72ce73dc921a09b4f2d7ba52"
+    },
+    {
+      "path": "public/UI/network-operations-dashboard.js",
+      "size": 9910,
+      "sha256": "c1b3eec3d57f1f9442cdc320e407ae7f9819f34aafa9071bdb090654e5437fb2"
+    },
+    {
+      "path": "public/UI/real-work-dashboard.js",
+      "size": 5043,
+      "sha256": "0b73af8a5280befbc58e4b6ae7e70444fbb7f5342bb9fd4c221a187ca1ed8b8b"
+    },
+    {
+      "path": "public/UI/styles-economy.css",
+      "size": 11137,
+      "sha256": "16d1b340b51267968fa1e109f2bd242f28cc8e6a48d3ad67845fd52c791e73f9"
+    },
+    {
+      "path": "public/UI/styles.css",
+      "size": 3018,
+      "sha256": "d1ae64f850c60de201c0d26db30392dbff00798f8c7abcd348bf1dc9c6c7b5e8"
+    },
+    {
+      "path": "public/UI/unified-control-center.css",
+      "size": 15958,
+      "sha256": "5b4bb5cb7045734035d944315a0c6d2e9d553d31bd16ae9d47fdb39da7f1f271"
+    },
+    {
+      "path": "public/UI/unified-control-center.js",
+      "size": 10060,
+      "sha256": "e9f8e7c5c6034a575098631d4cc1ea80a0178421e4a49fe3cacb183906117b38"
+    },
+    {
+      "path": "public/UI/wallet-dashboard.js",
+      "size": 10889,
+      "sha256": "440d2d62325774f7fad3ed303625310960b33317d6de783c054bebcc1513a9cc"
+    },
+    {
+      "path": "public/UI/wallet-private.css",
+      "size": 3402,
+      "sha256": "90d5c68c9124fff6768d13d2390d3e005c1986c32a4d89ca6ed47b7286fc228a"
+    },
+    {
+      "path": "public/ads.json",
+      "size": 235,
+      "sha256": "6e9756ec438ff8d758a7db13897adca357f2b4be59aee273161fde1d9f9b09a9"
+    },
+    {
+      "path": "public/app-icon.jpg",
+      "size": 43698,
+      "sha256": "fb5222b076eaed5d899db5300aaa81b9df07192a60d6cd5383be136789ebeec7"
+    },
+    {
+      "path": "public/core/economic-engine.js",
+      "size": 6733,
+      "sha256": "4066fd863d0cb550cf03bfba046a68d6c5692151f174bc4b58b011ff4c90264d"
+    },
+    {
+      "path": "public/core/neon-orb-runtime.js",
+      "size": 9097,
+      "sha256": "ac7a8388d66832c3bd4569393615f488ce2040cc744d937f9a82c1c609422745"
+    },
+    {
+      "path": "public/core/slot-engine.js",
+      "size": 991,
+      "sha256": "0d27b63c223f649f4719f7f00816cb24863be853ef669da76f1adadcf59d1eb6"
+    },
+    {
+      "path": "public/core/unified-ledger.js",
+      "size": 4000,
+      "sha256": "f3b3c54fcdda1ea5e3e14aae0a2227861e8d6d687848339482d27d4268882255"
+    },
+    {
+      "path": "public/creator-gift.bridge.js",
+      "size": 2294,
+      "sha256": "694c5173fe33190a10029e49117dde4769cdefe18b9dd23ea7990cbaff4f82e6"
+    },
+    {
+      "path": "public/favicon-32.png",
+      "size": 1389,
+      "sha256": "c6739f46fcc442006358fb1948cae93a29b09221afb3adaac2e55dafce617d71"
+    },
+    {
+      "path": "public/icon-180.png",
+      "size": 16415,
+      "sha256": "fef845fefbf745906dca6790954721e4d53957020a222ffea50b40a2f2b79199"
+    },
+    {
+      "path": "public/icon-192.png",
+      "size": 18272,
+      "sha256": "3f658efdf31625b560c8fb9655fe564f9a6a6109ce59b76a146b01d666241499"
+    },
+    {
+      "path": "public/icon-48.png",
+      "size": 2235,
+      "sha256": "7d73295b92bd8560ce333e0790dbe0bf9318982fb12b5692b29fd9249c7ffccc"
+    },
+    {
+      "path": "public/icon-512.png",
+      "size": 88944,
+      "sha256": "dd9fc497e48c7667f49858359d62d57792a0612482a92bc54e587ee4299aee20"
+    },
+    {
+      "path": "public/icon-96.png",
+      "size": 5991,
+      "sha256": "13e3a29236f85bda0e72660036a05712672317757d9ac139e96f4aa737f05c8f"
+    },
+    {
+      "path": "public/index.html",
+      "size": 20974,
+      "sha256": "0b03196da1b7431b9af698d7ca8c282cf6e96d91d3a385b83d9f9f471123c2c0"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "size": 424,
+      "sha256": "cb54115e9bfead453abab266f9e26ec92f19ec3c04be4da40da0cc6e62373bbe"
+    },
+    {
+      "path": "public/neon-ai.config.js",
+      "size": 190,
+      "sha256": "8307c73522a25866fd775828d6ff9b4497e65590c923428f58aa521a646b8b24"
+    },
+    {
+      "path": "public/script.js",
+      "size": 76629,
+      "sha256": "8dba22a2ce6c2cd910517af79c55e6de4a7618bb9af376aa89747ca5023ee93a"
+    },
+    {
+      "path": "public/style.css",
+      "size": 66933,
+      "sha256": "98b860fd0611b969128ef755a42c0133a7856158a914149de32587e3d5515621"
+    },
+    {
+      "path": "public/sw.js",
+      "size": 1317,
+      "sha256": "49020c93804c7e9ef0ee0130d916eea1d0d4455ab1aadec1d4f21689d1a0617a"
+    },
+    {
+      "path": "requirements-solana-md",
+      "size": 135,
+      "sha256": "92026cd09f8cb9e514ec6b7265d7ce0155af7ef25f1367c58df709db5bfd35f3"
+    },
+    {
+      "path": "requirements-solana.txt",
+      "size": 135,
+      "sha256": "92026cd09f8cb9e514ec6b7265d7ce0155af7ef25f1367c58df709db5bfd35f3"
+    },
+    {
+      "path": "script.js",
+      "size": 76629,
+      "sha256": "8dba22a2ce6c2cd910517af79c55e6de4a7618bb9af376aa89747ca5023ee93a"
+    },
+    {
+      "path": "scripts-check-package.mjs",
+      "size": 2029,
+      "sha256": "edbbea57874f32a3c9b991bb926f10e45c9f025cd403f7ab28eae58ef32459f6"
+    },
+    {
+      "path": "scripts/autostart.mjs",
+      "size": 4541,
+      "sha256": "ca1820b6b5c00c7e5191dc70b646596fa074683d9fd06d8b91e2a5450d116c8a"
+    },
+    {
+      "path": "scripts/check-multichain-api.js",
+      "size": 504,
+      "sha256": "ea82186cb6de971d16362bdb45080f9e960529c19b134c665a040b1ad396ba45"
+    },
+    {
+      "path": "server.js",
+      "size": 36437,
+      "sha256": "f9666c22132c7d549ed2832a5a385c277358fc00d8b50d7bb3769394defffe01"
+    },
+    {
+      "path": "server/agent-runtime.js",
+      "size": 25830,
+      "sha256": "d74e75e284aec0d6195f2a1dc39fce28bf9893560cec029adbcd8fba9a587456"
+    },
+    {
+      "path": "server/arcade-demo-ledger.js",
+      "size": 4728,
+      "sha256": "c2b7d3dda6c5f858abdae79f4b2863fedc79d30b40c8520b0e95b92c1ba8dbc7"
+    },
+    {
+      "path": "server/arcade-router.js",
+      "size": 612,
+      "sha256": "bd157e66e7956baabdf376349e7f1619502bb0ff0ac32ef96e12fb5c9eda9a06"
+    },
+    {
+      "path": "server/asset-converter.js",
+      "size": 909,
+      "sha256": "6d7aef1f4fe9fae8484e6123de8b09e0d8b1a201292672d902fd9fee42015fc2"
+    },
+    {
+      "path": "server/asset-router.js",
+      "size": 2228,
+      "sha256": "ced8e98a6c705ba8202b718a72e1d77c504dc301e5396b78db5b4bea7fd1a117"
+    },
+    {
+      "path": "server/autonomy-supervisor.js",
+      "size": 5838,
+      "sha256": "67dae0a8752812d8a3feff2424a531d51ce7af8916f44bca1741b2d39c2b7143"
+    },
+    {
+      "path": "server/autonomy/operations.js",
+      "size": 9448,
+      "sha256": "7d31b468ef10374737a80c3ff5e5832e5dea883d6fa4c66907df2c1a3a99ec7b"
+    },
+    {
+      "path": "server/bitcoin-network.js",
+      "size": 7583,
+      "sha256": "2078545bd0d5836f8fa0ce4aa962a0cb4059ed30277c47c08b5b373e867439e7"
+    },
+    {
+      "path": "server/connection-coordinator.js",
+      "size": 5930,
+      "sha256": "6cf6d7baa5ceb92fe640560f7d5a48b5d2b7d2dc83a865ca37605f11df5e439c"
+    },
+    {
+      "path": "server/currency-converter.js",
+      "size": 2367,
+      "sha256": "2e3f8e5d64ab0b181b045a45427b9856b7581a7639ef7e4e385ca0ee7080e464"
+    },
+    {
+      "path": "server/eco-coordinator.js",
+      "size": 10634,
+      "sha256": "ba3dbbd04334de4e36d26a2addbf3710bdb0d23c8e60b08b378bfb5884e36c64"
+    },
+    {
+      "path": "server/economic-accounting.js",
+      "size": 2336,
+      "sha256": "41932ac851b1794f959028a67cf4d9fdd4eff2696815be030608cbdd5795e3c5"
+    },
+    {
+      "path": "server/economic-api.js",
+      "size": 1742,
+      "sha256": "a6f7f72310855672a263d23b6e7e8ea68ddbfa33046d85d41617a8a62a8785d6"
+    },
+    {
+      "path": "server/economic-capabilities.js",
+      "size": 5274,
+      "sha256": "f4a0933e892e48d7052468c044456c140ff0fb7376d6a802cf7e3a64b49d2b43"
+    },
+    {
+      "path": "server/economic-governor.js",
+      "size": 6373,
+      "sha256": "b021523f3fadf111970270f7791f141d36ee0be0ac0307cbdff7f678975c888b"
+    },
+    {
+      "path": "server/economic-source-catalog.js",
+      "size": 3453,
+      "sha256": "74aca8b8d9feb375fc81ba7f8f4dd03c05e1608e3191a8f370f4b823718aec79"
+    },
+    {
+      "path": "server/economic-source-registry.js",
+      "size": 4392,
+      "sha256": "e42bace297ed333080c0ffb64f697682996948c5d9531690f40848c57b7b7bc9"
+    },
+    {
+      "path": "server/economic-store.js",
+      "size": 895,
+      "sha256": "a50df17ca9d01d9cb4e791101bf238e8eb560033d2002656ed0427b0d28befbe"
+    },
+    {
+      "path": "server/economy-profile.js",
+      "size": 452,
+      "sha256": "7a5693d0842369e27d09e8e19b8b336780de2bb5e2192567a7fee3fa11c1500c"
+    },
+    {
+      "path": "server/external-economic-governor.js",
+      "size": 7803,
+      "sha256": "8e7900a1a887a5b2bb5d51d075a126bf34bdb7c3c9653d08f5e123f8c587e535"
+    },
+    {
+      "path": "server/external-execution.js",
+      "size": 4171,
+      "sha256": "5d86926b1b87fe6f2c702256bee52fcdc67c5e99c11e48a363d6a72d2e0e94d7"
+    },
+    {
+      "path": "server/external-source-adapter.js",
+      "size": 1346,
+      "sha256": "3a5dea002d3a5f072ae67eb57ecb9e7b796fe8e07264b1c8ca42256c2098857c"
+    },
+    {
+      "path": "server/governor.js",
+      "size": 3309,
+      "sha256": "ee61cc86cf56b88401e19891bf72f374d92b52a32064b0bd6a679e704778af84"
+    },
+    {
+      "path": "server/load-env.js",
+      "size": 905,
+      "sha256": "67cdd95c0ebf46e08cbe35955aea1d08af440effe19140885ef565816f27e2fa"
+    },
+    {
+      "path": "server/market-mining-telemetry.js",
+      "size": 17270,
+      "sha256": "1d5cebdaf17be27701971008f2de4a8ab20a3e4b7cb3012136df26aaa006b810"
+    },
+    {
+      "path": "server/miner-supervisor.js",
+      "size": 6711,
+      "sha256": "68e6bfc5a5513a70929ce0de16e579727a50aaa1d7f3204923ade1e8b9166846"
+    },
+    {
+      "path": "server/multichain-wallet.js",
+      "size": 12622,
+      "sha256": "f0d60900e77efc2531034df215f75ba74b2ead753026621b7b5896f8ef459a90"
+    },
+    {
+      "path": "server/neon-life-agent.js",
+      "size": 4861,
+      "sha256": "b3f653bc63b651e1e34f4b785a2da4c5f92b5e315cdd52fe583eb02419b68bfd"
+    },
+    {
+      "path": "server/network-operations.js",
+      "size": 7802,
+      "sha256": "e839f0a1d79e91a003486f5ca1a735139a0eb3778e37149d393251f9f3a7990c"
+    },
+    {
+      "path": "server/network-sandbox.js",
+      "size": 3002,
+      "sha256": "7e652759dde02ec181615113e2aa4a8cfd303b715afa17b592f157f6e97c33ce"
+    },
+    {
+      "path": "server/operation-preflight.js",
+      "size": 4073,
+      "sha256": "070948bfd3a0f6714e728b98dc7abfc3bdb7ffbeb6cfaf7038b5074b04651c45"
+    },
+    {
+      "path": "server/opportunity-engine.js",
+      "size": 3824,
+      "sha256": "ed464760bbbe6558e7545c99fd27e6a002ef8f481be5d11e80f0eb13dfb4e519"
+    },
+    {
+      "path": "server/provider-api.js",
+      "size": 3747,
+      "sha256": "35eb1f20c2fdac48bfec018f149d2e56e3aee6fdbc584a6229590b60e334585a"
+    },
+    {
+      "path": "server/provider-security.js",
+      "size": 417,
+      "sha256": "3294142b3eac3effd7c2f50b3a517cc4f24e40dc6b2f027f808e86557d2ccb01"
+    },
+    {
+      "path": "server/providers.js",
+      "size": 3736,
+      "sha256": "a12aa172d65f33b0833ddf7adc7a9299f9574f5d3c596b2325cf4fa07b2a4098"
+    },
+    {
+      "path": "server/providers/compute-node.js",
+      "size": 1102,
+      "sha256": "9a556de14d64b0ae2933b3e7a463ad9d6552907cc4939f30b5650bb80a105973"
+    },
+    {
+      "path": "server/providers/crypto.js",
+      "size": 1472,
+      "sha256": "958bb9b7a15c612c497ca9c70547d0bc15e2031eb7aafbc74aa90cf6f8efc8f3"
+    },
+    {
+      "path": "server/providers/index.js",
+      "size": 623,
+      "sha256": "b04f3d21d9f5f7a9dcdcc537e244aa09e37ddd1a4e00db81b751563d9f05ad0e"
+    },
+    {
+      "path": "server/providers/paypal.js",
+      "size": 2143,
+      "sha256": "4160d13fe6baa7a32e098563e4309dd1d4497a42b4be8d4d74d7794bb400adac"
+    },
+    {
+      "path": "server/providers/runpod.js",
+      "size": 819,
+      "sha256": "a690bccc3c39ba6ebeecab3e6323dabe7adc4e4aea8bb341cb15e134ab98c1a1"
+    },
+    {
+      "path": "server/providers/stripe.js",
+      "size": 872,
+      "sha256": "ca951e89994f596208f0979cbe576434abfbaef378647b948242612c43c8b680"
+    },
+    {
+      "path": "server/public-work-sources.js",
+      "size": 9493,
+      "sha256": "e4d021cb7d3c65dd1492c12aefeac8a13951d2a02e27d8dc91b07ee1412a84a7"
+    },
+    {
+      "path": "server/radio-control.js",
+      "size": 1809,
+      "sha256": "ef1e1c34cc6ab2b10045c7e2c4ceedadc8a1a8d33b06a10545e497668f4cd11a"
+    },
+    {
+      "path": "server/real-economic-registry.js",
+      "size": 2725,
+      "sha256": "5dc7dfca72e856e61ea80f39c80a91b85ae28a683819a194fbb7b61d740ea46d"
+    },
+    {
+      "path": "server/real-work-sources.js",
+      "size": 1432,
+      "sha256": "158cf87568a128cdf9c58a996470983ad998d3df89cdc6f45f31b96843d8dc8c"
+    },
+    {
+      "path": "server/real-work-verifier.js",
+      "size": 2383,
+      "sha256": "59c42b0f06da126cde05ef6db49d5db951a65245e36f085e468ef30f8da34d98"
+    },
+    {
+      "path": "server/secrets.js",
+      "size": 441,
+      "sha256": "5980ca3b7e7ab521c05e06d390abfee1903046ebcd35c1186d7d8bf4cdb02d12"
+    },
+    {
+      "path": "server/security-audit.js",
+      "size": 3898,
+      "sha256": "8afc698099d458b5368710b68954bf63896530be32f9e2e6887a81001185988a"
+    },
+    {
+      "path": "server/settlement-verifier.js",
+      "size": 2210,
+      "sha256": "366b5b7120727aa97af522db809fbb2dc2d58ab8b78ec9f10b9a67377f3361da"
+    },
+    {
+      "path": "server/store.js",
+      "size": 619,
+      "sha256": "bb48dc321f95a2e3cc888f76ecf616406419dfeb3208a720695eb11dac5024c2"
+    },
+    {
+      "path": "server/wallet-observer.js",
+      "size": 2839,
+      "sha256": "02d4015e3761e20b433ad81fb5bb3d1dc55c8f3a3a4b838ca0428cadf8c5ce7d"
+    },
+    {
+      "path": "server/wallet-vault.js",
+      "size": 945,
+      "sha256": "89cc378d2ffdd4dbd0eb9b76f1a250bd75c82376841ce2c65d01ad3d197919bf"
+    },
+    {
+      "path": "settings.js",
+      "size": 73,
+      "sha256": "0b15fc7dc566ff962f60e8dbe4a0bd5dc56f9cbae99f03029964d8c6ad5c2fcc"
+    },
+    {
+      "path": "style.css",
+      "size": 66933,
+      "sha256": "98b860fd0611b969128ef755a42c0133a7856158a914149de32587e3d5515621"
+    },
+    {
+      "path": "sw.js",
+      "size": 1317,
+      "sha256": "49020c93804c7e9ef0ee0130d916eea1d0d4455ab1aadec1d4f21689d1a0617a"
+    },
+    {
+      "path": "tests/agent-runtime.test.mjs",
+      "size": 3306,
+      "sha256": "c685135d414c1d39488bd9685683408024b52727c4ddcd7b6fe1889c866ed1b4"
+    },
+    {
+      "path": "tests/arcade-demo-ledger.test.mjs",
+      "size": 1559,
+      "sha256": "a63c4aad296293401a662bcde6b7dddb16b3c48b7d9779b4403082be1fa08f93"
+    },
+    {
+      "path": "tests/autonomy-operations.test.mjs",
+      "size": 1234,
+      "sha256": "8618c13f2b9777098bb24e60f9565307fb6c7be5595fa4e5d9356b8aeb382e16"
+    },
+    {
+      "path": "tests/autonomy-supervisor.test.mjs",
+      "size": 1726,
+      "sha256": "b168f6b4736273f77f5b36fd65bad7c12bb1dbfa3a342e4b0bcf52479aabe997"
+    },
+    {
+      "path": "tests/bitcoin-network.test.mjs",
+      "size": 4558,
+      "sha256": "14916193ce00042fb60dbd76ebdcbc1d4f2b94d7aa5f68e9472dbafb584e2628"
+    },
+    {
+      "path": "tests/command-deck-assets.test.mjs",
+      "size": 1814,
+      "sha256": "8ca1a3f9f3f45315424619848d7147b7cbe57576bcb1e2b40d11a0e1e1d860e5"
+    },
+    {
+      "path": "tests/connection-coordinator.test.mjs",
+      "size": 1572,
+      "sha256": "dadcee0f9e8f5ec888ef6c809c61164d3a7b47e6b7ef81bdb2cf04ac4b4a7691"
+    },
+    {
+      "path": "tests/control-center-polish.test.mjs",
+      "size": 2610,
+      "sha256": "2d64ea53904c0036b4037d09a2096c4b92be3b906d6e378d7667ff846cbb900a"
+    },
+    {
+      "path": "tests/eco-coordinator.test.mjs",
+      "size": 1316,
+      "sha256": "bd8b1f69a73a7d3faf6f1453b38f052b1e540f26aaef6a5a3e5e1800eca40ffc"
+    },
+    {
+      "path": "tests/economic-source-catalog.js",
+      "size": 1389,
+      "sha256": "ae944c9bd6a331358018b727c349930305a36bbdc6a9bf3678722ca73e7ee988"
+    },
+    {
+      "path": "tests/economic-sources.js",
+      "size": 1301,
+      "sha256": "f99764b9185aa400c6e621e551aa1f141e3b0e0d37e1c875229a2ad56e3bfd1e"
+    },
+    {
+      "path": "tests/economy-integrations.test.mjs",
+      "size": 901,
+      "sha256": "2c6301067aacdcf624e0bf6b5374c5775b136ba6da4f53e35c529e94886862fb"
+    },
+    {
+      "path": "tests/external-economic-governor.js",
+      "size": 2313,
+      "sha256": "9083b48b6dc6825f5418e9c48cab697709f0f18210d3d4005348adc92e8b9c04"
+    },
+    {
+      "path": "tests/external-economy.test.mjs",
+      "size": 1033,
+      "sha256": "9380d944d55b72714ad0e8a827b8f4144113dcc6f00013d1fe6d27bb6185a49b"
+    },
+    {
+      "path": "tests/governor.js",
+      "size": 635,
+      "sha256": "56b2b402ed61bc7ce4468d6303eac37c79f8c1c7b708865010cc62be8bd6a3b8"
+    },
+    {
+      "path": "tests/ledger-security.test.mjs",
+      "size": 1385,
+      "sha256": "321bd1f3b5c1e1d0d7779e2c987f75387d69c6afb11d08498eb7989a28282ae4"
+    },
+    {
+      "path": "tests/life-agent.test.mjs",
+      "size": 1155,
+      "sha256": "ed16b89d27bff776469c7094de7e1ef2c9422b934767fcb51af40945a817e972"
+    },
+    {
+      "path": "tests/market-mining-telemetry.test.mjs",
+      "size": 7478,
+      "sha256": "789fabc6b15c45bbd762e821028baabece25ce124e1536053cf9fcd23aa30eb3"
+    },
+    {
+      "path": "tests/multichain-wallet.test.mjs",
+      "size": 861,
+      "sha256": "7fca379489d2b62d79d085f79472e55a98a984455e8ce4fc2fc6871eee40897a"
+    },
+    {
+      "path": "tests/neon-orb-agent-operations.test.mjs",
+      "size": 1424,
+      "sha256": "afd81c6a8537e83fed0e117914cbbbc5c4b49aad9078385407cec0b4fbfb41cd"
+    },
+    {
+      "path": "tests/neon-orb-companion.test.mjs",
+      "size": 2655,
+      "sha256": "f87ac41ba3b2231bfd6eea6725cad1a6ac0997d2055c9360292decab1c7e229f"
+    },
+    {
+      "path": "tests/neon-orb-daemon.test.mjs",
+      "size": 2247,
+      "sha256": "1e754687e24dcf902fb8675e6b4c868cb2be628f091cc60cdae5d33516d466b5"
+    },
+    {
+      "path": "tests/neon-orb-runtime.test.mjs",
+      "size": 1237,
+      "sha256": "bfb3493ac9e56e281f17754a4c35d7a181150b2ab2cfc8f3554bb78fc0ccdaf7"
+    },
+    {
+      "path": "tests/network-sandbox.test.mjs",
+      "size": 4091,
+      "sha256": "b908a9323cf513b48475f64bf3e7106f7acb4b165859c847dd1e515d13f3761c"
+    },
+    {
+      "path": "tests/operation-preflight.test.mjs",
+      "size": 1384,
+      "sha256": "c0a51f95904e82902e2ec1b856ab6b380cc7519b89fe581362556a5b143520aa"
+    },
+    {
+      "path": "tests/private-wallet-access.test.mjs",
+      "size": 2266,
+      "sha256": "3cb23ea1a33b1c17c6489b262fe7c6f319a1c75611195f746c7019b36465fada"
+    },
+    {
+      "path": "tests/provider-adapters.test.mjs",
+      "size": 869,
+      "sha256": "f130d213e0e8ce8ebc7bb4ddb25ea0f4f58ba08c8a3e8fa5df4e0584e15df85e"
+    },
+    {
+      "path": "tests/public-work-sources.test.mjs",
+      "size": 2422,
+      "sha256": "66ca7bbdad8d94183ac1410fb39d8ff0992c53bebee365321c1912c9f4479483"
+    },
+    {
+      "path": "tests/radio-control.test.mjs",
+      "size": 1252,
+      "sha256": "918eb68004338ae68c116a8373c7b75b1c0973ec7e74fd7ad9d82d6fdf2d0918"
+    },
+    {
+      "path": "tests/radio-static.test.mjs",
+      "size": 1400,
+      "sha256": "f9ac1a19515ae36e95cc8bafbc2c9c979e731df7867df8dc6bcfa25f48490eab"
+    },
+    {
+      "path": "tests/real-economy-pipeline.test.mjs",
+      "size": 1796,
+      "sha256": "fd1d781dc485b204f5313eb91d5742826de9a12529e1aae3a0c70c14260a9630"
+    },
+    {
+      "path": "tests/secret-hygiene.test.mjs",
+      "size": 1283,
+      "sha256": "0ba0b8033cd783bab4a5797c8a4d4ddd136b6f3f922754a61c9056ed939bd311"
+    },
+    {
+      "path": "tests/server-routing.test.mjs",
+      "size": 1302,
+      "sha256": "258a3d0c1b1e296dea1726410a11e6dbbffaaa8e734deb78cf031127789e7103"
+    },
+    {
+      "path": "tests/settlement-verifier.test.mjs",
+      "size": 1997,
+      "sha256": "4c8e5fcfda34534b499d4cf4494f1839e589c712bfe56e86aa21b3a552b498bc"
+    },
+    {
+      "path": "tests/slot-engine.test.mjs",
+      "size": 911,
+      "sha256": "b28bfdda2b984bc38862120b933afd18deba22032746c6cedd909f8ad35eb2c6"
+    },
+    {
+      "path": "tests/ui-sync.test.mjs",
+      "size": 2506,
+      "sha256": "cead8073febde2a163c10918d6d8338bfc33a50b5b98f9b412c05fffb0ab4ae7"
+    },
+    {
+      "path": "tests/unified-control-center.test.mjs",
+      "size": 1687,
+      "sha256": "82ae3f15bf869399e580f82b0b81ad7ad09d51b236492125a26d0d9becc027a5"
+    },
+    {
+      "path": "tests/wallet-auto-sync.test.mjs",
+      "size": 2321,
+      "sha256": "0c39a64a464ade6a5c02bc8d8926e899024e23e1f8c23f35fa6565ae42cf02d9"
+    },
+    {
+      "path": "tests/web3-integration.test.mjs",
+      "size": 2143,
+      "sha256": "38b2411fcf04d4455be8b395073636147e2523970d0e95d1fe46fd4652a4b27f"
+    }
+  ],
+  "excluded": [
+    ".env",
+    "keypair.json",
+    "keypair.js",
+    "data/",
+    "node_modules/",
+    ".git/",
+    "*.pem",
+    "*.key",
+    "*.p12",
+    "*.pfx"
+  ]
+}

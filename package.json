@@ -1,6 +1,6 @@
 {
   "name": "neon-player-x",
-  "version": "11.9.0",
+  "version": "11.8.0",
   "private": true,
   "main": "server.js",
   "type": "module",
