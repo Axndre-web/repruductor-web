@@ -118,3 +118,19 @@
 .ctrl-circle-main:active {
     transform: scale(0.95);
 }
+/* Coinbase Wallet + read-only multi-chain portfolio */
+.coinbase-wallet-panel{margin:1rem 0;padding:1rem;border:1px solid rgba(88,210,255,.24);border-radius:16px;background:linear-gradient(135deg,rgba(8,20,38,.88),rgba(22,12,45,.78));color:var(--text,#f2f5ff)}
+.wallet-connect-head{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.wallet-connect-head>div{display:grid;gap:.3rem;min-width:220px}
+.wallet-connect-head small,.wallet-portfolio-totals small{font-size:.7rem;letter-spacing:.09em;opacity:.72}
+.wallet-connect-head strong{font-size:1.1rem;overflow-wrap:anywhere}
+.wallet-connect-head span{font-size:.8rem;opacity:.76}
+.wallet-connect-head button{border:1px solid rgba(93,214,255,.6);border-radius:10px;padding:.7rem 1rem;background:rgba(33,157,215,.18);color:inherit;font-weight:700;cursor:pointer}
+.wallet-connect-head button:disabled{opacity:.55;cursor:wait}
+.wallet-portfolio-totals{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:.7rem;margin:1rem 0}
+.wallet-portfolio-totals>div{display:grid;gap:.35rem;padding:.75rem;border-radius:10px;background:rgba(255,255,255,.045)}
+.wallet-portfolio-totals strong{font-size:1rem}
+.wallet-assets-table{max-width:100%;overflow:auto}
+.wallet-assets-table table{width:100%;border-collapse:collapse;font-size:.78rem}
+.wallet-assets-table th,.wallet-assets-table td{padding:.55rem;text-align:left;border-bottom:1px solid rgba(255,255,255,.08);overflow-wrap:anywhere}
+.wallet-error{padding:.7rem;border-left:3px solid #ff7e7e;background:rgba(255,70,70,.08);font-size:.82rem;overflow-wrap:anywhere}
