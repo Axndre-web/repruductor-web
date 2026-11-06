@@ -1,5 +1,8 @@
-# NEON PLAYER X — sincronización de GitHub Pages
+# Sincronización con GitHub Pages
 
-`github-pages-sync/` contiene el frontend estático publicado. Se corrigió el enlace que abría la misma URL, se incorporó un mapa holográfico estático e interactivo, y se mantiene la máquina arcade de créditos virtuales.
-
-GitHub Pages no ejecuta el backend Node.js. No publiques `.env` ni credenciales. Publicar este ZIP localmente no actualiza por sí solo el repositorio remoto.
+- Se conserva la estructura y los módulos de la base del proyecto.
+- `github-pages-sync/` contiene la copia estática del frontend derivada de `public/`.
+- La aplicación completa y su backend permanecen en el proyecto principal.
+- GitHub Pages no ejecuta Node.js ni el backend de NEON ORB.
+- No publicar archivos `.env` ni credenciales.
+- El ZIP no se publica automáticamente en GitHub; hay que subirlo al repositorio de forma controlada.
