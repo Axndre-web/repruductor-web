@@ -53,8 +53,6 @@ export function mountUnifiedControlCenter(root) {
     if(checks.some(r=>r.status==='fulfilled')) lastSuccess=new Date().toISOString();
     render();
   }
-  // Paint the holographic map immediately; live API checks must never block first render.
-  render();
   refresh(); timer=setInterval(refresh,5000);
   return () => { stopped=true; clearInterval(timer); };
 }

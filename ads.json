@@ -1,34 +1,7 @@
-[
-  {
-    "active": true,
-    "text": "NEON PLAYER X V5.4+",
-    "subtext": "¡Escucha y acumula puntos en tiempo real!",
-    "link": "https://github.com",
-    "image": "",
-    "button": "DESCUBRIR",
-    "priority": 1,
-    "target": "_blank",
-    "type": "recommendation",
-    "category": "NEON",
-    "sponsor": "NEON PLAYER X",
-    "startsAt": "",
-    "endsAt": "",
-    "id": "neon-rewards"
-  },
-  {
-    "active": true,
-    "text": "ECOSISTEMA SOLANA",
-    "subtext": "Conecta tu wallet Phantom para funciones Web3",
-    "link": "https://phantom.app",
-    "image": "",
-    "button": "CONECTAR",
-    "priority": 2,
-    "target": "_blank",
-    "type": "recommendation",
-    "category": "NEON",
-    "sponsor": "NEON PLAYER X",
-    "startsAt": "",
-    "endsAt": "",
-    "id": "solana-ecosystem"
-  }
-]
+{
+  "version": 1,
+  "mode": "SERVER_VERIFIED_REPORTING",
+  "inventory": [],
+  "authorizedSellers": [],
+  "note": "Configure real SSP/DSP reporting on the server. This public file contains no credentials and does not assert revenue."
+}

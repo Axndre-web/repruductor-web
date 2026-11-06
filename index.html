@@ -35,9 +35,9 @@
   <a href="#control" class="nav-link">◈ <span>Control Center</span></a>
   <a href="#radio" class="nav-link">◉ <span>Radio en vivo</span></a>
   <a href="#player" class="nav-link">♫ <span>Reproductor multimedia</span></a>
-  <a href="#holographic-map" class="nav-link">⌖ <span>Mapa holográfico</span></a>
   <a href="#slot-zone" class="nav-link">▥ <span>Arcade</span></a>
   <a href="#temas" class="nav-link">✦ <span>Temas</span></a>
+  <a href="https://axndre-web.github.io/repruductor-web/" class="nav-link" target="_blank" rel="noopener noreferrer">↗ <span>Web publicada</span></a>
   <div class="nav-footer"><i></i><span>LOCAL CONTROL<br><small>127.0.0.1:3000</small></span></div>
 </nav>
 <main>
@@ -119,31 +119,6 @@
 </section>
 <section id="temas" class="section panel reveal"><div class="section-head"><div><span class="eyebrow">VISUAL ENGINE</span><h2>ELIGE TU <em>ESTILO</em></h2></div><span class="pill">12 THEMES</span></div><div class="theme-grid" id="themeGrid"></div></section>
 
-
-<section id="holographic-map" class="section panel reveal" aria-labelledby="holographic-map-title">
-  <div class="neo-unified-center neo-cc-streamlined" aria-label="Mapa holográfico de módulos NEON ORB">
-    <header class="neo-cc-header"><div><span class="neo-cc-kicker">NEON ORB / MAPA LOCAL</span><h2 id="holographic-map-title">MAPA <em>HOLOGRÁFICO</em></h2><p>Mapa visual interactivo de los módulos del proyecto. Selecciona un nodo para abrir su sección. La visualización no afirma que los servicios externos estén conectados.</p></div><div class="neo-cc-live is-warn"><i></i><span>VISTA LOCAL</span><small>Estado remoto no verificado</small></div></header>
-    <div class="neo-holo-map-card neo-holo-map-card-primary">
-      <div class="neo-holo-map" role="group" aria-label="Mapa interactivo de módulos NEON PLAYER X">
-        <div class="neo-map-sweep" aria-hidden="true"></div>
-        <svg class="neo-world-svg" viewBox="0 0 700 300" aria-hidden="true"><defs><pattern id="neonMapGridStatic" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" fill="none" stroke="#38dfff" stroke-opacity=".25"/></pattern></defs><rect width="700" height="300" fill="url(#neonMapGridStatic)"/><g fill="#00eaff18" stroke="#4deaff" stroke-opacity=".7" stroke-width="2"><path d="M70 60l70-25 45 35-10 50-35 20-25 55-25-25-5-45-30-25zM290 50l65-15 45 35 20 55-35 20-20 65-35-15-20-45-30-30zM430 60l100-10 80 45-35 35-60-5-30 35-45-25-20-35zM510 175l50-15 30 35-25 35-40-10z"/></g><g fill="none" stroke="#1feaff" stroke-dasharray="4 7"><path d="M150 105L300 75 405 140 510 90M150 105L215 220 350 215 530 210"/></g></svg>
-        <div class="neo-map-markers">
-          <a class="neo-map-node muted" data-node="api" href="#control" aria-label="Abrir Control Center"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>CONTROL</b><small>Centro de control</small></span></a>
-          <a class="neo-map-node muted" data-node="ai" href="#control" aria-label="Abrir módulo NEON ORB"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>NEON ORB</b><small>Panel del sistema</small></span></a>
-          <a class="neo-map-node muted" data-node="radio" href="#radio" aria-label="Abrir radio"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>RADIO</b><small>Audio en vivo</small></span></a>
-          <a class="neo-map-node muted" data-node="web" href="#inicio" aria-label="Volver al inicio"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>PLAYER X</b><small>Inicio</small></span></a>
-          <a class="neo-map-node muted" data-node="btc" href="#control" aria-label="Ver estado de redes"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>REDES</b><small>Estado no verificado</small></span></a>
-          <a class="neo-map-node muted" data-node="sol" href="#control" aria-label="Ver integraciones"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>INTEGRACIONES</b><small>Panel de control</small></span></a>
-          <a class="neo-map-node muted" data-node="evm" href="#control" aria-label="Ver módulos técnicos"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>MÓDULOS</b><small>Panel de control</small></span></a>
-          <a class="neo-map-node muted" data-node="arcade" href="#slot-zone" aria-label="Abrir máquina tragamonedas gratuita"><span class="neo-map-pulse"></span><span class="neo-map-node-label"><b>ARCADE</b><small>Créditos virtuales</small></span></a>
-        </div>
-        <div class="neo-map-caption"><span>● MAPA VISUAL INTERACTIVO</span><span>ENLACES INTERNOS ACTIVOS · CONEXIÓN REMOTA NO VERIFICADA</span></div>
-      </div>
-      <div class="neo-cc-map-foot"><span>Selecciona un nodo para navegar a su módulo.</span><a class="neo-cc-footer-sync" href="#slot-zone">IR A LA MÁQUINA ARCADE ↓</a></div>
-    </div>
-  </div>
-</section>
-
 <section id="slot-zone" class="section panel reveal" aria-labelledby="slot-zone-title">
   <div class="section-head"><div><span class="eyebrow">ARCADE MODULE · DEMO CREDITS ONLY</span><h2 id="slot-zone-title">100 <em>POWER HOT</em></h2><p class="section-note">Modo recreativo. Los créditos y premios son virtuales, no representan dinero real ni pueden retirarse.</p></div><span class="pill" id="slot-bridge-state"><i></i> COMPROBANDO PUENTE…</span></div>
   <div id="slot-machine" aria-live="polite"></div>
@@ -168,5 +143,4 @@
 <script src="script.js"></script>
 <script type="module">import { mountNeonOrbCompanion } from './UI/neon-orb-companion.js'; import { mountWalletDashboard } from './UI/wallet-dashboard.js'; import { mountRealWorkDashboard } from './UI/real-work-dashboard.js'; import { mountNeonOrbCommandDeck } from './UI/neon-orb-command-deck.js'; import { mountAccountReadiness } from './UI/account-readiness.js'; import { mountNetworkOperationsDashboard } from './UI/network-operations-dashboard.js'; import { mountUnifiedControlCenter } from './UI/unified-control-center.js'; mountUnifiedControlCenter(document.querySelector('#unifiedControlCenter')); const networkOpsRoot=document.querySelector('#networkOpsDashboard'); const unifiedOpsHost=document.querySelector('#unifiedNetworkOpsHost'); if(networkOpsRoot&&unifiedOpsHost) unifiedOpsHost.append(networkOpsRoot); mountNetworkOperationsDashboard(networkOpsRoot); mountNeonOrbCompanion(document.body); mountNeonOrbCommandDeck(document.querySelector('#neonOrbCommandDeck')); mountWalletDashboard(document.querySelector('#walletDashboard')); mountRealWorkDashboard(document.querySelector('#realWorkDashboard')); mountAccountReadiness(document.querySelector('#accountReadinessDashboard')); </script>
 <script type="module" src="UI/arcade-slot-machine.js"></script>
-<script src="UI/render-fallbacks.js" defer></script>
 </body></html>
