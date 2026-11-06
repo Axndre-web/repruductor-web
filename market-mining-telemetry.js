@@ -33,7 +33,7 @@ export function listMiningPools() {
   return Object.entries(POOLS).map(([id, p]) => ({ id, name: p.name, coin: p.coin, algorithm: p.algorithm, api: p.base, mode: 'READ_ONLY_POOL_TELEMETRY', miningClientRequired: true }));
 }
 
-export async function getMiningPoolStatus({ poolId = process.env.NEON_MINING_POOL || 'etc', wallet = process.env.NEON_MINING_WALLET_ADDRESS || '' } = {}) {
+export async function getMiningPoolStatus({ poolId = process.env.NEON_MINING_POOL || 'etc', wallet = process.env.NEON_MINING_WALLET_ADDRESS || process.env.NEON_BITCOIN_ADDRESS || '' } = {}) {
   const pool = POOLS[String(poolId).toLowerCase()];
   if (!pool) return { ok: false, identity: 'NEON_ORB', code: 'MINING_POOL_NOT_SUPPORTED', supportedPools: listMiningPools() };
   const enabled = String(process.env.ENABLE_REAL_MINING || 'false').toLowerCase() === 'true';

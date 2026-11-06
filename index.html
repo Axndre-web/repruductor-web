@@ -18,7 +18,6 @@
 <link rel="stylesheet" href="UI/unified-control-center.css">
 <style>.orb-internal-only{display:none!important}#unifiedNetworkOpsHost{display:none!important}</style>
 <link rel="stylesheet" href="UI/wallet-private.css">
-<link rel="stylesheet" href="UI/ecosystem-bridge.css">
 </head>
 <body data-theme="neon-dark">
 <div class="app-bg"></div><div class="scanlines"></div><div class="edge-frame"></div>
@@ -38,7 +37,6 @@
   <a href="#player" class="nav-link">♫ <span>Reproductor multimedia</span></a>
   <a href="#holographic-map" class="nav-link">⌖ <span>Mapa holográfico</span></a>
   <a href="#slot-zone" class="nav-link">▥ <span>Arcade</span></a>
-  <a href="#ecosystem-bridge" class="nav-link">◎ <span>Eco Bridge</span></a>
   <a href="#temas" class="nav-link">✦ <span>Temas</span></a>
   <div class="nav-footer"><i></i><span>LOCAL CONTROL<br><small>127.0.0.1:3000</small></span></div>
 </nav>
@@ -151,26 +149,6 @@
   <div id="slot-machine" aria-live="polite"></div>
   <div class="slot-bridge-footer"><span id="slot-ledger-state">Ledger: comprobando…</span><span id="slot-last-sync">Sincronización pendiente</span></div>
 </section>
-
-<section id="ecosystem-bridge" class="section panel reveal" aria-labelledby="eco-title">
- <div class="eco-bridge">
-  <div class="eco-hero"><div><span class="eyebrow">NEON ORB · EXTERNAL ECOSYSTEM</span><h2 id="eco-title">ECOSYSTEM <em>BRIDGE</em></h2><p class="section-note">Puente de salida a internet, telemetría observable y oportunidades públicas desde el runtime local de NEON ORB.</p></div><div><span class="eco-status" data-state="offline" data-eco-summary>Comprobando servicios…</span><p class="eco-small eco-muted" data-eco-updated>Esperando primera lectura</p></div></div>
-  <section class="eco-card eco-portal" aria-labelledby="eco-portal-title">
-   <div class="eco-portal-head"><div><span class="eyebrow">OUTBOUND GATEWAY · INTERNET PÚBLICO</span><h3 id="eco-portal-title">◉ PORTAL / AGUJERO NEGRO</h3><p>Puente de salida desde NEON ORB hacia servicios externos permitidos. Las consultas salen desde el servidor local por HTTPS; no se expone un proxy abierto ni se ejecuta código remoto.</p></div><span class="eco-status" data-portal-state data-state="offline">BACKEND SIN VERIFICAR</span></div>
-   <form class="eco-portal-form" data-portal-search><label for="portal-query">Buscar en internet público</label><div class="eco-portal-controls"><input id="portal-query" name="q" minlength="2" maxlength="160" required placeholder="Ej.: trabajos remotos, documentación API, recursos…"><button type="submit">Buscar fuera ↗</button></div></form>
-   <form class="eco-portal-form" data-portal-jobs><label for="portal-jobs-query">Buscar oportunidades de trabajo públicas</label><div class="eco-portal-controls"><input id="portal-jobs-query" name="q" maxlength="120" placeholder="Ej.: soporte técnico, diseño, JavaScript…"><button type="submit">Buscar trabajos</button></div></form>
-   <p class="eco-small" data-portal-message aria-live="polite">El portal está preparado para funcionar desde http://127.0.0.1:3000. En GitHub Pages sin backend, las búsquedas no se ejecutan.</p>
-   <div class="eco-portal-results" data-portal-results aria-live="polite"><p class="eco-muted">Los resultados externos aparecerán aquí cuando el servidor local responda.</p></div>
-  </section>
-  <div class="eco-grid">
-   <article class="eco-card"><h3>◉ Telemetría viva</h3><p>Lectura periódica de los endpoints del servidor. Un estado solo aparece como disponible cuando responde la API.</p><ul class="eco-list"><li>Red: <b class="eco-status" data-eco-network>Sin verificar</b></li><li>Agente: <b class="eco-status" data-eco-agent>Sin verificar</b></li><li>Control: <b class="eco-status" data-eco-control>Sin verificar</b></li><li>Billetera: <b class="eco-status" data-eco-wallet>Solo lectura pendiente</b></li></ul><button type="button" data-eco-export>Exportar telemetría local</button></article>
-   <article class="eco-card"><h3>⌕ Oportunidades públicas</h3><p>El servidor ya incluye fuentes de empleo y recompensas públicas. La búsqueda y evaluación deben respetar las condiciones de cada plataforma.</p><ul class="eco-list"><li><a href="https://www.arbeitnow.com/" target="_blank" rel="noopener noreferrer">Arbeitnow</a> · ofertas públicas</li><li><a href="https://remotive.com/" target="_blank" rel="noopener noreferrer">Remotive</a> · empleo remoto</li><li><a href="https://jobicy.com/" target="_blank" rel="noopener noreferrer">Jobicy</a> · empleo remoto</li><li><a href="https://gitcoin.co/" target="_blank" rel="noopener noreferrer">Gitcoin</a> · bounties sujetas a revisión</li></ul><p class="eco-warning">NEON ORB puede ayudar a filtrar ofertas y preparar borradores. No enviará solicitudes, aceptará contratos ni afirmará experiencia sin tu aprobación.</p></article>
-   <article class="eco-card"><h3>◎ Perfil de trabajo</h3><p>Guarda un perfil de capacidades no sensibles en este dispositivo para preparar candidaturas revisables.</p><form class="eco-form" data-eco-profile><label>Competencias (sin contraseñas)<textarea name="skills" maxlength="1000" placeholder="Ej.: soporte técnico, diseño web, traducción..."></textarea></label><label>Región o zona horaria<input name="region" maxlength="120" placeholder="Ej.: España / CET"></label><label>Disponibilidad<input name="availability" maxlength="120" placeholder="Ej.: 10 horas por semana"></label><button type="submit">Guardar perfil local</button></form><p class="eco-small" data-eco-profile-state aria-live="polite">No se ha guardado ningún perfil.</p></article>
-  </div>
-  <div class="eco-card"><h3>🔐 Límites operativos y seguridad</h3><p>Integración preparada para internet público mediante fuentes permitidas, APIs documentadas y conectores autorizados. La observación de blockchain es de solo lectura: nunca introduzcas frases semilla, claves privadas, contraseñas ni documentos de identidad en este panel.</p><p class="eco-warning">No se habilita acceso a la dark web/deep web, mercados clandestinos, evasión de controles ni automatización de identidad. Las operaciones financieras, firmas, transferencias, KYC y envío de formularios requieren revisión y autorización explícita de la persona titular.</p><p class="eco-muted eco-small">La telemetría refleja respuestas técnicas, no prueba beneficios, empleo conseguido, identidad verificada ni sincronización global. En GitHub Pages sin backend, los servicios aparecerán como no disponibles.</p></div>
- </div>
-</section>
-
 </main>
 <footer><span>NEON PLAYER X</span><small>FUTURE MEDIA SYSTEM · V8.8 · 2026</small><a href="https://www.google.com" target="_blank" rel="noopener">GOOGLE ↗</a><a href="https://www.youtube.com" target="_blank" rel="noopener">YOUTUBE ↗</a><a href="https://www.tiktok.com" target="_blank" rel="noopener">TIKTOK ↗</a><a href="https://www.instagram.com" target="_blank" rel="noopener">INSTAGRAM ↗</a><a href="https://www.facebook.com" target="_blank" rel="noopener">FACEBOOK ↗</a></footer>
 <div id="payModal" class="pay-modal" aria-hidden="true">
@@ -190,6 +168,5 @@
 <script src="script.js"></script>
 <script type="module">import { mountNeonOrbCompanion } from './UI/neon-orb-companion.js'; import { mountWalletDashboard } from './UI/wallet-dashboard.js'; import { mountRealWorkDashboard } from './UI/real-work-dashboard.js'; import { mountNeonOrbCommandDeck } from './UI/neon-orb-command-deck.js'; import { mountAccountReadiness } from './UI/account-readiness.js'; import { mountNetworkOperationsDashboard } from './UI/network-operations-dashboard.js'; import { mountUnifiedControlCenter } from './UI/unified-control-center.js'; mountUnifiedControlCenter(document.querySelector('#unifiedControlCenter')); const networkOpsRoot=document.querySelector('#networkOpsDashboard'); const unifiedOpsHost=document.querySelector('#unifiedNetworkOpsHost'); if(networkOpsRoot&&unifiedOpsHost) unifiedOpsHost.append(networkOpsRoot); mountNetworkOperationsDashboard(networkOpsRoot); mountNeonOrbCompanion(document.body); mountNeonOrbCommandDeck(document.querySelector('#neonOrbCommandDeck')); mountWalletDashboard(document.querySelector('#walletDashboard')); mountRealWorkDashboard(document.querySelector('#realWorkDashboard')); mountAccountReadiness(document.querySelector('#accountReadinessDashboard')); </script>
 <script type="module" src="UI/arcade-slot-machine.js"></script>
-<script type="module">import {mountEcosystemBridge} from './UI/ecosystem-bridge.js'; mountEcosystemBridge(document.querySelector('#ecosystem-bridge'));</script>
 <script src="UI/render-fallbacks.js" defer></script>
 </body></html>
