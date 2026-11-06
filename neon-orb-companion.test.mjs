@@ -30,6 +30,10 @@ test('Neon Orb chat has bounded requests, readable error messages and optional S
   assert.match(js, /cognition_unavailable/);
   assert.match(js, /speechSynthesis/);
   assert.match(js, /utterance\.lang = 'es-ES'/);
+  assert.match(js, /window\.SpeechRecognition \|\| window\.webkitSpeechRecognition/);
+  assert.match(js, /recognition\.start\(\)/);
+  assert.match(js, /sessionStorage/);
+  assert.match(js, /localStorage\.setItem\('neonOrbVoice'/);
   assert.equal(fs.readFileSync(path.join(root, 'UI/neon-orb-companion.js'), 'utf8'), js);
   assert.equal(fs.readFileSync(path.join(root, 'UI/neon-orb-companion.css'), 'utf8'), fs.readFileSync(path.join(root, 'public/UI/neon-orb-companion.css'), 'utf8'));
 });

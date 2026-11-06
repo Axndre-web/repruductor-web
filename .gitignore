@@ -5,3 +5,6 @@ keypair.js
 __pycache__/
 data/
 *.log
+
+# NEON ORB private proposals and rollback backups
+agent-workspace/

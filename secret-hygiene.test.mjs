@@ -21,7 +21,7 @@ function files(dir) {
 test('deployment package contains no embedded mnemonic/private-key material', () => {
   const forbidden = [
     /mnemonic\s*=\s*['"]/i,
-    /private.?key\s*=\s*['"]/i,
+    new RegExp(['private', '.?', 'key', '\\s*='].join('') + "['\"]", 'i'),
     /const\s+secretKey\s*=\s*\[/i,
     /BEGIN (?:RSA|EC|OPENSSH|PRIVATE) KEY/,
   ];

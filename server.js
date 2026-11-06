@@ -56,7 +56,7 @@ app.get("/api/neon-orb/agent/status", (_req, res) => {
 });
 app.get("/api/neon-orb/control/status", (_req, res) => {
   res.set("Cache-Control", "no-store");
-  res.json({ ok:true, ecosystem:"NEON_PLAYER_X", administrator:"NEON_ORB", synchronized:true, server:{ port:PORT }, agent:getAgentStatus(), autonomy:autonomySupervisorStatus(), miningWorker:minerSupervisorStatus(), network:getNetworkOperationsStatus(), radio:getRadioControlState(), updatedAt:new Date().toISOString() });
+  res.json({ ok:true, ecosystem:"NEON_PLAYER_X", administrator:"NEON_ORB", synchronized:true, server:{ port:PORT }, agent:getAgentStatus(), autonomy:autonomySupervisorStatus(), miningWorker:minerSupervisorStatus(), network:getNetworkOperationsStatus(), maintenance:agentMaintenanceStatus(), radio:getRadioControlState(), updatedAt:new Date().toISOString() });
 });
 app.get("/api/neon-orb/radio/control", (_req, res) => {
   res.set("Cache-Control", "no-store");
@@ -193,6 +193,7 @@ import { listPaidWorkSources, discoverPublicWork } from './server/public-work-so
 import { getJupiterSwapQuote, getMarketQuotes, getMiningPoolStatus, listMiningPools, verifyBitcoinPayout } from './server/market-mining-telemetry.js';
 import { startWalletObserver, snapshotWalletObservation, stopWalletObserver } from './server/wallet-observer.js';
 import { autonomySupervisorStatus, startAutonomySupervisor, stopAutonomySupervisor, runAutonomyTick } from './server/autonomy-supervisor.js';
+import { agentMaintenanceStatus, startAgentMaintenance, stopAgentMaintenance, runAgentMaintenanceCycle } from './server/agent-maintenance.js';
 import { startConfiguredMiner, stopConfiguredMiner, minerSupervisorStatus } from './server/miner-supervisor.js';
 
 // Neon Orb is the resident runtime; inference is invoked as one of its capabilities.
@@ -200,6 +201,7 @@ neonOrbRuntime.start();
 void neonOrbDaemon.ready.then(() => neonOrbDaemon.start()).catch(error => console.error('[Neon Orb daemon] startup failed:', error?.message || error));
 startWalletObserver();
 void startAutonomySupervisor().catch(error => console.warn('[NEON autonomy supervisor] startup failed:', error?.message || error));
+startAgentMaintenance();
 const orbRequestWindows = new Map();
 function orbRateLimit(req, res, next) {
   const key = req.ip || req.socket.remoteAddress || 'unknown';
@@ -444,6 +446,14 @@ app.get('/api/neon-orb/wallet/observed/local', localSameOriginReadOnly, orbRateL
   }
 });
 
+app.get('/api/neon-orb/agent/maintenance', (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, ...agentMaintenanceStatus() });
+});
+app.post('/api/neon-orb/agent/maintenance/run', adminRequired, orbRateLimit, async (_req, res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ ok: true, ...await runAgentMaintenanceCycle({ force: true }) });
+});
 app.get('/api/neon-orb/autonomy/status', (_req, res) => {
   res.set('Cache-Control', 'no-store');
   res.json({ ok: true, ...autonomySupervisorStatus() });
@@ -529,6 +539,14 @@ app.post('/api/economy/conversion/execute', adminRequired, async (req,res)=>{ tr
 app.post('/api/economy/currency/quote', adminRequired, async (req,res)=>{ try { const body=req.body||{}; const quote=body.quoteUrl ? await fetchCurrencyQuote(body.quoteUrl,body.payload||{}) : body.quote; if(!quote)return res.status(400).json({ok:false,error:'quote_required'}); res.json({ok:true,conversion:calculateCurrencyConversion({...body,...quote}),quote}); } catch(error){ res.status(502).json({ok:false,error:String(error?.message||error)}); } });
 app.post('/api/economy/currency/execute', adminRequired, async (req,res)=>{ try { const body=req.body||{}; const result=await executeCurrencyConversion(body.executeUrl,body,body.payload||{}); res.status(result.ok?200:409).json(result); } catch(error){ res.status(502).json({ok:false,error:String(error?.message||error)}); } });
 
+// API misses must stay JSON and never fall through to the public SPA.
+app.use("/api", (_req, res) => { res.status(404).json({ ok:false, error:"api_route_not_found" }); });
+
+// Explicit canonical entry points keep / and /index.html on the same public build.
+app.get(["/", "/index.html"], (_req, res) => {
+  res.sendFile(path.join(publicDir, "index.html"));
+});
+
 app.use(express.static(publicDir, {
   index: "index.html",
   extensions: ["html"],
@@ -541,6 +559,12 @@ app.use(express.static(publicDir, {
     }
   }
 }));
+
+// Missing asset paths should be real 404s, not HTML responses with a .js/.css URL.
+app.use((req, res, next) => {
+  if (path.extname(req.path)) return res.status(404).end();
+  next();
+});
 
 app.get("/{*splat}", (_req, res) => {
   res.sendFile(path.join(publicDir, "index.html"));
@@ -561,6 +585,7 @@ function shutdown(signal) {
   console.log(`${signal} received; shutting down...`);
   void neonOrbDaemon.stop().catch(() => {});
   void stopAutonomySupervisor().catch(() => {});
+  stopAgentMaintenance();
   stopWalletObserver();
   server.close(() => process.exit(0));
   setTimeout(() => process.exit(1), 10000).unref();
