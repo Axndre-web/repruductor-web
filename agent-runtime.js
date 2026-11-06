@@ -57,7 +57,7 @@ export function getAgentStatus(env = process.env) {
   const local = url.protocol === 'http:' && isLoopback(url.hostname);
   const hasKey = Boolean(String(env.NEON_AGENT_API_KEY || '').trim());
   const remoteAllowlisted = url.protocol === 'https:' && new Set(String(env.NEON_AGENT_ALLOWED_HOSTS || '').split(',').map(s=>s.trim().toLowerCase())).has(url.hostname.toLowerCase());
-  return { ok:true, configured:local || (hasKey && remoteAllowlisted), provider:local?'local-openai-compatible':(remoteAllowlisted?'remote-openai-compatible':'not-allowlisted'), model:String(env.NEON_AGENT_MODEL || 'qwen2.5-coder:7b'), apiKeyConfigured:hasKey, mode:'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT', capabilities:['code_generation','code_review','web_research','github_repository_search','static_security_audit','job_search','fixed_test_suite','isolated_proposal_files','guarded_source_edits_with_backup_and_test_rollback','integrated_radio_control','shared_live_telemetry'], restrictions:['no arbitrary shell','source edits restricted to allowlisted paths with backup and test rollback','no transaction signing or broadcasting','no remote target scanning','radio playback follows browser autoplay policy'] };
+  return { ok:true, configured:local || (hasKey && remoteAllowlisted), provider:local?'local-openai-compatible':(remoteAllowlisted?'remote-openai-compatible':'not-allowlisted'), model:String(env.NEON_AGENT_MODEL || 'qwen2.5-coder:7b'), apiKeyConfigured:hasKey, mode:'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT', capabilities:['code_generation','code_review','web_research','github_repository_search','static_security_audit','job_search','fixed_test_suite','isolated_proposal_files','guarded_source_edits_with_backup_and_test_rollback','integrated_radio_control','shared_live_telemetry','scheduled_autonomous_technical_maintenance'], restrictions:['no arbitrary shell','source edits restricted to allowlisted paths with backup and test rollback','no transaction signing or broadcasting','no remote target scanning','radio playback follows browser autoplay policy'] };
 }
 
 function safeRelativePath(raw) {
@@ -259,7 +259,7 @@ async function runTool(name, args) {
     default: throw new Error('AGENT_TOOL_NOT_ALLOWED');
   }
 }
-export async function runNeonAgent({ message, history = [], context = {} } = {}) {
+export async function runNeonAgent({ message, history = [], context = {}, autonomousMaintenance = false } = {}) {
   const text = String(message || '').trim();
   if (text.length < 2) throw new Error('AGENT_MESSAGE_TOO_SHORT');
   if (text.length > MAX_MESSAGE) throw new Error('AGENT_MESSAGE_TOO_LARGE');
@@ -272,7 +272,7 @@ export async function runNeonAgent({ message, history = [], context = {} } = {})
     messages.push({role:item.role,content:item.content.slice(0,3000)});
   }
   messages.push({role:'user',content:text});
-  const startedAt = new Date().toISOString(); let toolCalls = 0; const usedTools=[];
+  const startedAt = new Date().toISOString(); let toolCalls = 0; let appliedChanges = 0; const usedTools=[];
   for (let round=0; round<=MAX_TOOL_ROUNDS; round++) {
     const payload = { model:cfg.model, messages, temperature:0.2, stream:false, tools:toolDefinitions, tool_choice:'auto' };
     const headers = {'content-type':'application/json','accept':'application/json'};
@@ -289,15 +289,18 @@ export async function runNeonAgent({ message, history = [], context = {} } = {})
     const calls = Array.isArray(assistant.tool_calls) ? assistant.tool_calls : [];
     if (!calls.length) {
       const content = typeof assistant.content === 'string' ? assistant.content : JSON.stringify(assistant.content ?? '');
-      return { ok:true, agent:'NEON_ORB', mode:'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT', model:cfg.model, answer:content.slice(0,50000), toolsUsed:usedTools, toolCallCount:toolCalls, startedAt, completedAt:new Date().toISOString(), appliedChanges:false };
+      return { ok:true, agent:'NEON_ORB', mode:'GUARDED_AUTONOMOUS_ECOSYSTEM_AGENT', model:cfg.model, answer:content.slice(0,50000), toolsUsed:usedTools, toolCallCount:toolCalls, startedAt, completedAt:new Date().toISOString(), appliedChanges:appliedChanges > 0, appliedChangeCount:appliedChanges };
     }
     if (round === MAX_TOOL_ROUNDS || toolCalls + calls.length > MAX_TOOL_CALLS) throw new Error('AGENT_TOOL_BUDGET_EXCEEDED');
     for (const call of calls) {
       const name = String(call?.function?.name || '');
       let args; try { args=JSON.parse(call?.function?.arguments || '{}'); } catch { args={}; }
       let result;
-      try { result=await runTool(name,args); }
-      catch (error) { result={ok:false,error:String(error?.message || 'TOOL_FAILED').slice(0,180)}; }
+      try {
+        if (autonomousMaintenance && name === 'apply_project_file' && appliedChanges >= 1) throw new Error('AUTONOMOUS_DAILY_CHANGE_LIMIT');
+        result=await runTool(name,args);
+        if (name === 'apply_project_file' && result?.applied === true) appliedChanges += 1;
+      } catch (error) { result={ok:false,error:String(error?.message || 'TOOL_FAILED').slice(0,180)}; }
       const serial = JSON.stringify(result);
       messages.push({role:'tool',tool_call_id:call.id,name,content:serial.slice(0,30000)});
       toolCalls++; usedTools.push({name,ok:result?.ok !== false});
