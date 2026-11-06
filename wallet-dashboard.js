@@ -1,76 +1,142 @@
-/** NEON PLAYER X — Unified Wallet Dashboard V11.7
- * Framework-free responsive dashboard. Local ledger + observable bridge state.
+/** NEON PLAYER X — persistent local wallet observer.
+ * Reads public balances only. No seed phrases, private keys, signing, or transactions.
+ * Trusted browser-wallet permissions are restored silently where the provider allows it.
  */
-import { unifiedLedger } from '../core/unified-ledger.js';
-
-const BRIDGE_URL = (globalThis.NEON_BRIDGE_URL || 'http://127.0.0.1:8765').replace(/\/$/, '');
-const PUBLIC_IDENTITY = '@neonorb';
-const PUBLIC_ADDRESSES = { solana: '', bitcoin: '' };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const short = value => value ? `${value.slice(0, 8)}…${value.slice(-8)}` : '—';
+const short = value => value ? `${value.slice(0, 8)}…${value.slice(-6)}` : '—';
+const fmt = (value, digits = 6) => Number.isFinite(Number(value)) ? Number(value).toLocaleString('es-ES', { maximumFractionDigits: digits }) : '—';
 
-async function fetchJson(path, timeout = 3500) {
+async function fetchJson(path, options = {}) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeout);
+  const timer = setTimeout(() => controller.abort(), 9000);
   try {
-    const response = await fetch(`${BRIDGE_URL}${path}`, { signal: controller.signal, cache: 'no-store' });
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
+    const response = await fetch(path, { cache: 'no-store', credentials: 'same-origin', ...options, signal: controller.signal, headers: { Accept:'application/json', ...(options.headers || {}) } });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) { const e = new Error(data.error || data.code || `HTTP_${response.status}`); e.status = response.status; throw e; }
+    return data;
   } finally { clearTimeout(timer); }
 }
 
-export function mountWalletDashboard(root, ledger = unifiedLedger) {
+export function mountWalletDashboard(root) {
   if (!root) throw new Error('Dashboard root required');
-  let remote = { connected: false, health: null, wallet: null, telemetry: null };
+  let configured = null;
+  let phantomState = null;
+  let evmState = null;
+  let busy = false;
+  let notice = 'Arrancando sincronización local…';
+  let disposed = false;
 
-  const render = state => {
-    const network = remote.wallet?.network || {};
-    const sol = network.solana || {};
-    const btc = network.bitcoin || {};
-    const rows = [...state.history].reverse().slice(0, 25).map(tx => `
-      <tr><td>${new Date(tx.timestamp).toLocaleString()}</td><td>${esc(tx.source)}</td><td>${esc(tx.currency)}</td><td>${tx.amount}</td><td>${esc(tx.status)}</td><td>${esc(tx.txHash || tx.workId || '—')}</td></tr>`).join('');
-    const bridgeLabel = remote.connected ? 'BRIDGE · LIVE' : 'READ-ONLY · LOCAL SNAPSHOT';
-    const solValue = sol.status === 'observed' ? `${Number(sol.sol || 0).toFixed(6)} SOL` : 'NO OBSERVADO';
-    const btcValue = btc.status === 'observed' ? `${Number(btc.btc || 0).toFixed(8)} BTC` : 'NO OBSERVADO';
-    root.innerHTML = `<section class="neon-wallet" aria-label="Dashboard de billetera NEON ORB">
-      <header class="wallet-head">
-        <div><span class="wallet-kicker">NEON ORB · TESORERÍA</span><h2>${PUBLIC_IDENTITY}</h2><small>Identidad pública · estado observable · sin claves privadas en frontend</small></div>
-        <span class="wallet-live ${remote.connected ? 'is-live' : ''}"><i></i>${bridgeLabel}</span>
-      </header>
-      <div class="wallet-identity-grid">
-        <div class="wallet-address"><small>SOLANA · PUBLIC ADDRESS</small><strong title="${esc(remote.wallet?.addresses?.solana || PUBLIC_ADDRESSES.solana)}">${esc(short(remote.wallet?.addresses?.solana || PUBLIC_ADDRESSES.solana) || 'NO CONFIGURADA')}</strong><span>${solValue}</span></div>
-        <div class="wallet-address"><small>BITCOIN · PUBLIC ADDRESS</small><strong title="${esc(remote.wallet?.addresses?.bitcoin || PUBLIC_ADDRESSES.bitcoin)}">${esc(short(remote.wallet?.addresses?.bitcoin || PUBLIC_ADDRESSES.bitcoin) || 'NO CONFIGURADA')}</strong><span>${btcValue}</span></div>
-        <div class="wallet-health"><small>SALUD DEL PUENTE</small><strong>${remote.health?.ok ? 'HEALTHY' : 'OBSERVABLE'}</strong><span>${remote.health?.service || 'LOCAL LEDGER'}</span></div>
+  const render = (message = notice) => {
+    notice = message;
+    const rows = (configured?.balances || []).map(item => {
+      const amount = item.verified && Number.isFinite(Number(item.amount)) ? `${fmt(item.amount, item.asset === 'BTC' ? 8 : 6)} ${esc(item.unit || item.asset)}` : 'NO VERIFICADO';
+      return `<article class="npw-balance-card"><div class="npw-balance-top"><span>${esc(item.asset || 'ASSET')}</span><span class="npw-state ${item.verified ? 'ok' : 'warn'}">${item.verified ? 'OBSERVADO' : 'PENDIENTE'}</span></div><strong>${amount}</strong><small class="npw-address" title="${esc(item.address || '')}">${esc(short(item.address || 'Dirección pública no configurada'))}</small><small class="npw-source">${esc(item.source || item.error || 'Fuente no disponible')}</small></article>`;
+    }).join('');
+    root.innerHTML = `<div class="npw-private" aria-label="Observación privada de wallets">
+      <div class="npw-head"><div><span class="eyebrow">NEON ORB · OBSERVADOR RESIDENTE</span><h3>WALLETS <em>SINCRONIZADAS</em></h3><p>La observación de direcciones públicas se inicia automáticamente al abrir el panel. No se solicitan claves privadas ni frases semilla.</p></div><span class="npw-local"><i></i> LOCAL · SOLO LECTURA</span></div>
+      <div class="npw-access"><div class="npw-auto-state"><strong>${busy ? 'SINCRONIZANDO…' : configured ? 'OBSERVACIÓN ACTIVA' : 'INICIALIZANDO OBSERVACIÓN'}</strong><small>Actualización automática cada 15 segundos mientras la página esté visible.</small></div><button id="npwRefresh" type="button" class="btn mini" ${busy ? 'disabled' : ''}>${busy ? 'CONSULTANDO…' : 'ACTUALIZAR AHORA'}</button></div>
+      <p class="npw-notice" role="status" aria-live="polite">${esc(message || 'Esperando respuesta del servidor local…')}</p>
+      <div class="npw-balances">${rows || '<div class="npw-empty">Cargando saldos de las direcciones públicas configuradas en el servidor…</div>'}</div>
+      <div class="npw-browser-wallets"><div class="npw-browser-head"><div><span class="eyebrow">WALLET DEL NAVEGADOR</span><h4>Reconexión de confianza</h4><p>NEON ORB restaura silenciosamente permisos previos cuando Phantom o la wallet EVM lo permiten. La primera autorización sigue siendo tuya.</p></div></div>
+        <div class="npw-connect-actions"><button id="npwPhantom" class="btn mini" type="button">CONECTAR PHANTOM</button><button id="npwEvm" class="btn mini" type="button">CONECTAR ETHEREUM / BASE</button><button id="npwDisconnect" class="btn mini ghost" type="button">OCULTAR CUENTAS</button></div>
+        <div class="npw-connected-grid"><article><small>SOLANA · PHANTOM</small><strong>${esc(phantomState ? `${fmt(phantomState.balance, 6)} SOL` : 'NO CONECTADA')}</strong><span>${esc(phantomState ? short(phantomState.address) : 'Sin permiso previo disponible')}</span><em>${esc(phantomState?.status || 'Esperando autorización guardada')}</em></article><article><small>ETHEREUM / BASE · EVM</small><strong>${esc(evmState ? `${fmt(evmState.balance, 6)} ${evmState.symbol}` : 'NO CONECTADA')}</strong><span>${esc(evmState ? short(evmState.address) : 'Sin permiso previo disponible')}</span><em>${esc(evmState?.status || 'Esperando autorización guardada')}</em></article></div>
       </div>
-      <div class="neon-balances">
-        <div><small>NXC · COMPUTABLE</small><strong>${Number(state.internal.nxc).toFixed(6)}</strong></div>
-        <div><small>CREDITS · COMPUTABLE</small><strong>${Number(state.internal.credits).toFixed(2)}</strong></div>
-        <div><small>BITS · COMPUTABLE</small><strong>${Number(state.internal.bits).toFixed(2)}</strong></div>
-        <div><small>BTC · VERIFIED LEDGER</small><strong>${(Number(state.external.btcSatoshis) / 1e8).toFixed(8)}</strong></div>
-        <div><small>EUR · VERIFIED LEDGER</small><strong>€${Number(state.external.fiatEuroBalance).toFixed(2)}</strong></div>
-      </div>
-      <div class="wallet-source-note">COMPUTABLE ≠ EXTERNO · Los balances de red solo se muestran como observados cuando el bridge obtiene datos reales. Un estado pendiente nunca se presenta como liquidado.</div>
-      <div class="neon-history"><table><thead><tr><th>Fecha</th><th>Origen</th><th>Divisa</th><th>Importe</th><th>Estado</th><th>ID</th></tr></thead><tbody>${rows || '<tr><td colspan="6">Sin movimientos</td></tr>'}</tbody></table></div>
-    </section>`;
+      <p class="npw-foot">Solo se leen balances públicos. Las conexiones confiables pueden restaurarse sin diálogo, según los permisos de la extensión. Si el proveedor revoca el permiso o el navegador bloquea la wallet, tendrás que autorizarla de nuevo desde la extensión.</p>
+    </div>`;
+    root.querySelector('#npwRefresh')?.addEventListener('click', () => refreshConfigured(true));
+    root.querySelector('#npwPhantom')?.addEventListener('click', connectPhantom);
+    root.querySelector('#npwEvm')?.addEventListener('click', connectEvm);
+    root.querySelector('#npwDisconnect')?.addEventListener('click', () => { phantomState = null; evmState = null; render('Cuentas ocultadas de este panel. Esto no revoca el permiso de la extensión.'); });
   };
 
-  const refresh = async () => {
+  async function refreshConfigured(manual = false) {
+    if (busy || disposed) return;
+    busy = true;
+    render(manual ? 'Consultando las direcciones configuradas…' : 'Sincronizando saldos de forma automática…');
     try {
-      const [health, wallet, telemetry] = await Promise.all([
-        fetchJson('/health'), fetchJson('/wallet'), fetchJson('/telemetry')
-      ]);
-      remote = { connected: true, health, wallet, telemetry };
-    } catch {
-      remote = { connected: false, health: null, wallet: null, telemetry: null };
+      configured = await fetchJson('/api/neon-orb/wallet/observed/local');
+      render(`Sincronizado · ${new Date(configured.observedAt || Date.now()).toLocaleTimeString('es-ES')} · ${configured.balances?.filter(x => x.verified).length || 0} saldo(s) verificado(s).`);
+    } catch (error) {
+      configured = null;
+      render(error.status === 403 ? 'El servidor rechazó la solicitud: abre el panel desde http://127.0.0.1:3000 o http://localhost:3000.' : `Observación temporalmente no disponible: ${error.message}. Se reintentará automáticamente.`);
+    } finally {
+      busy = false;
+      if (!disposed) render(notice);
     }
-    render(ledger.getState());
-  };
+  }
 
-  render(ledger.getState());
-  const unsubscribe = ledger.subscribe(render);
-  refresh();
-  const interval = setInterval(refresh, 7000);
-  return () => { unsubscribe(); clearInterval(interval); };
+  async function updatePhantom(provider, { silent = false } = {}) {
+    const response = silent ? await provider.connect({ onlyIfTrusted: true }) : await provider.connect();
+    const address = String(response?.publicKey || provider.publicKey || '');
+    if (!address) throw new Error('Phantom no devolvió una cuenta pública.');
+    const rpc = 'https://api.mainnet-beta.solana.com';
+    const rpcResult = await fetch(rpc, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({jsonrpc:'2.0',id:1,method:'getBalance',params:[address,{commitment:'confirmed'}]}), signal:AbortSignal.timeout(8000) });
+    if (!rpcResult.ok) throw new Error('No se pudo consultar Solana RPC.');
+    const payload = await rpcResult.json();
+    if (payload.error || !Number.isFinite(Number(payload?.result?.value))) throw new Error('Respuesta de balance Solana no válida.');
+    phantomState = { address, balance:Number(payload.result.value)/1e9, status:silent ? 'Permiso de confianza restaurado · solo lectura' : 'Cuenta autorizada por Phantom · solo lectura' };
+  }
+
+  async function updateEvm(provider, { silent = false } = {}) {
+    const accounts = await provider.request({ method: silent ? 'eth_accounts' : 'eth_requestAccounts' });
+    const address = accounts?.[0];
+    if (!address) { if (!silent) throw new Error('No se autorizó ninguna cuenta.'); return; }
+    const chainHex = await provider.request({ method:'eth_chainId' });
+    const chainId = Number.parseInt(chainHex, 16);
+    const balanceHex = await provider.request({ method:'eth_getBalance', params:[address, 'latest'] });
+    evmState = { address, balance:Number(BigInt(balanceHex)) / 1e18, symbol:chainId === 8453 ? 'ETH · BASE' : chainId === 1 ? 'ETH' : `ETH · CHAIN ${chainId}`, chainId, status:silent ? 'Permiso de confianza restaurado · solo lectura' : 'Cuenta autorizada por wallet · solo lectura' };
+  }
+
+  async function connectPhantom() {
+    try {
+      const provider = window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null);
+      if (!provider) throw new Error('Phantom no está instalada en este navegador.');
+      await updatePhantom(provider);
+      render('Phantom conectada bajo tu autorización. Solo se ha leído el saldo SOL.');
+    } catch (error) { render(`Phantom: ${error.message || 'conexión cancelada'}`); }
+  }
+
+  async function connectEvm() {
+    try {
+      const provider = window.ethereum;
+      if (!provider?.request) throw new Error('No se detectó una wallet EVM compatible.');
+      await updateEvm(provider);
+      render(`Wallet EVM conectada bajo tu autorización. Red detectada: ${evmState.chainId}.`);
+    } catch (error) { render(`Wallet EVM: ${error.message || 'conexión cancelada'}`); }
+  }
+
+  async function restoreTrustedWallets() {
+    let restored = false;
+    const phantom = window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null);
+    if (phantom?.connect && !phantomState) {
+      try { await updatePhantom(phantom, { silent:true }); restored = true; } catch { /* Not previously trusted or extension unavailable. */ }
+    }
+    const evm = window.ethereum;
+    if (evm?.request && !evmState) {
+      try { await updateEvm(evm, { silent:true }); restored = Boolean(evmState) || restored; } catch { /* No previously authorized account. */ }
+    }
+    if (!disposed) render(restored ? 'Permisos previos restaurados sin diálogo. Saldos de wallet actualizados.' : notice);
+  }
+
+  async function refreshConnectedBalances() {
+    let changed = false;
+    const phantom = window.phantom?.solana || (window.solana?.isPhantom ? window.solana : null);
+    if (phantomState?.address && phantom) {
+      try { await updatePhantom(phantom, { silent:true }); changed = true; } catch { /* Preserve last verified value. */ }
+    }
+    if (evmState?.address && window.ethereum?.request) {
+      try { await updateEvm(window.ethereum, { silent:true }); changed = true; } catch { /* Preserve last verified value. */ }
+    }
+    if (changed && !disposed) render('Wallets del navegador sincronizadas automáticamente · solo lectura.');
+  }
+
+  render();
+  void refreshConfigured();
+  void restoreTrustedWallets();
+  const poller = setInterval(async () => {
+    if (disposed || document.visibilityState !== 'visible') return;
+    await refreshConfigured();
+    await refreshConnectedBalances();
+  }, 15000);
+  return () => { disposed = true; clearInterval(poller); configured = null; phantomState = null; evmState = null; };
 }
-
-globalThis.NeonWalletDashboard = { mountWalletDashboard, BRIDGE_URL, PUBLIC_IDENTITY, PUBLIC_ADDRESSES };

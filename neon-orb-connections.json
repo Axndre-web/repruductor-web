@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-10-25T14:14:05.098Z",
+  "requests": [
+    {
+      "id": "9823d172-76d7-4aa1-8e34-fcf078299691",
+      "providerId": "work-feeds",
+      "providerName": "External work feeds",
+      "capability": "DISCOVER_PUBLIC_LISTINGS",
+      "risk": "READ_ONLY",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "NEON_OPPORTUNITY_FEEDS"
+      ],
+      "note": "Public listings only; no auto-applications or claimed revenue",
+      "localApproval": false,
+      "providerVerified": false
+    },
+    {
+      "id": "5211352f-44a6-4831-9f18-f0172d3f2036",
+      "providerId": "ai-inference",
+      "providerName": "AI inference provider",
+      "capability": "INFERENCE",
+      "risk": "DATA_TRANSFER",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "NEON_AI_API_KEY"
+      ],
+      "note": "Configured endpoint and API credential required; send only minimized context",
+      "localApproval": false,
+      "providerVerified": false
+    },
+    {
+      "id": "ad7d96bd-1b37-49b3-a26e-68fe8220b073",
+      "providerId": "stripe",
+      "providerName": "Stripe",
+      "capability": "PAYMENTS_READ_VERIFY",
+      "risk": "FINANCIAL",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "STRIPE_SECRET_KEY"
+      ],
+      "note": "Restricted API key and verified webhooks required",
+      "localApproval": false,
+      "providerVerified": false
+    },
+    {
+      "id": "d6cdb5f5-1fee-497a-9296-5098e961d36b",
+      "providerId": "paypal",
+      "providerName": "PayPal",
+      "capability": "PAYMENTS_READ_VERIFY",
+      "risk": "FINANCIAL",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "PAYPAL_CLIENT_ID",
+        "PAYPAL_CLIENT_SECRET"
+      ],
+      "note": "Provider OAuth/API approval and webhook verification required",
+      "localApproval": false,
+      "providerVerified": false
+    },
+    {
+      "id": "36bd2d07-8548-489a-9e8c-149e9e235dc7",
+      "providerId": "solana-wallet",
+      "providerName": "Solana wallet",
+      "capability": "OBSERVE_PUBLIC_WALLET",
+      "risk": "READ_ONLY",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "SOLANA_WALLET_ADDRESS"
+      ],
+      "note": "Public address only; signing requires a wallet adapter and explicit transaction confirmation",
+      "localApproval": false,
+      "providerVerified": false
+    },
+    {
+      "id": "51f4fe28-299f-48c8-88db-4371829adc68",
+      "providerId": "solana-rpc",
+      "providerName": "Solana RPC",
+      "capability": "READ_CHAIN_STATE",
+      "risk": "READ_ONLY",
+      "status": "PENDING",
+      "createdAt": "2026-10-23T15:33:21.886Z",
+      "updatedAt": "2026-10-23T15:33:21.886Z",
+      "reason": "CONFIGURATION_REQUIRED",
+      "missingConfiguration": [
+        "SOLANA_RPC_ENDPOINT"
+      ],
+      "note": "RPC endpoint; verify network and provider terms",
+      "localApproval": false,
+      "providerVerified": false
+    }
+  ],
+  "events": [
+    {
+      "id": "a69654f6-91b0-4d80-99ee-0368d4915b25",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "work-feeds",
+        "capability": "DISCOVER_PUBLIC_LISTINGS",
+        "risk": "READ_ONLY",
+        "configured": false
+      }
+    },
+    {
+      "id": "d8066e66-e8b4-41a2-b46d-65c78fd7da07",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "ai-inference",
+        "capability": "INFERENCE",
+        "risk": "DATA_TRANSFER",
+        "configured": false
+      }
+    },
+    {
+      "id": "c00a4586-fe7d-4764-b0e0-8d08ad533241",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "stripe",
+        "capability": "PAYMENTS_READ_VERIFY",
+        "risk": "FINANCIAL",
+        "configured": false
+      }
+    },
+    {
+      "id": "017162df-8a48-46e6-b088-db89acfbd996",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "paypal",
+        "capability": "PAYMENTS_READ_VERIFY",
+        "risk": "FINANCIAL",
+        "configured": false
+      }
+    },
+    {
+      "id": "3c4a560c-f606-4be4-a4c9-e736cea76934",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "solana-wallet",
+        "capability": "OBSERVE_PUBLIC_WALLET",
+        "risk": "READ_ONLY",
+        "configured": false
+      }
+    },
+    {
+      "id": "0432214b-5cfd-414c-97fb-2bd03ec45f19",
+      "at": "2026-10-23T15:33:21.886Z",
+      "type": "PERMISSION_REQUEST_CREATED",
+      "details": {
+        "providerId": "solana-rpc",
+        "capability": "READ_CHAIN_STATE",
+        "risk": "READ_ONLY",
+        "configured": false
+      }
+    }
+  ]
+}

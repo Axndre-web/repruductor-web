@@ -105,6 +105,28 @@ async function playStation(i,attempt=0){
     setRadioStatus('STREAM NO DISPONIBLE','error');toast(r[0]+' · señal no disponible; puedes reintentar.');refreshStationStates();
   }
 }
+// Shared NEON ORB radio intent bridge: the stream remains in Player X, not a separate app.
+let lastOrbRadioInstance = sessionStorage.getItem('neonOrbRadioIntentInstance') || '';
+let lastOrbRadioIntent = Number(sessionStorage.getItem('neonOrbRadioIntent') || 0);
+window.neonRadioControlIntent = async intent => {
+  if (!intent || !Number.isInteger(Number(intent.intentId))) return;
+  if (intent.instanceId && intent.instanceId !== lastOrbRadioInstance) { lastOrbRadioInstance = intent.instanceId; lastOrbRadioIntent = 0; sessionStorage.setItem('neonOrbRadioIntentInstance', lastOrbRadioInstance); }
+  if (Number(intent.intentId) <= lastOrbRadioIntent) return;
+  lastOrbRadioIntent = Number(intent.intentId); sessionStorage.setItem('neonOrbRadioIntent', String(lastOrbRadioIntent));
+  const station = Number(intent.station);
+  if (!Number.isInteger(station) || !stations[station]) return;
+  if (intent.action === 'pause') { if (audio) audio.pause(); toast('NEON ORB ha pausado la radio'); return; }
+  if (intent.action === 'play') {
+    try { await playStation(station); }
+    catch { /* Browser autoplay policies are enforced by the browser. */ }
+    const hint = $('#radioGridHint');
+    if (hint) hint.textContent = 'NEON ORB ha solicitado esta emisora. Si el navegador bloquea la reproducción automática, pulsa ▶ para iniciar el audio.';
+  }
+};
+async function pollNeonOrbRadioIntent(){
+  try { const response = await fetch('/api/neon-orb/radio/control', { cache:'no-store', signal:AbortSignal.timeout(2500) }); if (!response.ok) return; const intent = await response.json(); if (intent.action && intent.action !== 'idle') await window.neonRadioControlIntent(intent); } catch { /* offline state is already reflected by radio telemetry */ }
+}
+setInterval(pollNeonOrbRadioIntent, 2500); void pollNeonOrbRadioIntent();
 if(audio){
   audio.addEventListener('playing',()=>{setRadioStatus('EN DIRECTO','live');radioFailCount=0;refreshStationStates();});
   audio.addEventListener('playing',()=>window.__neonOrbLife?.event?.('play'));
