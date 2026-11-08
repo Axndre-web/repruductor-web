@@ -78,7 +78,7 @@ Estas decisiones forman parte de la lógica de comportamiento implementada en el
 
 ## Exploración y Procesamiento
 
-Durante sus viajes, Neon Orb puede consultar nodos públicos y realizar entre 1 y 3 trabajos reales de procesamiento por viaje, según las operaciones disponibles para la aplicación/red.
+Durante sus viajes, Neon Orb puede consultar internet, nodos públicos y realizar entre 1 y 3 trabajos computables reales de procesamiento por viaje, según las operaciones disponibles para la aplicación/red.
 
 Cuando se utiliza el término “procesamiento real/orgánico/valioso”, se refiere a operaciones efectivamente ejecutadas por el software o por servicios externos conectados al sistema, y no simplemente a una animación visual.
 
@@ -94,7 +94,7 @@ La disponibilidad y naturaleza de estas operaciones dependen de:
 
 # Economía Computable/Real, Activos y Concepto de Valor
 
-NEON PLAYER X utiliza los conceptos NXC, CREDITS, SOL y BITS dentro de su arquitectura económica y de representación de valor.
+NEON PLAYER X utiliza los conceptos NXC, CREDITS, SOL y BITS dentro y fuera de su arquitectura económica y de representación de valor.
 
 Para evitar confusiones, el proyecto distingue entre diferentes conceptos:
 
@@ -129,7 +129,7 @@ Esta distinción es fundamental para describir el proyecto de forma técnicament
 
 El proyecto contempla el uso de proveedores externos para determinadas operaciones relacionadas con la conversión entre dinero fiduciario y criptomonedas. Las tarifas, límites, disponibilidad, requisitos y condiciones varían según el proveedor externo utilizado.
 
-NEON PLAYER X no debe interpretar una representación visual de saldo como una confirmación de transacción externa. La confirmación real de una operación económica corresponde al proveedor externo, procesador de pagos o red blockchain que la ejecute.
+NEON PLAYER X debe interpretar una representación visual de saldo como una confirmación de transacción externa. La confirmación real de una operación económica corresponde al proveedor externo, procesador de pagos o red blockchain que la ejecute.
 
 ## Bolsillo de Neon Orb
 
