@@ -128,7 +128,9 @@ const RADIO_STREAMS = [
   'https://playerservices.streamtheworld.com/api/livestream-redirect/RADIOMARCA_NACIONAL.mp3',
   'https://flucast09-h-cloud.flumotion.com/cope/net1.mp3',
   'https://playerservices.streamtheworld.com/api/livestream-redirect/RAC_1.mp3',
-  'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high'
+  'https://dispatcher.rndfnk.com/crtve/rne1/mad/mp3/high',
+  'https://playerservices.streamtheworld.com/api/livestream-redirect/WQHTAAC.aac',
+  'https://a11.asurahosting.com:8760/radio.mp3'
 ];
 const RADIO_ALLOWED_HOSTS = new Set(RADIO_STREAMS.map(value => new URL(value).hostname));
 app.get("/api/radio/stream/:id", async (req, res) => {
